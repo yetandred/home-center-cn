@@ -13,6 +13,9 @@ env:
 jobs:
   # Nothing is published unless typecheck, lint and tests pass.
   verify:
+    # Upstream-only: the image name below is hardcoded to yatzin/homecenter,
+    # so forks skip this workflow entirely instead of failing on push.
+    if: github.repository == 'yatzin/home-center'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -54,7 +57,7 @@ jobs:
 
   build-and-push:
     needs: verify
-    if: github.event_name != 'pull_request'
+    if: github.repository == 'yatzin/home-center' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -108,7 +111,7 @@ jobs:
   # verify has already refused a version that was released before.
   release:
     needs: build-and-push
-    if: github.ref == 'refs/heads/main'
+    if: github.repository == 'yatzin/home-center' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: write
