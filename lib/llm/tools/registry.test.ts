@@ -119,7 +119,7 @@ describe("runToolCall", () => {
 describe("toolLabel", () => {
   it("uses the tool's label, falling back when args don't parse", () => {
     expect(toolLabel(tools, call("echo", '{"n":3}'))).toBe("Echoing 3…")
-    expect(toolLabel(tools, call("echo", "garbage"))).toBe("Looking things up…")
-    expect(toolLabel(tools, call("nope", "{}"))).toBe("Looking things up…")
+    expect(toolLabel(tools, call("echo", "garbage"))).toBe("正在查询…")
+    expect(toolLabel(tools, call("nope", "{}"))).toBe("正在查询…")
   })
 })

@@ -13,7 +13,7 @@ import { loadLlmConfig, loadLlmStatus } from "@/lib/llm/config"
 import { cookies } from "next/headers"
 import { PLACEMENTS, readPlacement } from "@/lib/placement"
 import { PlacementSettings } from "@/components/settings/placement-settings"
-import { isLlmReady, parseExtraBody } from "@/lib/llm/settings-schema"
+import { isLlmReady, parseExtraBody, parseHeaders } from "@/lib/llm/settings-schema"
 import { DocumentSettings } from "@/components/settings/document-settings"
 import { CaptureSettings } from "@/components/settings/capture-settings"
 import { loadCaptureParser } from "@/lib/capture-server"
@@ -186,9 +186,11 @@ export default async function SettingsPage({
                 timeoutSeconds: llm.timeoutSeconds?.toString() ?? "",
                 maxToolRounds: llm.maxToolRounds?.toString() ?? "",
                 extraBody: llm.extraBody ? JSON.stringify(parseExtraBody(llm.extraBody), null, 2) : "",
+                headers: llm.headers ? JSON.stringify(parseHeaders(llm.headers), null, 2) : "",
                 documentsEnabled: llm.documentsEnabled,
                 healthDocumentsEnabled: llm.healthDocumentsEnabled,
               }}
+              toolCalling={llm.toolCalling}
               indexingEnabled={docs?.[0].indexingEnabled ?? true}
               healthEnabled={features?.health ?? true}
               hasStoredKey={llm.hasStoredKey}

@@ -28,6 +28,10 @@ export type ChatResult = {
   toolCalls: ToolCall[]
   /** Why the reply ended ("stop", "length", ...) when the server said; "length" means it was cut off. */
   finishReason?: string | null
+  /** Reasoning models put their thinking here (DeepSeek-R1 and friends); never shown as the answer. */
+  reasoning?: string
+  /** The URL that actually answered, after path probing — shown by the connection test. */
+  endpoint?: string
 }
 
 /** One streamed completion. `onText` receives content deltas as they arrive. */

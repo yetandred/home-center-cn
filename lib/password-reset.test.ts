@@ -40,7 +40,7 @@ describe("requestPasswordReset", () => {
     const { text } = resetEmail("Ann", "tok_abc", null)
     expect(text).toContain("tok_abc")
     expect(text).not.toContain("http")
-    expect(text).toContain("15 minutes")
+    expect(text).toContain("15 分钟")
   })
 
   it("does nothing when mail isn't set up", async () => {

@@ -9,7 +9,7 @@ const none: DropInput = { dialogTargets: [], modalOpen: false, zone: null, pageA
 
 describe("resolveDrop", () => {
   it("sends files to Intake when nothing more specific is there", () => {
-    expect(resolveDrop(none)).toEqual({ kind: "intake", asset: null, label: "Add to Intake" })
+    expect(resolveDrop(none)).toEqual({ kind: "intake", asset: null, label: "添加到收件箱" })
   })
 
   it("an open dialog that takes files gets them, even over a zone or an asset page", () => {
@@ -71,7 +71,7 @@ describe("resolveDrop", () => {
       kind: "blocked",
       label: BLOCKED_LABEL,
     })
-    expect(BLOCKED_LABEL).toBe("This form doesn't take files")
+    expect(BLOCKED_LABEL).toBe("此表单不接受文件")
   })
 
   it("a zone under the pointer beats the page's asset", () => {
@@ -83,19 +83,19 @@ describe("resolveDrop", () => {
   })
 
   it("on an asset's page, Intake with that asset", () => {
-    expect(resolveDrop({ ...none, pageAsset: civic })).toEqual({ kind: "intake", asset: civic, label: "Add to Intake — for Blue Civic" })
+    expect(resolveDrop({ ...none, pageAsset: civic })).toEqual({ kind: "intake", asset: civic, label: "添加到收件箱——Blue Civic" })
   })
 
   it("a person's page counts only while Health is on", () => {
     expect(resolveDrop({ ...none, pageAsset: ann })).toMatchObject({ kind: "intake", asset: ann })
-    expect(resolveDrop({ ...none, pageAsset: ann, healthEnabled: false })).toEqual({ kind: "intake", asset: null, label: "Add to Intake" })
+    expect(resolveDrop({ ...none, pageAsset: ann, healthEnabled: false })).toEqual({ kind: "intake", asset: null, label: "添加到收件箱" })
   })
 })
 
 describe("intakeLabel", () => {
   it("names the asset, or falls back when the name is blank", () => {
-    expect(intakeLabel(null)).toBe("Add to Intake")
-    expect(intakeLabel({ ...civic, name: "  " })).toBe("Add to Intake")
+    expect(intakeLabel(null)).toBe("添加到收件箱")
+    expect(intakeLabel({ ...civic, name: "  " })).toBe("添加到收件箱")
   })
 })
 
@@ -124,12 +124,12 @@ describe("splitDroppedFiles", () => {
 
 describe("messages", () => {
   it("counts what landed in Intake", () => {
-    expect(intakeAddedMessage(1)).toBe("Added 1 file to Intake")
-    expect(intakeAddedMessage(3)).toBe("Added 3 files to Intake")
+    expect(intakeAddedMessage(1)).toBe("已将 1 个文件添加到收件箱")
+    expect(intakeAddedMessage(3)).toBe("已将 3 个文件添加到收件箱")
   })
   it("lists rejected files, shortening a long list", () => {
-    expect(rejectedFilesMessage(["a.exe"])).toBe(`HomeCenter doesn't accept "a.exe".`)
-    expect(rejectedFilesMessage(["a.exe", "b.html"])).toBe(`HomeCenter doesn't accept "a.exe" and "b.html".`)
-    expect(rejectedFilesMessage(["a", "b", "c", "d", "e"])).toBe(`HomeCenter doesn't accept "a", "b", "c" and 2 more.`)
+    expect(rejectedFilesMessage(["a.exe"])).toBe(`HomeCenter 不接受 “a.exe”。`)
+    expect(rejectedFilesMessage(["a.exe", "b.html"])).toBe(`HomeCenter 不接受 “a.exe” 和 “b.html”。`)
+    expect(rejectedFilesMessage(["a", "b", "c", "d", "e"])).toBe(`HomeCenter 不接受 “a”、“b”、“c” 等 2 个文件。`)
   })
 })

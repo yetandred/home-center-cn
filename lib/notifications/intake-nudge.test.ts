@@ -7,8 +7,8 @@ const daysAgo = (d: number) => new Date(NOW.getTime() - d * DAY)
 const item = (age: number, over: Partial<IntakeNudgeItem> = {}): IntakeNudgeItem => ({ createdAt: daysAgo(age), suggestedAssetType: null, ...over })
 const nudge = (over: Partial<PriorNudge> = {}): PriorNudge => ({
   id: "n1",
-  title: "1 item waiting in Intake",
-  message: "Added more than a week ago. File, keep or discard it.",
+  title: "收件箱中有 1 个项目待处理",
+  message: "添加时间已超过一周，请归档、保留或丢弃。",
   cycleKey: daysAgo(8).toISOString(),
   dismissedAt: null,
   ...over,
@@ -29,11 +29,11 @@ describe("decideIntakeNudge", () => {
     expect(run([item(7 + 1 / 1440)])).toMatchObject({ action: "create" })
   })
 
-  it("creates one nudge for one old item, in the singular", () => {
+  it("creates one nudge for one old item", () => {
     expect(run([item(8), item(2)])).toEqual({
       action: "create",
-      title: "1 item waiting in Intake",
-      message: "Added more than a week ago. File, keep or discard it.",
+      title: "收件箱中有 1 个项目待处理",
+      message: "添加时间已超过一周，请归档、保留或丢弃。",
       cycleKey: daysAgo(8).toISOString(),
     })
   })
@@ -41,16 +41,16 @@ describe("decideIntakeNudge", () => {
   it("counts several old items and keys on the newest of them", () => {
     expect(run([item(30), item(9), item(12), item(1)])).toEqual({
       action: "create",
-      title: "3 items waiting in Intake",
-      message: "Added more than a week ago. File, keep or discard them.",
+      title: "收件箱中有 3 个项目待处理",
+      message: "添加时间已超过一周，请归档、保留或丢弃。",
       cycleKey: daysAgo(9).toISOString(),
     })
   })
 
   it("leaves out items suggested for a person while Health is off", () => {
     const items = [item(10, { suggestedAssetType: "PERSON" }), item(9, { suggestedAssetType: "VEHICLE" })]
-    expect(run(items, [], false)).toMatchObject({ action: "create", title: "1 item waiting in Intake", cycleKey: daysAgo(9).toISOString() })
-    expect(run(items, [], true)).toMatchObject({ action: "create", title: "2 items waiting in Intake" })
+    expect(run(items, [], false)).toMatchObject({ action: "create", title: "收件箱中有 1 个项目待处理", cycleKey: daysAgo(9).toISOString() })
+    expect(run(items, [], true)).toMatchObject({ action: "create", title: "收件箱中有 2 个项目待处理" })
     expect(run([item(10, { suggestedAssetType: "PERSON" })], [], false)).toEqual({ action: "none" })
   })
 
@@ -62,15 +62,15 @@ describe("decideIntakeNudge", () => {
     expect(run([item(8), item(7.5)], [nudge()])).toEqual({
       action: "update",
       id: "n1",
-      title: "2 items waiting in Intake",
-      message: "Added more than a week ago. File, keep or discard them.",
+      title: "收件箱中有 2 个项目待处理",
+      message: "添加时间已超过一周，请归档、保留或丢弃。",
       cycleKey: daysAgo(7.5).toISOString(),
     })
   })
 
   it("updates the open nudge's count when some were filed", () => {
-    const open = nudge({ title: "3 items waiting in Intake", message: "Added more than a week ago. File, keep or discard them.", cycleKey: daysAgo(8).toISOString() })
-    expect(run([item(8)], [open])).toMatchObject({ action: "update", id: "n1", title: "1 item waiting in Intake" })
+    const open = nudge({ title: "收件箱中有 3 个项目待处理", message: "添加时间已超过一周，请归档、保留或丢弃。", cycleKey: daysAgo(8).toISOString() })
+    expect(run([item(8)], [open])).toMatchObject({ action: "update", id: "n1", title: "收件箱中有 1 个项目待处理" })
   })
 
   it("stays quiet after a dismissal while no newer item has crossed the mark", () => {
@@ -84,8 +84,8 @@ describe("decideIntakeNudge", () => {
     const dismissed = nudge({ dismissedAt: daysAgo(0.5) })
     expect(run([item(8), item(7.2)], [dismissed])).toEqual({
       action: "create",
-      title: "2 items waiting in Intake",
-      message: "Added more than a week ago. File, keep or discard them.",
+      title: "收件箱中有 2 个项目待处理",
+      message: "添加时间已超过一周，请归档、保留或丢弃。",
       cycleKey: daysAgo(7.2).toISOString(),
     })
   })

@@ -7,7 +7,7 @@ import { z } from "zod"
 import { redirect } from "next/navigation"
 import { encrypt } from "@/lib/secret-box"
 import { loadLlmConfig, LLM_SETTINGS_ID } from "@/lib/llm/config"
-import { originChanged, parseLlmSettings, type LlmSettingsInput, parseExtraBody } from "@/lib/llm/settings-schema"
+import { originChanged, parseHeaders, parseLlmSettings, type LlmSettingsInput, parseExtraBody } from "@/lib/llm/settings-schema"
 import { createChatClient } from "@/lib/llm/client"
 import { LlmError } from "@/lib/llm/errors"
 import type { OpenAiTool } from "@/lib/llm/types"
@@ -100,11 +100,13 @@ const PING_TOOL: OpenAiTool = {
 
 /**
  * Tries what's on screen, falling back to what's saved, and checks the one
- * capability the assistant can't work without: tool calling.
+ * capability the assistant can't work without: tool calling. The result is
+ * stored, so a server that rejects `tools` runs the assistant in chat-only
+ * mode instead of failing every question.
  */
 export async function testLlmConnection(
   data: LlmSettingsInput
-): Promise<{ error: string } | { success: true; model: string; toolCalling: boolean }> {
+): Promise<{ error: string } | { success: true; model: string; toolCalling: boolean; endpoint?: string }> {
   await requireAdmin()
   const parsed = parseLlmSettings(data, { requireComplete: false })
   if (!parsed.ok) return { error: parsed.error }
@@ -118,7 +120,20 @@ export async function testLlmConnection(
   const apiKey = data.clearApiKey ? null : data.apiKey || savedKey
 
   // The form is pre-filled with the saved JSON, so what's typed is what to test.
-  const chat = createChatClient({ baseUrl, apiKey, model, temperature: null, maxTokens: null, extraBody: parseExtraBody(parsed.value.extraBody) })
+  const chat = createChatClient({
+    baseUrl,
+    apiKey,
+    model,
+    temperature: null,
+    maxTokens: null,
+    extraBody: parseExtraBody(parsed.value.extraBody),
+    headers: parseHeaders(parsed.value.headers),
+  })
+
+  /** Remembered so the chat route knows whether to offer tools at all. */
+  const remember = (toolCalling: boolean) =>
+    prisma.llmSettings.updateMany({ where: { id: LLM_SETTINGS_ID }, data: { toolCalling } })
+
   try {
     const result = await chat(
       {
@@ -130,11 +145,21 @@ export async function testLlmConnection(
         toolChoice: "auto",
       },
       () => {},
-      AbortSignal.timeout(30_000)
+      // Local models can take a while to load; the test is not the chat timeout.
+      AbortSignal.timeout(90_000)
     )
-    return { success: true, model, toolCalling: result.toolCalls.some((c) => c.name === "ping") }
+    const toolCalling = result.toolCalls.some((c) => c.name === "ping")
+    await remember(toolCalling)
+    return { success: true, model, toolCalling, endpoint: result.endpoint }
   } catch (error) {
-    if (error instanceof LlmError) return { error: error.message }
+    if (error instanceof LlmError) {
+      // Reachable but tool-less: still a usable (chat-only) assistant.
+      if (error.toolsUnsupported) {
+        await remember(false)
+        return { success: true, model, toolCalling: false }
+      }
+      return { error: error.message }
+    }
     return { error: `Test failed: ${error instanceof Error ? error.message : String(error)}` }
   }
 }

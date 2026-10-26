@@ -23,7 +23,7 @@ describe("report options", () => {
     expect(obsDays(o)).toBe(1095)
     expect(o.historyRange).toBe("1825")
     expect([30, 365, 730, 1095, 1825, "all" as const].map(rangeLabel)).toEqual([
-      "last 30 days", "last 12 months", "last 2 years", "last 3 years", "last 5 years", "all time",
+      "最近 30 天", "最近 12 个月", "最近 2 年", "最近 3 年", "最近 5 年", "全部时间",
     ])
   })
 })

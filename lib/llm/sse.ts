@@ -27,6 +27,9 @@ type DeltaChunk = {
     finish_reason?: string | null
     delta?: {
       content?: string | null
+      /** DeepSeek-R1 and friends stream their chain of thought here. */
+      reasoning_content?: string | null
+      reasoning?: string | null
       tool_calls?: { index?: number; id?: string; function?: { name?: string; arguments?: string } }[]
     }
   }[]
@@ -39,6 +42,7 @@ type DeltaChunk = {
  */
 export function createDeltaAccumulator(onText: (text: string) => void) {
   let content = ""
+  let reasoning = ""
   let finishReason: string | undefined
   const calls: { id: string; name: string; arguments: string }[] = []
 
@@ -56,6 +60,10 @@ export function createDeltaAccumulator(onText: (text: string) => void) {
       if (chunk.choices?.[0]?.finish_reason) finishReason = chunk.choices[0].finish_reason
       const delta = chunk.choices?.[0]?.delta
       if (!delta) return false
+      // Thinking stays out of the answer; it is kept only so a turn that produced
+      // nothing but reasoning can be diagnosed instead of looking like a blank reply.
+      const thinking = delta.reasoning_content ?? delta.reasoning
+      if (thinking) reasoning += thinking
       if (delta.content) {
         content += delta.content
         onText(delta.content)
@@ -77,6 +85,7 @@ export function createDeltaAccumulator(onText: (text: string) => void) {
         toolCalls: calls
           .filter((c) => c && c.name)
           .map((c, i) => ({ id: c.id || `call_${i}`, name: c.name, arguments: c.arguments })),
+        ...(reasoning ? { reasoning } : {}),
         ...(finishReason ? { finishReason } : {}),
       }
     },

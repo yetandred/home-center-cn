@@ -37,7 +37,7 @@ describe("restore actions share the one job lock", () => {
     fx.stage.mockImplementation(() => new Promise<void>((r) => { finish = r }))
     const a = restoreConfirm({ word: "RESTORE" })
     const b = restoreConfirm({ word: "RESTORE" })
-    expect(await b).toEqual({ error: expect.stringContaining("Wait for the running") })
+    expect(await b).toEqual({ error: expect.stringContaining("请等待正在运行的备份或导出完成") })
     expect(isJobRunning()).toBe(true) // held while staging, so a backup can't start either
     expect(await startBackupJob("MANUAL")).toEqual({ error: expect.any(String) })
     finish()
@@ -65,7 +65,7 @@ describe("restore actions share the one job lock", () => {
     fx.restart.mockReturnValue({ restarting: true })
     expect(await restoreRestart()).toEqual({ restarting: true })
     expect(isJobRunning()).toBe(true)
-    expect(await restoreConfirm({ word: "RESTORE" })).toEqual({ error: expect.stringContaining("Wait for the running") })
+    expect(await restoreConfirm({ word: "RESTORE" })).toEqual({ error: expect.stringContaining("请等待正在运行的备份或导出完成") })
   })
 })
 
@@ -74,7 +74,7 @@ describe("setProtectionKey", () => {
     const good = await identityToRecipient(await generateX25519Identity())
     const bad = good.slice(0, -1) + (good.endsWith("q") ? "p" : "q")
     expect(bad).toMatch(/^age1[0-9a-z]{20,}$/)
-    expect(await setProtectionKey({ publicKey: bad, fingerprint: await fingerprintOf(bad) })).toEqual({ error: expect.stringContaining("public half") })
+    expect(await setProtectionKey({ publicKey: bad, fingerprint: await fingerprintOf(bad) })).toEqual({ error: expect.stringContaining("恢复密钥的公钥部分") })
     expect(db.settingsUpdate).not.toHaveBeenCalled()
   })
 

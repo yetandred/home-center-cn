@@ -3,7 +3,7 @@ import { loadFeatures } from "@/lib/features-server"
 import { loadRegionalSettings } from "@/lib/regional-server"
 import { loadLlmConfig } from "@/lib/llm/config"
 import { createChatClient } from "@/lib/llm/client"
-import { isLlmReady, parseExtraBody } from "@/lib/llm/settings-schema"
+import { isLlmReady, parseExtraBody, parseHeaders } from "@/lib/llm/settings-schema"
 import { DOCUMENT_SETTINGS_ID, loadDocumentSettings } from "@/lib/documents/settings"
 import { parseReceipt, type ParsedReceipt } from "@/lib/capture/parse"
 import { fillFromBasic, llmFailureDetail, readReceiptByLlm, receiptChatOptions, type LlmReceiptRead } from "@/lib/capture/llm-parse"
@@ -100,7 +100,7 @@ async function readWithLlm(text: string): Promise<LlmReceiptRead | { note: "llm-
   const { currency } = await loadRegionalSettings()
   return readReceiptByLlm(
     text,
-    (opts) => createChatClient({ baseUrl, apiKey: config.apiKey, model, ...receiptChatOptions(extraBody, opts) }),
+    (opts) => createChatClient({ baseUrl, apiKey: config.apiKey, model, headers: parseHeaders(config.headers), ...receiptChatOptions(extraBody, opts) }),
     AbortSignal.timeout(LLM_TIMEOUT_MS),
     currency,
   )

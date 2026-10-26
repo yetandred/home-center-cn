@@ -66,9 +66,8 @@ describe("buildSystemPrompt", () => {
     const fmt = createFormatter({ ...DEFAULT_REGIONAL, currency: "EUR", distanceUnit: "KM", areaUnit: "SQM" })
     const p = buildSystemPrompt({ now, fmt })
     expect(p).toContain(`Money as ${fmt.money(1234.56)}`)
-    expect(p).toContain("Distances on odometers are in kilometres")
-    expect(p).toContain("Areas are in square metres")
-    expect(p).not.toContain("$1,234.56")
+    expect(p).toContain("already in the household's configured units")
+        expect(p).not.toContain("$1,234.56")
   })
 
   it("defaults keep dollars and miles", () => {

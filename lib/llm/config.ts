@@ -9,6 +9,8 @@ export type LlmConfig = ParsedLlmSettings & {
   hasStoredKey: boolean
   /** A key is stored but AUTH_SECRET can no longer decrypt it. */
   keyUnreadable: boolean
+  /** Last connection test: null = never tested, false = the server rejected `tools`. */
+  toolCalling: boolean | null
 }
 
 export async function loadLlmConfig(): Promise<LlmConfig> {
@@ -25,6 +27,8 @@ export async function loadLlmConfig(): Promise<LlmConfig> {
     timeoutSeconds: row?.timeoutSeconds ?? null,
     maxToolRounds: row?.maxToolRounds ?? null,
     extraBody: row?.extraBody ?? null,
+    headers: row?.headers ?? null,
+    toolCalling: row?.toolCalling ?? null,
     documentsEnabled: row?.documentsEnabled ?? true,
     healthDocumentsEnabled: row?.healthDocumentsEnabled ?? false,
     apiKey,

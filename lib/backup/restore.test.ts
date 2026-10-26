@@ -110,7 +110,7 @@ describe("restore", () => {
     const { backup, paths } = await world("password")
     const known = await appMigrations()
     expect(await dryRun({ archivePath: backup.path, secret: {}, paths, known })).toMatchObject({ ok: false, needs: "password" })
-    expect(await dryRun({ archivePath: backup.path, secret: { password: "nope12" }, paths, known })).toMatchObject({ ok: false, error: expect.stringContaining("doesn't open") })
+    expect(await dryRun({ archivePath: backup.path, secret: { password: "nope12" }, paths, known })).toMatchObject({ ok: false, error: expect.stringContaining("无法打开") })
     await expect(stage({ paths })).rejects.toThrow()
   })
 

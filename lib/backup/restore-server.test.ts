@@ -77,7 +77,7 @@ describe("finalizeRestore", () => {
     expect(existsSync(path.join(dir, "secrets.enc.json"))).toBe(false)
     expect(db.userUpdate).toHaveBeenCalledTimes(2)
     expect(db.runCreate).toHaveBeenCalledTimes(1)
-    expect(alert.raise).toHaveBeenCalledWith(`restore:${result.appliedAt}`, expect.stringContaining("Restored from the backup"), expect.any(String))
+    expect(alert.raise).toHaveBeenCalledWith(`restore:${result.appliedAt}`, expect.stringContaining("已恢复"), "所有用户均已退出登录，请使用备份中的账户重新登录。")
     expect(JSON.parse(await readFile(path.join(dir, "result.json"), "utf8")).finalized).toBe(true)
   })
 
@@ -108,7 +108,7 @@ describe("finalizeRestore", () => {
     await finalizeRestore()
     expect(db.userUpdate).not.toHaveBeenCalled()
     expect(db.mailUpsert).not.toHaveBeenCalled()
-    expect(alert.raise).toHaveBeenCalledWith(expect.any(String), "Restore didn't finish", expect.stringContaining("Nothing was changed"))
+    expect(alert.raise).toHaveBeenCalledWith(expect.any(String), "恢复未完成", expect.stringContaining("未做任何更改"))
   })
 
   it("does not finalize a failure that displaced data until it is acknowledged", async () => {

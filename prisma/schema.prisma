@@ -706,6 +706,12 @@ model LlmSettings {
   maxToolRounds          Int?
   /// JSON object merged into every request, e.g. {"chat_template_kwargs":{"enable_thinking":true}}.
   extraBody              String?
+  /// JSON object of extra request headers, e.g. {"HTTP-Referer":"https://home.example"}.
+  headers                String?
+  /// Result of the last connection test: true = tool calling works, false =
+  /// the server rejected `tools` and the assistant runs without data lookups,
+  /// null = never tested.
+  toolCalling            Boolean?
   /// Offer search_documents / read_document to the assistant.
   documentsEnabled       Boolean  @default(true)
   /// Include attachments on health records (conditions, observations,

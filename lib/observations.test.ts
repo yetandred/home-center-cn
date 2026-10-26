@@ -12,9 +12,9 @@ const now = new Date("2026-06-15T15:00:00Z")
 
 describe("formatting", () => {
   it("formats durations and times", () => {
-    expect(formatDuration(45)).toBe("45 min")
-    expect(formatDuration(60)).toBe("1 h")
-    expect(formatDuration(95)).toBe("1 h 35 min")
+    expect(formatDuration(45)).toBe("45 分钟")
+    expect(formatDuration(60)).toBe("1 小时")
+    expect(formatDuration(95)).toBe("1 小时 35 分钟")
     expect(formatDuration(null)).toBe("—")
   })
 })

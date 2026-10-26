@@ -31,7 +31,7 @@ describe("createDeltaAccumulator", () => {
     const acc = createDeltaAccumulator(() => {})
     acc.push(chunk({ reasoning_content: "thinking" }))
     acc.push(JSON.stringify({ choices: [{ delta: {}, finish_reason: "length" }] }))
-    expect(acc.result()).toEqual({ content: "", toolCalls: [], finishReason: "length" })
+    expect(acc.result()).toEqual({ content: "", toolCalls: [], reasoning: "thinking", finishReason: "length" })
   })
 
   it("assembles parallel tool calls from fragments", () => {

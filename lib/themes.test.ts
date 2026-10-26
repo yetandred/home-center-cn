@@ -10,18 +10,18 @@ describe("THEMES", () => {
   })
   it("lists every design once, in order", () => {
     expect(THEMES.map((t) => t.label)).toEqual([
-      "Spruce",
-      "Spruce Night",
-      "Ledger",
-      "Frost",
-      "Observatory",
-      "Terminal",
-      "Terracotta",
-      "Swiss",
-      "Lodge",
-      "Blueprint",
-      "Sage",
-      "Brutal",
+      "云杉",
+      "云杉夜色",
+      "账簿",
+      "霜白",
+      "观星台",
+      "终端",
+      "赤陶",
+      "瑞士",
+      "山间木屋",
+      "蓝图",
+      "鼠尾草",
+      "粗野主义",
     ])
     expect(new Set(THEMES.map((t) => t.id)).size).toBe(THEMES.length)
   })
@@ -66,13 +66,13 @@ describe("nextTheme / prevTheme", () => {
 
 describe("themeLabel", () => {
   it("names known themes", () => {
-    expect(themeLabel("dark")).toBe("Spruce Night")
-    expect(themeLabel("observatory")).toBe("Observatory")
+    expect(themeLabel("dark")).toBe("云杉夜色")
+    expect(themeLabel("observatory")).toBe("观星台")
   })
   it("falls back to Spruce", () => {
-    expect(themeLabel("nope")).toBe("Spruce")
-    expect(themeLabel(undefined)).toBe("Spruce")
-    expect(themeLabel("system")).toBe("Spruce")
+    expect(themeLabel("nope")).toBe("云杉")
+    expect(themeLabel(undefined)).toBe("云杉")
+    expect(themeLabel("system")).toBe("云杉")
   })
 })
 

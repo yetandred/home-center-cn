@@ -27,6 +27,7 @@ type Values = {
   timeoutSeconds: string
   maxToolRounds: string
   extraBody: string
+  headers: string
   documentsEnabled: boolean
   healthDocumentsEnabled: boolean
 }
@@ -36,6 +37,7 @@ export function LlmSettings({
   hasStoredKey,
   keyUnreadable,
   ready,
+  toolCalling,
   indexingEnabled,
   healthEnabled,
 }: {
@@ -43,6 +45,8 @@ export function LlmSettings({
   hasStoredKey: boolean
   keyUnreadable: boolean
   ready: boolean
+  /** Last connection test: null = never tested, false = the server rejected tools. */
+  toolCalling: boolean | null
   /** Document switches only matter while indexing is on (Settings → Documents). */
   indexingEnabled: boolean
   /** Health on or off under Settings → Features. */
@@ -103,11 +107,12 @@ export function LlmSettings({
         toast.error(result.error, { duration: 15000 })
         return
       }
-      if (result.toolCalling) toast.success(`已连接到 ${result.model} — 工具调用正常。`)
+      const where = result.endpoint ? `（${result.endpoint}）` : ""
+      if (result.toolCalling) toast.success(`已连接到 ${result.model}${where} — 工具调用正常。`, { duration: 8000 })
       else
         toast.warning(
-          `已连接到 ${result.model}，但它未调用测试工具。可能不支持工具调用，而 AI 助手需要此功能。`,
-          { duration: 15000 }
+          `已连接到 ${result.model}${where}，但它没有调用测试工具。已保存为「纯聊天模式」：可以对话，但不能查询家庭数据。换一个支持工具调用的模型即可恢复查询能力。`,
+          { duration: 20000 }
         )
     })
   }
@@ -118,6 +123,8 @@ export function LlmSettings({
         <CardTitle className="flex items-center gap-2">
           AI 助手
           {ready ? <Badge variant="secondary">开启</Badge> : <Badge variant="outline">关闭</Badge>}
+          {toolCalling === false && <Badge variant="outline">纯聊天模式</Badge>}
+          {toolCalling === true && <Badge variant="outline">工具调用正常</Badge>}
         </CardTitle>
         <CardDescription>
           让所有成员在聊天中询问 HomeCenter 数据相关的问题。兼容任何 OpenAI 兼容服务器 — OpenAI、Ollama、LM Studio、OpenRouter。问题和回答所需的记录会发送到该服务器，包括健康记录；如有顾虑请使用本地模型。
@@ -214,7 +221,7 @@ export function LlmSettings({
                         </button>
                       </span>
                     ))}
-                    。在 Docker 中请使用宿主机地址，而非 localhost。
+                    。不带 <code className="text-xs">/v1</code> 也可以，会自动探测并补全；Azure OpenAI 填到 <code className="text-xs">https://资源名.openai.azure.com</code> 即可。在 Docker 中请使用宿主机地址，而非 localhost。
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -224,7 +231,9 @@ export function LlmSettings({
                 <FormItem>
                   <FormLabel>模型</FormLabel>
                   <FormControl><Input placeholder="gpt-4o-mini" {...field} /></FormControl>
-                  <FormDescription className="text-xs">必须支持工具（函数）调用。</FormDescription>
+                  <FormDescription className="text-xs">
+                    支持工具（函数）调用的模型才能查询家庭数据；不支持的会以纯聊天模式运行。点「测试连接」可自动检测。
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )} />
@@ -310,6 +319,19 @@ export function LlmSettings({
                   </FormControl>
                   <FormDescription className="text-xs">
                     每次请求都会附带的可选字段，用于服务器支持的设置 — 例如开启模型的思考模式（llama.cpp、vLLM）或 <code className="text-xs">reasoning_effort</code>（OpenAI）。不确定时请留空。
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <FormField control={form.control} name="headers" render={({ field }) => (
+                <FormItem className="col-span-2">
+                  <FormLabel>额外请求头</FormLabel>
+                  <FormControl>
+                    <Textarea rows={2} maxLength={2000} className="font-mono text-xs" placeholder='{"HTTP-Referer": "https://home.example"}' {...field} />
+                  </FormControl>
+                  <FormDescription className="text-xs">
+                    部分网关或代理需要额外的请求头（如 <code className="text-xs">HTTP-Referer</code>、自定义鉴权头）。键值都必须是文本。不确定时请留空。
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

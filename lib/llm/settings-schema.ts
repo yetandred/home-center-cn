@@ -24,6 +24,7 @@ const schema = z.object({
   timeoutSeconds: z.string().trim().optional(),
   maxToolRounds: z.string().trim().optional(),
   extraBody: z.string().trim().max(2000).optional(),
+  headers: z.string().trim().max(2000).optional(),
   documentsEnabled: z.boolean().optional(),
   healthDocumentsEnabled: z.boolean().optional(),
 })
@@ -60,6 +61,8 @@ export type ParsedLlmSettings = {
   maxToolRounds: number | null
   /** Provider-specific request fields as normalised JSON, e.g. {"chat_template_kwargs":{"enable_thinking":true}}. */
   extraBody: string | null
+  /** Extra request headers as normalised JSON, e.g. {"HTTP-Referer":"https://home.example"}. */
+  headers: string | null
   /** Offer the document tools to the assistant. */
   documentsEnabled: boolean
   /** Include files on health records in those tools. */
@@ -123,6 +126,15 @@ export function parseLlmSettings(input: LlmSettingsInput, opts: { requireComplet
     extraBody = JSON.stringify(obj)
   }
 
+  let headers: string | null = null
+  if (v.headers) {
+    const obj = parseHeaders(v.headers)
+    if (!obj) return { ok: false, error: "Extra request headers must be a JSON object of text values." }
+    const bad = Object.keys(obj).filter((k) => RESERVED_HEADERS.includes(k.toLowerCase()))
+    if (bad.length) return { ok: false, error: `Extra request headers can't set ${bad.join(", ")} — the assistant sets those.` }
+    headers = JSON.stringify(obj)
+  }
+
   const model = v.model || null
   if ((opts.requireComplete ?? true) && v.enabled && (!baseUrl || !model)) {
     return { ok: false, error: "Base URL and model are required to turn the assistant on." }
@@ -132,7 +144,7 @@ export function parseLlmSettings(input: LlmSettingsInput, opts: { requireComplet
     ok: true,
     // Hidden only makes sense while off — turning the assistant on clears it,
     // rather than trusting the client to have disabled the checkbox.
-    value: { enabled: v.enabled, hidden: v.enabled ? false : (v.hidden ?? false), baseUrl, model, temperature, maxTokens, systemPrompt: v.systemPrompt || null, timeoutSeconds, maxToolRounds, extraBody, documentsEnabled: v.documentsEnabled ?? true, healthDocumentsEnabled: v.healthDocumentsEnabled ?? false },
+    value: { enabled: v.enabled, hidden: v.enabled ? false : (v.hidden ?? false), baseUrl, model, temperature, maxTokens, systemPrompt: v.systemPrompt || null, timeoutSeconds, maxToolRounds, extraBody, headers, documentsEnabled: v.documentsEnabled ?? true, healthDocumentsEnabled: v.healthDocumentsEnabled ?? false },
   }
 }
 
@@ -159,6 +171,26 @@ export function parseExtraBody(raw: string | null | undefined): Record<string, u
   try {
     const v: unknown = JSON.parse(raw)
     return v && typeof v === "object" && !Array.isArray(v) ? (v as Record<string, unknown>) : null
+  } catch {
+    return null
+  }
+}
+
+/** Headers the client builds itself; extra headers may not replace them. */
+const RESERVED_HEADERS = ["content-type", "accept", "host", "content-length"]
+
+/** Extra request headers as a plain object of strings; null when blank or malformed. */
+export function parseHeaders(raw: string | null | undefined): Record<string, string> | null {
+  if (!raw) return null
+  try {
+    const v: unknown = JSON.parse(raw)
+    if (!v || typeof v !== "object" || Array.isArray(v)) return null
+    const out: Record<string, string> = {}
+    for (const [key, value] of Object.entries(v as Record<string, unknown>)) {
+      if (typeof value !== "string" && typeof value !== "number") return null
+      out[key] = String(value)
+    }
+    return out
   } catch {
     return null
   }

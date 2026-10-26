@@ -25,7 +25,7 @@ describe("ageWords", () => {
 describe("intervalWords", () => {
   it("prefers whole years, months, weeks", () => {
     expect(intervalWords(365, null, null)).toBe("Repeats every year")
-    expect(intervalWords(90, 5000, "MILES")).toBe("Repeats every 3 months or every 5,000 miles")
+    expect(intervalWords(90, 5000, "MILES")).toBe("Repeats every 3 months or every 5,000 公里")
     expect(intervalWords(14, null, null)).toBe("Repeats every 2 weeks")
     expect(intervalWords(null, 100, "HOURS")).toBe("Repeats every 100 engine hours")
     expect(intervalWords(null, null, null)).toBeNull()
@@ -59,7 +59,7 @@ describe("record text", () => {
       id: "p1",
       chunks: [
         "Property: Maple Street House. A house at 412 Maple St, Springfield. Built in 1998 (about 28 years old). " +
-        "2,150 square feet. Purchased May 2019 for about $412,000. Equipment here: Gas Furnace (heating & cooling). " +
+        "2,150 平方米. Purchased May 2019 for about ¥412,000. Equipment here: Gas Furnace (heating & cooling). " +
         "Notes: Corner lot, finished basement.",
       ],
     })
@@ -79,7 +79,7 @@ describe("record text", () => {
     expect(doc.chunks[0]).toContain("Agreeable Gray")
     expect(doc.chunks[0]).toContain("Maple Street House")
     expect(doc.chunks[0]).toBe(
-      "Room: Kitchen at Maple Street House. Level: Main floor. 224 square feet (14 × 16 ft). " +
+      "Room: Kitchen at Maple Street House. Level: Main floor. 224 平方米 (14 × 16 ft). " +
       "Flooring: Hardwood, Bruce Natural Oak. Paint: Walls: Sherwin-Williams Agreeable Gray SW 7029 · Eggshell; Ceiling."
     )
   })
@@ -89,7 +89,7 @@ describe("record text", () => {
       id: "v1", name: "Commuter", make: "Honda", model: "Civic Sport", year: 2021, color: "Blue",
       purchaseDate: null, purchasePrice: null, currentMileage: 28900, meterUnit: "MILES", notes: null,
     }, now)
-    expect(doc.chunks).toEqual(["Vehicle: Commuter. A 2021 Honda Civic Sport, blue (about 5 years old). About 28,900 miles on it."])
+    expect(doc.chunks).toEqual(["Vehicle: Commuter. A 2021 Honda Civic Sport, blue (about 5 years old). About 28,900 公里 on it."])
   })
 
   it("names the owner of a service record and calls a person's one a health visit", () => {
@@ -100,7 +100,7 @@ describe("record text", () => {
     })
     expect(asset.chunks[0]).toBe(
       "Service record for Gas Furnace (equipment at Maple Street House) on August 14, 2026: Annual furnace service. " +
-      "Done by Comfort Air. Type: Routine. Cost about $189. Details: Replaced filter."
+      "Done by Comfort Air. Type: Routine. Cost about ¥189. Details: Replaced filter."
     )
     const visit = serviceDoc({
       id: "s2", title: "Ear check", description: null, date: day("2026-03-02"), vendor: null, cost: null, category: "Office visit",
@@ -119,7 +119,7 @@ describe("record text", () => {
       nextDueMileage: null, isActive: true,
     }
     expect(maintenanceDoc(base, now).chunks[0]).toBe(
-      "Maintenance reminder for Commuter (vehicle): Oil change. Repeats every 6 months or every 5,000 miles. Next due September 1, 2026 (overdue)."
+      "Maintenance reminder for Commuter (vehicle): Oil change. Repeats every 6 months or every 5,000 公里. Next due September 1, 2026 (overdue)."
     )
     expect(maintenanceDoc({ ...base, isActive: false }, now).chunks[0]).toContain("Paused, not currently scheduled.")
   })
@@ -162,12 +162,12 @@ describe("household units", () => {
   const metric = createFormatter({ ...DEFAULT_REGIONAL, currency: "EUR", distanceUnit: "KM", areaUnit: "SQM" })
 
   it("writes metric units and the household currency", () => {
-    expect(intervalWords(90, 5000, "MILES", metric)).toBe("Repeats every 3 months or every 5,000 kilometres")
+    expect(intervalWords(90, 5000, "MILES", metric)).toBe("Repeats every 3 months or every 5,000 公里")
     const doc = vehicleDoc({
       id: "v1", name: "Commuter", make: "Honda", model: "Civic Sport", year: 2021, color: "Blue",
       purchaseDate: day("2022-03-01"), purchasePrice: 20000, currentMileage: 28900, meterUnit: "MILES", notes: null,
     }, now, metric)
-    expect(doc.chunks[0]).toContain("About 28,900 kilometres on it")
+    expect(doc.chunks[0]).toContain("About 28,900 公里 on it")
     expect(doc.chunks[0]).toContain(metric.moneyWhole(20000))
     expect(doc.chunks[0]).not.toContain("$")
   })

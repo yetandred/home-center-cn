@@ -35,10 +35,10 @@ describe("intakeSummary", () => {
 
 describe("emptyStateCopy", () => {
   it("words each context", () => {
-    expect(emptyStateCopy("records")).toBe("No records yet — add one, or drop a receipt here.")
-    expect(emptyStateCopy("service")).toBe("No records yet — add one, or drop a receipt here.")
-    expect(emptyStateCopy("visits")).toBe("No visits yet — add one, or drop a receipt here.")
-    expect(emptyStateCopy("documents")).toBe("No documents yet — drop a manual or warranty card here, or use Attach file.")
+    expect(emptyStateCopy("records")).toBe("暂无记录——可添加一条，或将收据拖放到此处。")
+    expect(emptyStateCopy("service")).toBe("暂无记录——可添加一条，或将收据拖放到此处。")
+    expect(emptyStateCopy("visits")).toBe("暂无就诊记录——可添加一条，或将收据拖放到此处。")
+    expect(emptyStateCopy("documents")).toBe("暂无文档——可拖入说明书或保修卡，或使用“添加附件”。")
   })
 })
 

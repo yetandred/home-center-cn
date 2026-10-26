@@ -1,7 +1,7 @@
 import { auth } from "@/auth"
 import { NextResponse } from "next/server"
 import { loadLlmConfig } from "@/lib/llm/config"
-import { DEFAULT_TIMEOUT_SECONDS, DEFAULT_TOOL_ROUNDS, parseExtraBody } from "@/lib/llm/settings-schema"
+import { DEFAULT_TIMEOUT_SECONDS, DEFAULT_TOOL_ROUNDS, parseExtraBody, parseHeaders } from "@/lib/llm/settings-schema"
 import { createChatClient } from "@/lib/llm/client"
 import { LlmError } from "@/lib/llm/errors"
 import { buildSystemPrompt } from "@/lib/llm/prompt"
@@ -46,6 +46,7 @@ export async function POST(request: Request) {
     temperature: settings.temperature,
     maxTokens: config.maxTokens,
     extraBody: parseExtraBody(settings.extraBody),
+    headers: parseHeaders(config.headers),
   })
   const maxRounds = settings.maxToolRounds ?? DEFAULT_TOOL_ROUNDS
   const systemPrompt = buildSystemPrompt({ now: new Date(`${MODEL_TEST_TODAY}T12:00:00`), extra: config.systemPrompt, maxRounds })

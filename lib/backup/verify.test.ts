@@ -55,7 +55,7 @@ describe("verifyArchive", () => {
     const dir = await tempDir()
     const out = path.join(dir, "junk.hcbackup")
     await writeFile(out, "not a zip")
-    expect(await verifyArchive(out, { workDir: dir })).toMatchObject({ ok: false, error: "Not a HomeCenter archive (it can't be opened as a zip)." })
+    expect(await verifyArchive(out, { workDir: dir })).toMatchObject({ ok: false, error: "不是 HomeCenter 归档（无法按 zip 打开）。" })
   })
 
   it("refuses an archive from a newer format", async () => {
@@ -71,9 +71,9 @@ describe("checkCompatibility", () => {
   const known = ["20260101000000_a", "20260201000000_b"]
   const m = (over: Partial<Manifest>) => ({ ...meta(over), files: [] }) as Manifest
   it("accepts a known migration", () => expect(checkCompatibility(m({ migration: "20260101000000_a" }), known)).toEqual({ ok: true }))
-  it("refuses an export", () => expect(checkCompatibility(m({ kind: "export" }), known)).toMatchObject({ ok: false, reason: expect.stringContaining("export") }))
+  it("refuses an export", () => expect(checkCompatibility(m({ kind: "export" }), known)).toMatchObject({ ok: false, reason: expect.stringContaining("导出") }))
   it("refuses a newer migration", () =>
-    expect(checkCompatibility(m({ migration: "20270101000000_z" }), known)).toMatchObject({ ok: false, reason: expect.stringContaining("Update HomeCenter first") }))
+    expect(checkCompatibility(m({ migration: "20270101000000_z" }), known)).toMatchObject({ ok: false, reason: expect.stringContaining("请先升级 HomeCenter") }))
   it("refuses an unknown older migration", () =>
-    expect(checkCompatibility(m({ migration: "20260115000000_fork" }), known)).toMatchObject({ ok: false, reason: expect.stringContaining("doesn't know") }))
+    expect(checkCompatibility(m({ migration: "20260115000000_fork" }), known)).toMatchObject({ ok: false, reason: expect.stringContaining("识别范围") }))
 })

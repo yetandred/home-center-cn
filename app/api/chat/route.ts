@@ -1,7 +1,9 @@
 import { auth } from "@/auth"
 import { NextResponse } from "next/server"
 import { loadLlmConfig } from "@/lib/llm/config"
-import { DEFAULT_TIMEOUT_SECONDS, DEFAULT_TOOL_ROUNDS, isLlmReady, parseExtraBody } from "@/lib/llm/settings-schema"
+import { LLM_SETTINGS_ID } from "@/lib/llm/config"
+import { prisma } from "@/lib/prisma"
+import { DEFAULT_TIMEOUT_SECONDS, DEFAULT_TOOL_ROUNDS, isLlmReady, parseExtraBody, parseHeaders } from "@/lib/llm/settings-schema"
 import { createChatClient } from "@/lib/llm/client"
 import { agentErrorMessage, LlmError } from "@/lib/llm/errors"
 import { runAgent } from "@/lib/llm/agent"
@@ -16,6 +18,10 @@ import { getFormat } from "@/lib/regional-server"
 import { loadFeatures } from "@/lib/features-server"
 
 export const runtime = "nodejs"
+
+/** Added to the system prompt when the model can't call tools, so it doesn't promise lookups. */
+const CHAT_ONLY_NOTE =
+  "当前模型不支持工具调用，无法查询任何记录。回答只能基于对话内容；遇到需要查数据的问题，请说明需要在设置中更换支持工具调用的模型。"
 
 // Streams one assistant turn as NDJSON. The thread arrives from the browser on
 // every request and is never stored. Logs carry tool names and timings only —
@@ -55,7 +61,14 @@ export async function POST(request: Request) {
     temperature: config.temperature,
     maxTokens: config.maxTokens,
     extraBody: parseExtraBody(config.extraBody),
+    headers: parseHeaders(config.headers),
   })
+  // A server that rejected `tools` in the connection test still answers
+  // questions — it just can't look records up, so the tools aren't offered.
+  const toolCalling = config.toolCalling !== false
+  const systemPrompt = toolCalling
+    ? config.systemPrompt
+    : [config.systemPrompt, CHAT_ONLY_NOTE].filter(Boolean).join("\n\n")
   const model = config.model
   const maxRounds = config.maxToolRounds ?? DEFAULT_TOOL_ROUNDS
   const userId = session.user.id
@@ -77,9 +90,9 @@ export async function POST(request: Request) {
         const now = new Date()
         await runAgent({
           history: health ? parsed.data.messages : stripDraftLines(parsed.data.messages),
-          systemPrompt: buildSystemPrompt({ now, extra: config.systemPrompt, maxRounds, documents: docs.enabled, health, rooms, fmt: await getFormat(), today: parsed.data.today }),
+          systemPrompt: buildSystemPrompt({ now, extra: systemPrompt, maxRounds, documents: docs.enabled && toolCalling, health, rooms, fmt: await getFormat(), today: parsed.data.today }),
           chat,
-          tools: chatTools(docs, health, config.healthDocumentsEnabled, rooms),
+          tools: toolCalling ? chatTools(docs, health, config.healthDocumentsEnabled, rooms) : [],
           ctx: { userId, now, health, rooms, today: parsed.data.today },
           signal,
           model,
@@ -91,7 +104,14 @@ export async function POST(request: Request) {
           },
         })
       } catch (error) {
-        if (!request.signal.aborted) send({ type: "error", message: agentErrorMessage(error, timeout.aborted) })
+        let message = agentErrorMessage(error, timeout.aborted)
+        // The server rejected `tools` mid-turn: remember it, so the next
+        // question runs in chat-only mode instead of failing the same way.
+        if (error instanceof LlmError && error.toolsUnsupported) {
+          await prisma.llmSettings.updateMany({ where: { id: LLM_SETTINGS_ID }, data: { toolCalling: false } }).catch(() => {})
+          message = "该模型不支持工具调用 — 已自动切换为纯聊天模式，请重新提问。想在聊天里查询家庭数据，请在设置中换一个支持工具调用的模型。"
+        }
+        if (!request.signal.aborted) send({ type: "error", message })
         console.error(
           "[llm] chat failed:",
           error instanceof LlmError ? `LlmError${error.status ? ` status=${error.status}` : ""}` : error instanceof Error ? error.name : typeof error

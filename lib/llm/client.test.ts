@@ -142,6 +142,7 @@ describe("createChatClient", () => {
     expect(result).toEqual({
       content: "Let me check.",
       toolCalls: [{ id: "c1", name: "search", arguments: '{"query":"civic"}' }],
+      endpoint: "http://llm/v1/chat/completions",
     })
   })
 
@@ -155,6 +156,7 @@ describe("createChatClient", () => {
     expect(await chat({ messages: [] }, () => {}, signal())).toEqual({
       content: "",
       toolCalls: [{ id: "x", name: "search", arguments: "{}" }],
+      endpoint: "http://llm/v1/chat/completions",
     })
   })
 
@@ -188,5 +190,97 @@ describe("createChatClient", () => {
     })
     const chat = createChatClient(config, fetchImpl as unknown as typeof fetch)
     await expect(chat({ messages: [] }, () => {}, controller.signal)).rejects.not.toBeInstanceOf(LlmError)
+  })
+})
+
+describe("provider compatibility", () => {
+  const ok = () => sseResponse([delta({ content: "hi" }), "[DONE]"])
+  const fail = (status: number, body: string) => new Response(body, { status })
+
+  it("retries the bare path with /v1 when the server 404s", async () => {
+    const fetchImpl = vi.fn(async (url: string) => (url.endsWith("/v1/chat/completions") ? ok() : fail(404, "not found")))
+    const chat = createChatClient({ ...config, baseUrl: "http://ollama:11434", apiKey: null }, fetchImpl as unknown as typeof fetch)
+    const result = await chat({ messages: [] }, () => {}, signal())
+    expect(result.content).toBe("hi")
+    expect(result.endpoint).toBe("http://ollama:11434/v1/chat/completions")
+    expect(fetchImpl.mock.calls.map((c) => c[0])).toEqual([
+      "http://ollama:11434/chat/completions",
+      "http://ollama:11434/v1/chat/completions",
+    ])
+  })
+
+  it("remembers the endpoint that answered instead of probing again", async () => {
+    const fetchImpl = vi.fn(async (url: string) => (url.endsWith("/v1/chat/completions") ? ok() : fail(404, "not found")))
+    const chat = createChatClient({ ...config, baseUrl: "http://ollama:11434" }, fetchImpl as unknown as typeof fetch)
+    await chat({ messages: [] }, () => {}, signal())
+    fetchImpl.mockClear()
+    await chat({ messages: [] }, () => {}, signal())
+    expect(fetchImpl.mock.calls.map((c) => c[0])).toEqual(["http://ollama:11434/v1/chat/completions"])
+  })
+
+  it("switches to max_completion_tokens when the provider rejects max_tokens", async () => {
+    let call = 0
+    const fetchImpl = vi.fn(async () => {
+      call++
+      return call === 1 ? fail(400, "Unsupported parameter: 'max_tokens' is not supported. Use 'max_completion_tokens' instead.") : ok()
+    })
+    const chat = createChatClient({ ...config, maxTokens: 500 }, fetchImpl as unknown as typeof fetch)
+    expect((await chat({ messages: [] }, () => {}, signal())).content).toBe("hi")
+    const second = JSON.parse((fetchImpl.mock.calls[1] as unknown as [string, RequestInit])[1].body as string)
+    expect(second.max_tokens).toBeUndefined()
+    expect(second.max_completion_tokens).toBe(500)
+  })
+
+  it("retries without streaming when the server rejects stream", async () => {
+    let call = 0
+    const fetchImpl = vi.fn(async () => {
+      call++
+      return call === 1 ? fail(400, "stream is not supported") : ok()
+    })
+    const chat = createChatClient(config, fetchImpl as unknown as typeof fetch)
+    expect((await chat({ messages: [] }, () => {}, signal())).content).toBe("hi")
+    expect(JSON.parse((fetchImpl.mock.calls[1] as unknown as [string, RequestInit])[1].body as string).stream).toBe(false)
+  })
+
+  it("drops tool_choice when the server rejects the field", async () => {
+    let call = 0
+    const fetchImpl = vi.fn(async () => {
+      call++
+      return call === 1 ? fail(400, "tool_choice is not supported by this server") : ok()
+    })
+    const chat = createChatClient(config, fetchImpl as unknown as typeof fetch)
+    const tools = [{ type: "function" as const, function: { name: "t", description: "d", parameters: {} } }]
+    await chat({ messages: [], tools, toolChoice: "auto" }, () => {}, signal())
+    const second = JSON.parse((fetchImpl.mock.calls[1] as unknown as [string, RequestInit])[1].body as string)
+    expect(second.tool_choice).toBeUndefined()
+    expect(second.tools).toEqual(tools)
+  })
+
+  it("sends configured extra headers alongside the bearer token", async () => {
+    const fetchImpl = vi.fn(async () => ok())
+    const chat = createChatClient({ ...config, headers: { "HTTP-Referer": "https://home.example" } }, fetchImpl as unknown as typeof fetch)
+    await chat({ messages: [] }, () => {}, signal())
+    const headers = (fetchImpl.mock.calls[0] as unknown as [string, RequestInit])[1].headers as Record<string, string>
+    expect(headers["HTTP-Referer"]).toBe("https://home.example")
+    expect(headers.Authorization).toBe("Bearer sk-test")
+  })
+
+  it("uses the deployments path and api-key header for Azure", async () => {
+    const fetchImpl = vi.fn(async () => ok())
+    const chat = createChatClient({ ...config, baseUrl: "https://myres.openai.azure.com" }, fetchImpl as unknown as typeof fetch)
+    await chat({ messages: [] }, () => {}, signal())
+    const [url, init] = fetchImpl.mock.calls[0] as unknown as [string, RequestInit]
+    expect(url).toBe("https://myres.openai.azure.com/openai/deployments/m/chat/completions?api-version=2024-10-21")
+    const headers = init.headers as Record<string, string>
+    expect(headers["api-key"]).toBe("sk-test")
+    expect(headers.Authorization).toBeUndefined()
+  })
+
+  it("flags a model that rejects tools outright", async () => {
+    const fetchImpl = vi.fn(async () => fail(400, "tools are not supported by this model"))
+    const chat = createChatClient(config, fetchImpl as unknown as typeof fetch)
+    const error = await chat({ messages: [], tools: [{ type: "function", function: { name: "t", description: "d", parameters: {} } }] }, () => {}, signal()).catch((e) => e)
+    expect(error).toBeInstanceOf(LlmError)
+    expect(error.toolsUnsupported).toBe(true)
   })
 })

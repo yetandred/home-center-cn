@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { isLlmReady, LLM_PRESETS, originChanged, parseExtraBody, parseLlmSettings, type LlmSettingsInput } from "./settings-schema"
+import { isLlmReady, LLM_PRESETS, originChanged, parseExtraBody, parseHeaders, parseLlmSettings, type LlmSettingsInput } from "./settings-schema"
 
 const base: LlmSettingsInput = {
   enabled: true,
@@ -38,6 +38,7 @@ describe("parseLlmSettings", () => {
         timeoutSeconds: null,
         maxToolRounds: null,
         extraBody: null,
+        headers: null,
         documentsEnabled: true,
         healthDocumentsEnabled: false,
       },
@@ -50,7 +51,7 @@ describe("parseLlmSettings", () => {
       ok: true,
       value: {
         enabled: false, hidden: false, baseUrl: null, model: null, temperature: null, maxTokens: null, systemPrompt: null,
-        timeoutSeconds: null, maxToolRounds: null, extraBody: null, documentsEnabled: true, healthDocumentsEnabled: false,
+        timeoutSeconds: null, maxToolRounds: null, extraBody: null, headers: null, documentsEnabled: true, healthDocumentsEnabled: false,
       },
     })
   })
@@ -142,5 +143,32 @@ describe("time limit and extra request JSON", () => {
     expect(parseExtraBody('{"a":1}')).toEqual({ a: 1 })
     expect(parseExtraBody(null)).toBeNull()
     expect(parseExtraBody("garbage")).toBeNull()
+  })
+})
+
+describe("extra request headers", () => {
+  it("stores a JSON object of text values", () => {
+    const r = parseLlmSettings({ ...base, headers: '{"HTTP-Referer":"https://home.example","X-Tenant":"a"}' })
+    expect(r.ok && JSON.parse(r.value.headers!)).toEqual({ "HTTP-Referer": "https://home.example", "X-Tenant": "a" })
+  })
+
+  it("rejects headers that would replace the ones the client sets", () => {
+    const r = parseLlmSettings({ ...base, headers: '{"Content-Type":"text/plain"}' })
+    expect(r).toEqual({ ok: false, error: "Extra request headers can't set Content-Type — the assistant sets those." })
+  })
+
+  it("rejects values that aren't text", () => {
+    expect(parseLlmSettings({ ...base, headers: '{"X-Thing":{"nested":true}}' })).toEqual({
+      ok: false,
+      error: "Extra request headers must be a JSON object of text values.",
+    })
+  })
+
+  it("stores blanks as null and parses numbers as text", () => {
+    const blank = parseLlmSettings({ ...base, headers: "   " })
+    expect(blank.ok && blank.value.headers).toBeNull()
+    expect(parseHeaders('{"X-Retries":3}')).toEqual({ "X-Retries": "3" })
+    expect(parseHeaders("[]")).toBeNull()
+    expect(parseHeaders("nope")).toBeNull()
   })
 })

@@ -3,18 +3,32 @@
 // mail settings.
 
 export class LlmError extends Error {
-  constructor(message: string, readonly status?: number) {
+  constructor(
+    message: string,
+    readonly status?: number,
+    readonly options: { toolsUnsupported?: boolean } = {}
+  ) {
     super(message)
     this.name = "LlmError"
+  }
+
+  /** The server rejected `tools` itself, so the assistant can only chat. */
+  get toolsUnsupported(): boolean {
+    return this.options.toolsUnsupported === true
   }
 }
 
 export function explainHttpError(status: number, body: string): string {
-  if (status === 400 && /tool|function/i.test(body)) {
+  const said = body.toLowerCase()
+  if (status === 400 && /tool|function/.test(said)) {
     return "This model doesn't support tool calling — pick another in Settings."
+  }
+  if (status === 400 && /max_completion_tokens/.test(said)) {
+    return "This model wants max_completion_tokens instead of max_tokens — leave the token cap blank or use a newer OpenAI model."
   }
   if (status === 401 || status === 403) return "The provider rejected the API key — check it in Settings."
   if (status === 404) return "Model or URL not found — check the base URL and model name in Settings."
+  if (status === 422) return `The provider rejected the request shape: ${body.slice(0, 200)}`
   if (status === 429) return "The provider's rate limit was hit — try again shortly."
   if (status >= 500) return "The LLM provider had an error — try again."
   return `The LLM provider returned ${status}: ${body.slice(0, 200)}`
