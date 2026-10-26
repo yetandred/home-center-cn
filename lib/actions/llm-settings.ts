@@ -74,7 +74,7 @@ export async function updateLlmSwitches(patch: Partial<LlmSwitches>): Promise<{ 
     ...parsed.data,
   }
   if (next.enabled && !(saved?.baseUrl && saved?.model)) {
-    return { error: "Save a base URL and model under Advanced settings first." }
+    return { error: "请先在“高级设置”中保存基础 URL 和模型。" }
   }
   // Hidden only applies while off.
   if (next.enabled) next.hidden = false
@@ -112,7 +112,7 @@ export async function testLlmConnection(
   const saved = await loadLlmConfig()
   const baseUrl = parsed.value.baseUrl ?? saved.baseUrl
   const model = parsed.value.model ?? saved.model
-  if (!baseUrl || !model) return { error: "Enter a base URL and model first." }
+  if (!baseUrl || !model) return { error: "请先填写基础 URL 和模型。" }
   // The saved key is only sent to the server it was saved for.
   const savedKey = originChanged(saved.baseUrl, baseUrl) ? null : saved.apiKey
   const apiKey = data.clearApiKey ? null : data.apiKey || savedKey

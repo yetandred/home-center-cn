@@ -79,8 +79,8 @@ function OwnerChip({ owner }: { owner: AssetThumb }) {
 function MatchBadge({ matchedBy, className }: { matchedBy: MatchKind | undefined; className?: string }) {
   if (matchedBy === "semantic") {
     return (
-      <Badge variant="outline" className={cn("gap-1", className)} title="Related by meaning, not by your search words">
-        <Sparkles className="h-3 w-3" /> Semantic
+      <Badge variant="outline" className={cn("gap-1", className)} title="按语义关联，而非直接匹配搜索词">
+        <Sparkles className="h-3 w-3" /> 语义匹配
       </Badge>
     )
   }
@@ -89,9 +89,9 @@ function MatchBadge({ matchedBy, className }: { matchedBy: MatchKind | undefined
       <Badge
         variant="outline"
         className={cn("gap-1 border-dashed text-muted-foreground", className)}
-        title="Not every search word appears here as a whole word, e.g. “car” inside “carpet”"
+        title="并非所有搜索词都以完整词出现，例如“车”出现在“车库”中"
       >
-        <TextSearch className="h-3 w-3" /> Partial match
+        <TextSearch className="h-3 w-3" /> 部分匹配
       </Badge>
     )
   }
@@ -135,18 +135,18 @@ export function AssetCard({ item, terms }: { item: AssetResult; terms: string[] 
 }
 
 const KIND: Record<RecordKind, { label: string; icon: React.ElementType; tint: string }> = {
-  service: { label: "Service", icon: Wrench, tint: "bg-sky-500/10 text-sky-700 dark:text-sky-300" },
-  visit: { label: "Health visit", icon: Stethoscope, tint: "bg-rose-500/10 text-rose-700 dark:text-rose-300" },
-  maintenance: { label: "Maintenance", icon: CalendarClock, tint: "bg-amber-500/10 text-amber-700 dark:text-amber-300" },
-  warranty: { label: "Warranty", icon: ShieldCheck, tint: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300" },
-  insurance: { label: "Insurance", icon: Umbrella, tint: "bg-indigo-500/10 text-indigo-700 dark:text-indigo-300" },
-  provider: { label: "Provider", icon: UserRound, tint: "bg-violet-500/10 text-violet-700 dark:text-violet-300" },
-  condition: { label: "Condition", icon: Activity, tint: "bg-rose-500/10 text-rose-700 dark:text-rose-300" },
-  medication: { label: "Medication", icon: Pill, tint: "bg-teal-500/10 text-teal-700 dark:text-teal-300" },
-  allergy: { label: "Allergy", icon: TriangleAlert, tint: "bg-orange-500/10 text-orange-700 dark:text-orange-300" },
-  immunization: { label: "Immunization", icon: Syringe, tint: "bg-cyan-500/10 text-cyan-700 dark:text-cyan-300" },
-  observation: { label: "Observation", icon: NotebookPen, tint: "bg-fuchsia-500/10 text-fuchsia-700 dark:text-fuchsia-300" },
-  room: { label: "Room", icon: DoorOpen, tint: "bg-lime-500/10 text-lime-700 dark:text-lime-300" },
+  service: { label: "维护记录", icon: Wrench, tint: "bg-sky-500/10 text-sky-700 dark:text-sky-300" },
+  visit: { label: "就诊", icon: Stethoscope, tint: "bg-rose-500/10 text-rose-700 dark:text-rose-300" },
+  maintenance: { label: "维护", icon: CalendarClock, tint: "bg-amber-500/10 text-amber-700 dark:text-amber-300" },
+  warranty: { label: "保修", icon: ShieldCheck, tint: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300" },
+  insurance: { label: "保险", icon: Umbrella, tint: "bg-indigo-500/10 text-indigo-700 dark:text-indigo-300" },
+  provider: { label: "供应商", icon: UserRound, tint: "bg-violet-500/10 text-violet-700 dark:text-violet-300" },
+  condition: { label: "病症", icon: Activity, tint: "bg-rose-500/10 text-rose-700 dark:text-rose-300" },
+  medication: { label: "用药", icon: Pill, tint: "bg-teal-500/10 text-teal-700 dark:text-teal-300" },
+  allergy: { label: "过敏", icon: TriangleAlert, tint: "bg-orange-500/10 text-orange-700 dark:text-orange-300" },
+  immunization: { label: "疫苗接种", icon: Syringe, tint: "bg-cyan-500/10 text-cyan-700 dark:text-cyan-300" },
+  observation: { label: "观察", icon: NotebookPen, tint: "bg-fuchsia-500/10 text-fuchsia-700 dark:text-fuchsia-300" },
+  room: { label: "房间", icon: DoorOpen, tint: "bg-lime-500/10 text-lime-700 dark:text-lime-300" },
 }
 
 export function RecordCard({ item, terms }: { item: RecordResult; terms: string[] }) {
@@ -184,7 +184,7 @@ export function RecordCard({ item, terms }: { item: RecordResult; terms: string[
           {item.owner ? (
             <OwnerChip owner={item.owner} />
           ) : (
-            <span className="truncate text-xs text-muted-foreground">Covers {item.people}</span>
+            <span className="truncate text-xs text-muted-foreground">涉及 {item.people}</span>
           )}
         </div>
       )}
@@ -202,8 +202,8 @@ export function DocumentCard({ item, terms }: { item: DocumentResult; terms: str
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-            <span>Document</span>
-            {item.pages && <span className="normal-case tracking-normal">· {item.pages} pages</span>}
+            <span>文档</span>
+            {item.pages && <span className="normal-case tracking-normal">· {item.pages} 页</span>}
           </div>
           {href ? (
             <Link href={href} className={cn("block truncate font-semibold leading-snug", stretched)}>
@@ -213,7 +213,7 @@ export function DocumentCard({ item, terms }: { item: DocumentResult; terms: str
             <p className="truncate font-semibold leading-snug">{item.fileName}</p>
           )}
           <p className="truncate text-xs text-muted-foreground">
-            On {item.record.type}: {item.record.title}
+            所属{item.record.type}：{item.record.title}
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
@@ -223,7 +223,7 @@ export function DocumentCard({ item, terms }: { item: DocumentResult; terms: str
               href={item.fileHref}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label={`Open ${item.fileName}`}
+              aria-label={`打开 ${item.fileName}`}
               className="relative z-10 inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
             >
               <ExternalLink className="h-3.5 w-3.5" />
@@ -234,7 +234,7 @@ export function DocumentCard({ item, terms }: { item: DocumentResult; terms: str
       <div className="space-y-2">
         {item.passages.map((p, i) => (
           <blockquote key={i} className="border-l-2 border-primary/30 pl-3 text-sm text-muted-foreground">
-            {p.page && <span className="mr-1.5 text-xs font-medium text-foreground/70">p. {p.page}</span>}
+            {p.page && <span className="mr-1.5 text-xs font-medium text-foreground/70">第 {p.page} 页</span>}
             <Highlighted text={p.text} terms={terms} />
           </blockquote>
         ))}

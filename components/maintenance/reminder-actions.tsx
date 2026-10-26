@@ -21,8 +21,8 @@ export function ReminderActions({ schedule, currentMileage, meterUnit, compact =
 
   return (
     <>
-      <Button variant="outline" size="sm" className="h-7 px-2 text-xs" onClick={() => setCompleting(true)} aria-label={`Complete "${schedule.title}"`}>
-        Complete
+      <Button variant="outline" size="sm" className="h-7 px-2 text-xs" onClick={() => setCompleting(true)} aria-label={`完成“${schedule.title}”`}>
+        完成
       </Button>
       <SnoozeMenu schedule={schedule} iconOnly={compact} />
       {completing && (

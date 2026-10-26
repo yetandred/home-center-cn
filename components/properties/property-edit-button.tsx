@@ -14,7 +14,7 @@ export function PropertyEditButton({ property }: { property: Property }) {
         onClick={() => setOpen(true)}
         className="inline-flex shrink-0 items-center gap-1.5 rounded-md border bg-background px-3 py-1.5 text-sm font-medium hover:bg-muted transition-colors"
       >
-        <Pencil className="h-3.5 w-3.5" /> Edit
+        <Pencil className="h-3.5 w-3.5" /> 编辑
       </button>
       <PropertyFormDialog open={open} onClose={() => setOpen(false)} property={property} />
     </>

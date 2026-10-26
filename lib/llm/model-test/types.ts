@@ -15,9 +15,9 @@ export const MODEL_TEST_TODAY = "2026-06-15"
 export type Stage = "tool-choice" | "answer" | "end-to-end"
 
 export const STAGES: { id: Stage; label: string; description: string }[] = [
-  { id: "tool-choice", label: "Picks the right lookup", description: "Given a question, does the model ask for the right data?" },
-  { id: "answer", label: "Answers from the data", description: "Given the data, does the model answer correctly and stick to it?" },
-  { id: "end-to-end", label: "Whole conversation", description: "The full assistant, with made-up data behind every lookup." },
+  { id: "tool-choice", label: "选择正确的查询", description: "给定一个问题，模型是否会请求正确的数据？" },
+  { id: "answer", label: "依据数据作答", description: "给定数据，模型能否正确回答并严格依据数据？" },
+  { id: "end-to-end", label: "完整对话", description: "完整助手流程，每次查询背后都是模拟数据。" },
 ]
 
 export type ToolCallRecord = { name: string; args: Record<string, unknown> }

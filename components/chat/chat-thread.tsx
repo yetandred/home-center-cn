@@ -21,10 +21,10 @@ import type { ChatNotice } from "./use-chat-thread"
 const ACCEPT = uploadAccept()
 
 const EXAMPLES = [
-  "How much did we spend on each vehicle last year?",
-  "What maintenance is overdue or due soon?",
-  "Which medications need a refill soon?",
-  "When was the furnace last serviced?",
+  "去年每辆车各花了多少钱？",
+  "哪些维护已逾期或即将到期？",
+  "哪些用药很快需要续药？",
+  "暖气炉上次维护是什么时候？",
 ]
 
 /**
@@ -34,8 +34,8 @@ const EXAMPLES = [
 function DiscardedAnswer({ text, pending }: { text: string; pending: boolean }) {
   const struck = <p className="whitespace-pre-wrap text-sm text-muted-foreground line-through decoration-muted-foreground/70">{text}</p>
   const note = pending
-    ? "This answer linked to records the assistant hadn’t looked up, so it may be wrong. Checking and writing a new answer…"
-    : "The first answer linked to records the assistant hadn’t looked up, so it was replaced by the one below."
+    ? "这条回答引用了助手未查证的记录，可能有误。正在核对并重新作答……"
+    : "第一条回答引用了助手未查证的记录，可能不准，已替换为下方回答。"
   return (
     <div className="mb-2 rounded-md border border-dashed border-amber-500/50 bg-amber-500/5 px-3 py-2">
       <p className="mb-1 flex items-center gap-1.5 text-xs font-medium text-amber-700 dark:text-amber-400">
@@ -46,7 +46,7 @@ function DiscardedAnswer({ text, pending }: { text: string; pending: boolean }) 
         struck
       ) : (
         <details>
-          <summary className="cursor-pointer text-xs text-muted-foreground">Show the replaced answer</summary>
+          <summary className="cursor-pointer text-xs text-muted-foreground">查看被替换的回答</summary>
           <div className="mt-1">{struck}</div>
         </details>
       )}
@@ -86,7 +86,7 @@ function Notice({ notice }: { notice: ChatNotice }) {
       <p>
         {notice.text}{" "}
         <Link href={notice.href} className="text-primary underline">
-          Open Intake
+          打开收件箱
         </Link>
       </p>
     </div>
@@ -98,14 +98,14 @@ function Unavailable({ isAdmin, className }: { isAdmin: boolean; className?: str
     <div className={cn("flex flex-1 items-center justify-center p-6 text-center text-sm text-muted-foreground", className)}>
       {isAdmin ? (
         <p>
-          The assistant isn&apos;t set up yet.{" "}
+          AI 助手尚未配置。{" "}
           <Link href="/settings?tab=assistant" className="text-primary underline">
-            Configure it in Settings
+            前往设置进行配置
           </Link>
-          .
+          。
         </p>
       ) : (
-        <p>The assistant isn&apos;t set up yet. Ask an administrator to configure it.</p>
+        <p>AI 助手尚未配置，请联系管理员配置。</p>
       )}
     </div>
   )
@@ -124,7 +124,7 @@ export function ChatThread({ className }: { className?: string }) {
   }, [chat.messages, chat.notices, chat.draft, chat.discarded, chat.statusLabel, chat.error])
 
   // Dropped files go to Intake from here, with the same note in the conversation as the paperclip.
-  const { setElement: setDropElement, over: dropOver } = useDropZone({ label: "Add to Intake from this chat", onFiles: (files) => void attach(files) })
+  const { setElement: setDropElement, over: dropOver } = useDropZone({ label: "从聊天中添加到收件箱", onFiles: (files) => void attach(files) })
 
   if (!chat.available) return <Unavailable isAdmin={chat.isAdmin} className={className} />
 
@@ -165,7 +165,7 @@ export function ChatThread({ className }: { className?: string }) {
       <div className="flex-1 space-y-4 overflow-y-auto px-1 py-2" aria-live="polite">
         {empty && (
           <div className="space-y-2 pt-4">
-            <p className="text-sm text-muted-foreground">Ask about your home, vehicles, equipment, health records or spending. For example:</p>
+            <p className="text-sm text-muted-foreground">可以询问房屋、车辆、设备、健康档案或支出情况。例如：</p>
             <div className="flex flex-col items-start gap-2">
               {EXAMPLES.map((q) => (
                 <button
@@ -193,7 +193,7 @@ export function ChatThread({ className }: { className?: string }) {
         {chat.busy && (
           <p className="flex items-center gap-2 text-xs text-muted-foreground">
             <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            {chat.statusLabel ?? "Thinking…"}
+            {chat.statusLabel ?? "思考中……"}
           </p>
         )}
         {chat.error && (
@@ -201,17 +201,17 @@ export function ChatThread({ className }: { className?: string }) {
             <p>{chat.error}</p>
             <Button size="sm" variant="outline" className="mt-2" onClick={chat.retry}>
               <RotateCcw className="h-3.5 w-3.5" />
-              Retry
+              重试
             </Button>
           </div>
         )}
         {/* A reload mid-turn leaves the question unanswered, with no error to retry from. */}
         {!chat.busy && !chat.error && chat.messages.at(-1)?.role === "user" && (
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span>No answer yet.</span>
+            <span>还没有回答。</span>
             <Button size="sm" variant="ghost" className="h-7 px-2" onClick={chat.retry}>
               <RotateCcw className="h-3.5 w-3.5" />
-              Retry
+              重试
             </Button>
           </div>
         )}
@@ -234,11 +234,11 @@ export function ChatThread({ className }: { className?: string }) {
               submit()
             }
           }}
-          placeholder="Ask a question…"
+          placeholder="输入问题……"
           rows={2}
           maxLength={8000}
           className="resize-none"
-          aria-label="Message"
+          aria-label="消息"
         />
         <div className="mt-2 flex items-center justify-between gap-2">
           <div className="flex items-center gap-1">
@@ -250,7 +250,7 @@ export function ChatThread({ className }: { className?: string }) {
               disabled={chat.messages.length === 0 && chat.notices.length === 0 && !chat.busy && !chat.error}
             >
               <SquarePen className="h-3.5 w-3.5" />
-              New chat
+              新对话
             </Button>
             <Button
               type="button"
@@ -258,10 +258,10 @@ export function ChatThread({ className }: { className?: string }) {
               size="sm"
               onClick={() => pickRef.current?.click()}
               disabled={uploading > 0}
-              title="Add receipts or invoices to Intake"
+              title="将收据或发票添加到收件箱"
             >
               {uploading > 0 ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Paperclip className="h-3.5 w-3.5" />}
-              <span className="sr-only md:not-sr-only">Add to Intake</span>
+              <span className="sr-only md:not-sr-only">添加到收件箱</span>
             </Button>
             <input
               ref={pickRef}
@@ -278,17 +278,17 @@ export function ChatThread({ className }: { className?: string }) {
           {chat.busy ? (
             <Button type="button" size="sm" variant="outline" onClick={chat.stop}>
               <Square className="h-3.5 w-3.5" />
-              Stop
+              停止
             </Button>
           ) : (
             <Button type="submit" size="sm" disabled={!input.trim()}>
               <ArrowUp className="h-3.5 w-3.5" />
-              Send
+              发送
             </Button>
           )}
         </div>
         <p className="mt-2 text-[11px] text-muted-foreground">
-          Answers are generated from your HomeCenter data by {chat.model ?? "the configured model"} and can be wrong.
+          回答由 {chat.model ?? "所配置的模型"} 基于 HomeCenter 数据生成，可能有误。
         </p>
       </form>
     </div>

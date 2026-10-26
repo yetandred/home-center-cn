@@ -22,7 +22,7 @@ import type { Attachment, Warranty, AssetType } from "@/app/generated/prisma/cli
 const schema = z.object({
   assetId: z.string(),
   assetType: z.enum(ASSET_TYPES),
-  productName: z.string().min(1, "Product name is required"),
+  productName: z.string().min(1, "产品名称必填"),
   purchaseDate: z.string().optional(),
   expirationDate: z.string().optional(),
   vendor: z.string().optional(),
@@ -65,7 +65,7 @@ function formatBytes(bytes: number) {
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`
 }
 
-export function WarrantyFormDialog({ open, onClose, assetId, assetType, warranty, attachments: initialAttachments = [], onAttachmentDeleted, equipmentOptions, propertyName = "This property" }: Props) {
+export function WarrantyFormDialog({ open, onClose, assetId, assetType, warranty, attachments: initialAttachments = [], onAttachmentDeleted, equipmentOptions, propertyName = "本房产" }: Props) {
   const [stagedFiles, setStagedFiles] = useState<File[]>([])
   const [removedIds, setRemovedIds] = useState<Set<string>>(new Set())
   const [createdWarrantyId, setCreatedWarrantyId] = useState<string | null>(null)
@@ -106,7 +106,7 @@ export function WarrantyFormDialog({ open, onClose, assetId, assetType, warranty
 
   // A file dropped anywhere while this is open joins the files staged above.
   useDropTarget({
-    label: "Add to this record's files",
+    label: "添加到此记录的文件",
     onFiles: (files) => setStagedFiles((prev) => [...prev, ...files]),
     enabled: open,
   })
@@ -116,13 +116,13 @@ export function WarrantyFormDialog({ open, onClose, assetId, assetType, warranty
   }
 
   async function handleDeleteExisting(attachment: Attachment) {
-    if (!confirm(`Remove "${attachment.originalName}"?`)) return
+    if (!confirm(`移除“${attachment.originalName}”？`)) return
     if (!warranty) return
     const result = await deleteAttachment(attachment.id)
     if (result?.error) { toast.error(result.error); return }
     setRemovedIds((prev) => new Set(prev).add(attachment.id))
     onAttachmentDeleted?.(warranty.id, attachment.id)
-    toast.success("Attachment removed.")
+    toast.success("附件已移除。")
   }
 
   async function onSubmit(values: FormValues) {
@@ -132,7 +132,7 @@ export function WarrantyFormDialog({ open, onClose, assetId, assetType, warranty
       ? await updateWarranty(existingId, payload)
       : await createWarranty(payload)
 
-    if (result?.error) { toast.error("Please fix the errors and try again."); return }
+    if (result?.error) { toast.error("请修正错误后重试。"); return }
 
     const warrantyId = existingId ?? (result as { success: boolean; id?: string }).id
     if (warrantyId && !existingId) setCreatedWarrantyId(warrantyId)
@@ -147,7 +147,7 @@ export function WarrantyFormDialog({ open, onClose, assetId, assetType, warranty
           const res = await fetch("/api/uploads", { method: "POST", body: formData })
           if (!res.ok) {
             const json = await res.json().catch(() => ({}))
-            throw new Error(json.error ?? `Failed to upload "${file.name}"`)
+            throw new Error(json.error ?? `上传“${file.name}”失败`)
           }
           return file
         })
@@ -160,12 +160,12 @@ export function WarrantyFormDialog({ open, onClose, assetId, assetType, warranty
 
       const firstFailure = uploads.find((u): u is PromiseRejectedResult => u.status === "rejected")
       if (firstFailure) {
-        toast.error(firstFailure.reason instanceof Error ? firstFailure.reason.message : "Some files failed to upload.")
+        toast.error(firstFailure.reason instanceof Error ? firstFailure.reason.message : "部分文件上传失败。")
         return
       }
     }
 
-    toast.success(warranty ? "Warranty updated." : "Warranty added.")
+    toast.success(warranty ? "保修已更新。" : "保修已添加。")
     router.refresh()
     handleClose()
   }
@@ -181,13 +181,13 @@ export function WarrantyFormDialog({ open, onClose, assetId, assetType, warranty
     <Dialog open={open} onOpenChange={(v) => !v && handleClose()} disablePointerDismissal={filePickerOpen}>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{warranty ? "Edit Warranty" : "Add Warranty"}</DialogTitle>
+          <DialogTitle>{warranty ? "编辑保修" : "添加保修"}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             {equipmentOptions && equipmentOptions.length > 0 && (
               <FormItem>
-                <FormLabel>For</FormLabel>
+                <FormLabel>对象</FormLabel>
                 <Select
                   value={targetKey(form.watch("assetType"), form.watch("assetId"))}
                   onValueChange={(value) => {
@@ -217,15 +217,15 @@ export function WarrantyFormDialog({ open, onClose, assetId, assetType, warranty
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="productName" render={({ field }) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Product / Coverage *</FormLabel>
-                  <FormControl><Input placeholder="Roof — GAF Timberline" {...field} /></FormControl>
+                  <FormLabel>产品 / 保障 *</FormLabel>
+                  <FormControl><Input placeholder="屋顶 — GAF Timberline" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
 
               <FormField control={form.control} name="vendor" render={({ field }) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Vendor / Manufacturer</FormLabel>
+                  <FormLabel>商家 / 制造商</FormLabel>
                   <FormControl><Input placeholder="GAF" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -233,7 +233,7 @@ export function WarrantyFormDialog({ open, onClose, assetId, assetType, warranty
 
               <FormField control={form.control} name="purchaseDate" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Purchase Date</FormLabel>
+                  <FormLabel>购买日期</FormLabel>
                   <FormControl><Input type="date" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -241,7 +241,7 @@ export function WarrantyFormDialog({ open, onClose, assetId, assetType, warranty
 
               <FormField control={form.control} name="expirationDate" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Expiration Date</FormLabel>
+                  <FormLabel>到期日期</FormLabel>
                   <FormControl><Input type="date" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -249,7 +249,7 @@ export function WarrantyFormDialog({ open, onClose, assetId, assetType, warranty
 
               <FormField control={form.control} name="vendorPhone" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Vendor Phone</FormLabel>
+                  <FormLabel>商家电话</FormLabel>
                   <FormControl><Input type="tel" placeholder="555-555-5555" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -257,7 +257,7 @@ export function WarrantyFormDialog({ open, onClose, assetId, assetType, warranty
 
               <FormField control={form.control} name="vendorEmail" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Vendor Email</FormLabel>
+                  <FormLabel>商家邮箱</FormLabel>
                   <FormControl><Input type="email" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -265,7 +265,7 @@ export function WarrantyFormDialog({ open, onClose, assetId, assetType, warranty
 
               <FormField control={form.control} name="notes" render={({ field }) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Notes</FormLabel>
+                  <FormLabel>备注</FormLabel>
                   <FormControl><Textarea rows={3} {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -276,7 +276,7 @@ export function WarrantyFormDialog({ open, onClose, assetId, assetType, warranty
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
                   <Paperclip className="h-3.5 w-3.5" />
-                  Attachments {(existingAttachments.length + stagedFiles.length) > 0 && <span className="inline-flex items-center justify-center rounded-full bg-secondary px-1.5 py-0.5 text-xs font-medium">{existingAttachments.length + stagedFiles.length}</span>}
+                  附件 {(existingAttachments.length + stagedFiles.length) > 0 && <span className="inline-flex items-center justify-center rounded-full bg-secondary px-1.5 py-0.5 text-xs font-medium">{existingAttachments.length + stagedFiles.length}</span>}
                 </div>
                 <label>
                   <input
@@ -293,7 +293,7 @@ export function WarrantyFormDialog({ open, onClose, assetId, assetType, warranty
                     onClick={openFilePicker}
                   >
                     <Upload className="h-3.5 w-3.5 mr-1.5" />
-                    Attach file
+                    添加附件
                   </Button>
                 </label>
               </div>
@@ -318,7 +318,7 @@ export function WarrantyFormDialog({ open, onClose, assetId, assetType, warranty
                         <button
                           type="button"
                           onClick={() => handleDeleteExisting(a)}
-                          aria-label={`Remove "${a.originalName}"`}
+                          aria-label={`移除“${a.originalName}”`}
                           className="shrink-0 text-muted-foreground hover:text-destructive transition-colors"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
@@ -341,7 +341,7 @@ export function WarrantyFormDialog({ open, onClose, assetId, assetType, warranty
                         <button
                           type="button"
                           onClick={() => removeStagedFile(index)}
-                          aria-label={`Remove "${file.name}"`}
+                          aria-label={`移除“${file.name}”`}
                           className="shrink-0 text-muted-foreground hover:text-destructive transition-colors"
                         >
                           <X className="h-3.5 w-3.5" />
@@ -354,9 +354,9 @@ export function WarrantyFormDialog({ open, onClose, assetId, assetType, warranty
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={handleClose}>Cancel</Button>
+              <Button type="button" variant="outline" onClick={handleClose}>取消</Button>
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Saving…" : warranty ? "Save Changes" : "Add Warranty"}
+                {form.formState.isSubmitting ? "保存中…" : warranty ? "保存更改" : "添加保修"}
               </Button>
             </DialogFooter>
           </form>

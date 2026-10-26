@@ -19,7 +19,7 @@ export function oversizedBody(headers: Headers, maxBytes: number): { status: 411
   const length = raw === null || raw.trim() === "" ? NaN : Number(raw)
   // Node stops reading at the declared length, so a declared length is a real
   // bound; a body without one (chunked) could be any size.
-  if (!Number.isInteger(length) || length < 0) return { status: 411, error: "Upload size unknown." }
+  if (!Number.isInteger(length) || length < 0) return { status: 411, error: "上传大小未知。" }
   if (length > maxBytes + MULTIPART_SLACK) {
     return { status: 413, error: `File exceeds maximum size of ${Math.round(maxBytes / 1024 / 1024)} MB.` }
   }

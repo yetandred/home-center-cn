@@ -59,10 +59,10 @@ export function TemplatePicker({ assetType, assetId, templates, existingTitles, 
         }))
       )
       if (result?.error) {
-        toast.error(result.error === "Invalid input" ? "Check the intervals and try again." : result.error)
+        toast.error(result.error === "Invalid input" ? "请检查间隔后重试。" : result.error)
         return
       }
-      toast.success(`Added ${result.count} reminder${result.count === 1 ? "" : "s"}.`)
+      toast.success(`已添加 ${result.count} 项提醒。`)
       router.push(back)
     })
   }
@@ -86,32 +86,32 @@ export function TemplatePicker({ assetType, assetId, templates, existingTitles, 
                   <span className="block font-medium leading-snug">{t.title}</span>
                   {(t.description || exists) && (
                     <span className="block text-xs text-muted-foreground">
-                      {exists ? "Already has a reminder with this name." : t.description}
+                      {exists ? "已有同名提醒。" : t.description}
                     </span>
                   )}
                 </span>
               </label>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span>Every</span>
+                <span>每</span>
                 <Input
                   type="number"
                   min={1}
                   inputMode="numeric"
-                  aria-label={`${t.title}: days between`}
+                  aria-label={`${t.title}：间隔天数`}
                   className="h-8 w-20"
                   value={row.days}
                   disabled={!row.checked}
                   onChange={(e) => set(t.key, { days: e.target.value })}
                 />
-                <span>days</span>
+                <span>天</span>
                 {t.intervalMiles !== undefined && meterUnit && (
                   <>
-                    <span>or</span>
+                    <span>或</span>
                     <Input
                       type="number"
                       min={1}
                       inputMode="numeric"
-                      aria-label={`${t.title}: ${fmt.meterShort(meterUnit)} between`}
+                      aria-label={`${t.title}：间隔${fmt.meterShort(meterUnit)}`}
                       className="h-8 w-24"
                       value={row.miles}
                       disabled={!row.checked}
@@ -127,10 +127,10 @@ export function TemplatePicker({ assetType, assetId, templates, existingTitles, 
       </ul>
       <div className="flex flex-wrap justify-end gap-2">
         <Button variant="outline" onClick={() => router.push(back)} disabled={pending}>
-          Skip
+          跳过
         </Button>
         <Button onClick={submit} disabled={pending || picked.length === 0}>
-          {pending ? "Adding…" : `Add ${picked.length} reminder${picked.length === 1 ? "" : "s"}`}
+          {pending ? "添加中…" : `添加 ${picked.length} 项提醒`}
         </Button>
       </div>
     </div>

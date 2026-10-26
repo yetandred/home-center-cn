@@ -47,29 +47,29 @@ export default async function LoginPage({
             <Home className="h-5 w-5" />
           </div>
           <h1 className="font-heading text-2xl font-semibold tracking-tight">HomeCenter</h1>
-          <p className="text-sm text-muted-foreground">Sign in to your account</p>
+          <p className="text-sm text-muted-foreground">登录您的账户</p>
         </div>
 
         <Card>
           <CardHeader className="pb-4">
-            <CardTitle className="text-base">Welcome back</CardTitle>
+            <CardTitle className="text-base">欢迎回来</CardTitle>
             {error && (
               <CardDescription className="text-destructive">
                 {error === "locked"
-                  ? "Too many failed attempts. Wait 15 minutes, then try again."
-                  : "Invalid email or password."}
+                  ? "失败次数过多，请等待 15 分钟后再试。"
+                  : "邮箱或密码不正确。"}
               </CardDescription>
             )}
             {!error && message === "password-changed" && (
               <CardDescription className="text-emerald-700 dark:text-emerald-400">
-                Password changed. Sign in with your new password.
+                密码已修改，请使用新密码登录。
               </CardDescription>
             )}
           </CardHeader>
           <CardContent>
             <form action={login} className="space-y-4">
               <div className="space-y-1.5">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">邮箱</Label>
                 <Input
                   id="email"
                   name="email"
@@ -80,7 +80,7 @@ export default async function LoginPage({
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">密码</Label>
                 <Input
                   id="password"
                   name="password"
@@ -90,11 +90,11 @@ export default async function LoginPage({
                 />
               </div>
               <Button type="submit" className="w-full">
-                Sign in
+                登录
               </Button>
               {canReset && (
                 <Link href="/forgot-password" className="block text-center text-sm text-muted-foreground hover:underline">
-                  Reset password
+                  重置密码
                 </Link>
               )}
             </form>

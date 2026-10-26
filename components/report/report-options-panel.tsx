@@ -11,14 +11,14 @@ import {
 // rewrites the query string and the server re-renders the document.
 
 const BOOLEANS: { key: keyof ReportOptions; label: string }[] = [
-  { key: "allergies", label: "Allergies" },
-  { key: "conditions", label: "Conditions" },
-  { key: "medications", label: "Medications" },
-  { key: "immunizations", label: "Immunizations" },
-  { key: "insurance", label: "Insurance" },
-  { key: "careTeam", label: "Care team" },
-  { key: "review", label: "Medication & behavior review" },
-  { key: "changes", label: "Medication change observations" },
+  { key: "allergies", label: "过敏" },
+  { key: "conditions", label: "病症" },
+  { key: "medications", label: "用药" },
+  { key: "immunizations", label: "疫苗接种" },
+  { key: "insurance", label: "保险" },
+  { key: "careTeam", label: "医护团队" },
+  { key: "review", label: "用药与行为回顾" },
+  { key: "changes", label: "用药调整观察" },
 ]
 
 export function ReportOptionsPanel({ options }: { options: ReportOptions }) {
@@ -64,33 +64,33 @@ export function ReportOptionsPanel({ options }: { options: ReportOptions }) {
   return (
     <aside
       className={`no-print sticky top-4 w-60 shrink-0 self-start rounded-lg border bg-background p-4 ${pending ? "opacity-70" : ""}`}
-      aria-label="Report contents"
+      aria-label="报告内容"
     >
-      <h2 className="mb-2 text-sm font-semibold">Include in report</h2>
+      <h2 className="mb-2 text-sm font-semibold">报告包含内容</h2>
       <div>
         {BOOLEANS.slice(0, 6).map((b) => check(b.key, b.label))}
         <hr className="my-2" />
         {BOOLEANS.slice(6, 7).map((b) => check(b.key, b.label))}
-        {check("history", "Medication history chart")}
-        {check("medList", "Medication history")}
-        {options.medList && <div className="ml-2 border-l pl-3">{select("medListNotes", "Include notes", MED_NOTES)}</div>}
+        {check("history", "用药历史图表")}
+        {check("medList", "用药历史")}
+        {options.medList && <div className="ml-2 border-l pl-3">{select("medListNotes", "包含备注", MED_NOTES)}</div>}
         {(options.history || options.medList) && (
-          <div className="ml-2 border-l pl-3">{select("historyRange", "Medication history range", HISTORY_RANGES)}</div>
+          <div className="ml-2 border-l pl-3">{select("historyRange", "用药历史范围", HISTORY_RANGES)}</div>
         )}
         {BOOLEANS.slice(7).map((b) => check(b.key, b.label))}
         <hr className="my-2" />
-        {select("obs", "Observations", OBS_RANGES)}
+        {select("obs", "观察记录", OBS_RANGES)}
         {options.obs !== "off" && (
           <div className="ml-2 border-l pl-3">
-            {select("obsView", "Chart", OBS_VIEWS)}
-            {check("obsList", "Entry list")}
-            {options.obsList && <div className="ml-2 border-l pl-3">{check("obsNotes", "Include notes")}</div>}
+            {select("obsView", "图表", OBS_VIEWS)}
+            {check("obsList", "记录列表")}
+            {options.obsList && <div className="ml-2 border-l pl-3">{check("obsNotes", "包含备注")}</div>}
           </div>
         )}
         <hr className="my-2" />
-        {check("expense", "Medical expense")}
-        {select("visits", "Visits & expenses", VISIT_MODES)}
-        {check("reminders", "Health reminders")}
+        {check("expense", "医疗支出")}
+        {select("visits", "就诊与支出", VISIT_MODES)}
+        {check("reminders", "健康提醒")}
       </div>
     </aside>
   )

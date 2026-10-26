@@ -36,9 +36,9 @@ export function InboxList({
     return (
       <div className="flex flex-col items-center gap-2 rounded-xl border border-dashed px-6 py-12 text-center">
         <Inbox className="h-8 w-8 text-muted-foreground" strokeWidth={1.5} />
-        <p className="font-medium">Nothing waiting</p>
+        <p className="font-medium">暂无待处理项</p>
         <p className="max-w-sm text-sm text-muted-foreground">
-          Receipts and invoices you add here wait until you file them on a vehicle, property or piece of equipment.
+          你添加的收据和发票会先放在这里，等你在车辆、房产或设备上归档。
         </p>
       </div>
     )

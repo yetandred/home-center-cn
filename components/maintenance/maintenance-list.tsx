@@ -61,15 +61,15 @@ function getStatus(s: MaintenanceScheduleWithAttachments, currentMileage: number
     currentMileage != null ? [[s.assetId, { value: currentMileage, unit: meterUnit }] as const] : []
   )
   // Paused and snoozed say so first: whatever the due date, they're on hold.
-  if (!s.isActive) return { label: "Paused", variant: "outline" as const, icon: Pause }
+  if (!s.isActive) return { label: "已暂停", variant: "outline" as const, icon: Pause }
   if (isSnoozed(s)) {
-    return { label: `Snoozed to ${fmt.date(s.snoozedUntil!)}`, variant: "outline" as const, icon: AlarmClockOff }
+    return { label: `已稍后提醒至 ${fmt.date(s.snoozedUntil!)}`, variant: "outline" as const, icon: AlarmClockOff }
   }
   const due = scheduleDue(s, mileage)
   const badge = dueBadge(due, s.nextDueDate != null || s.nextDueMileage != null, fmt)
   if (!badge) return null
   const icon = due.overdue ? AlertTriangle : due.dueSoon ? Clock : CheckCircle2
-  return { ...badge, label: due.dueSoon ? "Due soon" : badge.label, icon }
+  return { ...badge, label: due.dueSoon ? "即将到期" : badge.label, icon }
 }
 
 // When the columns don't fit (a narrow window, the detail page's side column),
@@ -125,33 +125,33 @@ export function MaintenanceList({ schedules: initialSchedules, assetId, assetTyp
   }, [])
 
   async function handleDelete(s: MaintenanceScheduleWithAttachments) {
-    if (!confirm(`Delete "${s.title}"?`)) return
+    if (!confirm(`删除“${s.title}”？`)) return
     await deleteMaintenanceSchedule(s.id, s.assetType, s.assetId)
-    toast.success("Schedule deleted.")
+    toast.success("计划已删除。")
   }
 
   async function handleResume(s: MaintenanceScheduleWithAttachments) {
     const result = await setMaintenanceScheduleActive(s.id, true)
-    if (!result || result.error) { toast.error("Something went wrong."); return }
-    toast.success(`"${s.title}" resumed.`)
+    if (!result || result.error) { toast.error("出错了，请稍后重试。"); return }
+    toast.success(`“${s.title}”已恢复。`)
     router.refresh()
   }
 
   return (
     <>
       <div className="flex items-center justify-between mb-4">
-        <p className="text-sm text-muted-foreground">{schedules.length} schedule{schedules.length !== 1 ? "s" : ""}</p>
-        <Button size="sm" onClick={() => { setEditing(null); setFormOpen(true) }}>Add Schedule</Button>
+        <p className="text-sm text-muted-foreground">{schedules.length} 项计划</p>
+        <Button size="sm" onClick={() => { setEditing(null); setFormOpen(true) }}>添加计划</Button>
       </div>
 
       {schedules.length === 0 ? (
         <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-          No maintenance schedules yet.
+          暂无维护计划。
           {assetType !== "PERSON" && (
             <>
               {" "}
               <Link href={remindersHref(assetType, assetId)} className="font-medium text-foreground underline-offset-4 hover:underline">
-                Add default reminders
+                添加默认提醒
               </Link>
             </>
           )}
@@ -161,15 +161,15 @@ export function MaintenanceList({ schedules: initialSchedules, assetId, assetTyp
           <Table>
             <TableHeader>
               <TableRow>
-                <SortableTableHead column="title" label="Title" sortState={table.sortState} onToggle={table.toggleSort} />
-                <TableHead>Notes</TableHead>
-                {showSource && <TableHead>Source</TableHead>}
-                <SortableTableHead column="status" label="Status" sortState={table.sortState} onToggle={table.toggleSort} />
-                <SortableTableHead column="nextDue" label="Next Due" sortState={table.sortState} onToggle={table.toggleSort} />
-                <TableHead>Interval</TableHead>
-                <SortableTableHead column="lastCompleted" label="Last Completed" sortState={table.sortState} onToggle={table.toggleSort} />
-                <TableHead>Files</TableHead>
-                <TableHead className={`text-right ${stickyActions}`}>Actions</TableHead>
+                <SortableTableHead column="title" label="标题" sortState={table.sortState} onToggle={table.toggleSort} />
+                <TableHead>备注</TableHead>
+                {showSource && <TableHead>来源</TableHead>}
+                <SortableTableHead column="status" label="状态" sortState={table.sortState} onToggle={table.toggleSort} />
+                <SortableTableHead column="nextDue" label="下次到期" sortState={table.sortState} onToggle={table.toggleSort} />
+                <TableHead>间隔</TableHead>
+                <SortableTableHead column="lastCompleted" label="上次完成" sortState={table.sortState} onToggle={table.toggleSort} />
+                <TableHead>文件</TableHead>
+                <TableHead className={`text-right ${stickyActions}`}>操作</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -205,10 +205,10 @@ export function MaintenanceList({ schedules: initialSchedules, assetId, assetTyp
                       <TableCell className="whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                         {s.assetType === "EQUIPMENT" ? (
                           <Link href={`/assets/equipment/${s.assetId}`} className="text-sm hover:underline">
-                            {equipmentNames?.[s.assetId] ?? "Equipment"}
+                            {equipmentNames?.[s.assetId] ?? "设备"}
                           </Link>
                         ) : (
-                          <span className="text-sm text-muted-foreground">Property</span>
+                          <span className="text-sm text-muted-foreground">房产</span>
                         )}
                       </TableCell>
                     )}
@@ -226,8 +226,8 @@ export function MaintenanceList({ schedules: initialSchedules, assetId, assetTyp
                       {!s.nextDueDate && s.nextDueMileage == null && "—"}
                     </TableCell>
                     <TableCell className="whitespace-nowrap text-muted-foreground">
-                      {s.intervalDays && <div>Every {s.intervalDays}d</div>}
-                      {s.intervalMiles && <div>Every {s.intervalMiles.toLocaleString()} {fmt.meterShort(meterUnit)}</div>}
+                      {s.intervalDays && <div>每 {s.intervalDays} 天</div>}
+                      {s.intervalMiles && <div>每 {s.intervalMiles.toLocaleString()} {fmt.meterShort(meterUnit)}</div>}
                       {!s.intervalDays && !s.intervalMiles && "—"}
                     </TableCell>
                     <TableCell className="whitespace-nowrap text-muted-foreground">
@@ -240,24 +240,24 @@ export function MaintenanceList({ schedules: initialSchedules, assetId, assetTyp
                       <div className="flex items-center justify-end gap-1">
                         <Button variant="outline" size="sm" className="h-7 text-xs px-2"
                           onClick={() => setCompleting(s)}>
-                          Complete
+                          完成
                         </Button>
                         {s.isActive ? (
                           <SnoozeMenu schedule={s} />
                         ) : (
                           <Button variant="outline" size="sm" className="h-7 gap-1 px-2 text-xs" onClick={() => handleResume(s)}>
-                            <Play className="h-3.5 w-3.5" /> Resume
+                            <Play className="h-3.5 w-3.5" /> 恢复
                           </Button>
                         )}
-                        <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={`Edit "${s.title}"`}
+                        <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={`编辑“${s.title}”`}
                           onClick={() => { setEditing(s); setFormOpen(true) }}>
                           <Pencil className="h-3.5 w-3.5" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" aria-label={`Delete "${s.title}"`}
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" aria-label={`删除“${s.title}”`}
                           onClick={() => handleDelete(s)}>
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={expanded ? "Hide details" : "Show details"} aria-expanded={expanded}
+                        <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={expanded ? "隐藏详情" : "显示详情"} aria-expanded={expanded}
                           onClick={() => setExpandedId(expanded ? null : s.id)}>
                           <ChevronDown className={`h-3.5 w-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} />
                         </Button>
@@ -284,7 +284,7 @@ export function MaintenanceList({ schedules: initialSchedules, assetId, assetTyp
             per={table.per}
             onPage={table.setPage}
             onPer={table.setPer}
-            label="schedules"
+            label="计划"
           />
         </div>
       )}

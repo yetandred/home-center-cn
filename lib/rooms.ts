@@ -1,8 +1,8 @@
 import { z } from "zod"
 import { optionalNumber } from "./asset-input"
 
-export const FLOORING_SUGGESTIONS = ["Hardwood", "Engineered wood", "Laminate", "Luxury vinyl plank", "Vinyl", "Tile", "Carpet", "Concrete", "Stone"]
-export const PAINT_SURFACES = ["Walls", "Ceiling", "Trim", "Doors", "Accent wall", "Cabinets"]
+export const FLOORING_SUGGESTIONS = ["实木地板", "多层实木地板", "强化地板", "石塑地板（SPC）", "乙烯基地板", "瓷砖", "地毯", "混凝土", "石材"]
+export const PAINT_SURFACES = ["墙面", "天花板", "饰条", "门", "重点墙", "橱柜"]
 
 const paintSchema = z.object({
   surface: z.string().min(1),
@@ -14,7 +14,7 @@ const paintSchema = z.object({
 
 export const roomSchema = z.object({
   propertyId: z.string(),
-  name: z.string().min(1, "Name is required"),
+  name: z.string().min(1, "名称为必填项"),
   level: z.string().optional(),
   area: optionalNumber(z.coerce.number().positive()),
   dimensions: z.string().optional(),

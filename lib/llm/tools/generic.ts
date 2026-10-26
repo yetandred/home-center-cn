@@ -45,7 +45,7 @@ export const findRecordsTool = defineTool({
   }),
   label: (a) => {
     const p = plural(a.entity)
-    return p ? `Looking up ${p}…` : FALLBACK_LABEL
+    return p ? `正在查询${p}…` : FALLBACK_LABEL
   },
   run: (a, ctx) => findRecords(a, ctx),
 })
@@ -60,7 +60,7 @@ export const getRecordTool = defineTool({
   }),
   label: (a) => {
     const p = plural(a.entity)
-    return p ? `Opening ${p}…` : FALLBACK_LABEL
+    return p ? `正在打开${p}…` : FALLBACK_LABEL
   },
   run: (a, ctx) => getRecord(a, ctx),
 })
@@ -82,7 +82,7 @@ export const aggregateTool = defineTool({
   }),
   label: (a) => {
     const p = plural(a.entity)
-    return p ? `Totalling ${p}…` : FALLBACK_LABEL
+    return p ? `正在汇总${p}…` : FALLBACK_LABEL
   },
   run: (a, ctx) => aggregateRecords(a, ctx),
 })

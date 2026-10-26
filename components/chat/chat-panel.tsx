@@ -21,7 +21,7 @@ export function ChatToggle() {
       type="button"
       onClick={() => chat.setPanelOpen(!chat.panelOpen)}
       aria-pressed={chat.panelOpen}
-      title="Assistant"
+      title="AI 助手"
       className={cn(
         "relative inline-flex h-8 w-8 items-center justify-center rounded-md transition-colors hover:bg-muted",
         chat.panelOpen && "bg-muted text-foreground"
@@ -29,7 +29,7 @@ export function ChatToggle() {
     >
       <MessageSquare className="h-4 w-4" />
       {chat.busy && <span className="absolute right-1 top-1 h-2 w-2 animate-pulse rounded-full bg-primary" />}
-      <span className="sr-only">{chat.panelOpen ? "Close assistant" : "Open assistant"}</span>
+      <span className="sr-only">{chat.panelOpen ? "关闭助手" : "打开助手"}</span>
     </button>
   )
 }
@@ -51,7 +51,7 @@ export function ChatLauncher() {
           <button
             type="button"
             onClick={() => chat.setPanelOpen(true)}
-            aria-label="Open assistant"
+            aria-label="打开助手"
             className="fixed right-5 bottom-14 z-30 inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg ring-1 ring-primary/20 transition-all duration-150 hover:scale-105 hover:bg-primary/90 hover:shadow-xl focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring/50 motion-reduce:hover:scale-100"
           >
             <MessageSquare className="h-5 w-5" aria-hidden="true" />
@@ -67,7 +67,7 @@ export function ChatLauncher() {
         sideOffset={10}
         className="border border-border bg-popover px-2.5 py-1.5 text-sm font-medium text-popover-foreground shadow-md"
       >
-        Assistant
+        AI 助手
       </TooltipContent>
     </Tooltip>
   )
@@ -113,14 +113,14 @@ export function ChatDock() {
 
   return (
     <aside
-      aria-label="Assistant"
+      aria-label="AI 助手"
       style={{ "--chat-w": `${chat.panelWidth}px` } as React.CSSProperties}
       className="fixed inset-0 z-40 flex flex-col bg-card p-4 md:relative md:inset-auto md:z-auto md:w-[var(--chat-w)] md:shrink-0 md:border-l md:border-border/60"
     >
       <div
         role="separator"
         aria-orientation="vertical"
-        aria-label="Resize assistant"
+        aria-label="调整助手宽度"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -128,13 +128,13 @@ export function ChatDock() {
         className="absolute inset-y-0 -left-1 hidden w-2 cursor-col-resize hover:bg-primary/20 md:block"
       />
       <div className="mb-2 flex items-center gap-2">
-        <h2 className="font-heading text-base font-semibold">Assistant</h2>
+        <h2 className="font-heading text-base font-semibold">AI 助手</h2>
         <Link
           href="/chat"
           className="ml-auto inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
         >
           <Maximize2 className="h-3.5 w-3.5" />
-          Open full page
+          打开完整页面
         </Link>
         <button
           type="button"
@@ -142,7 +142,7 @@ export function ChatDock() {
           className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
         >
           <X className="h-4 w-4" />
-          <span className="sr-only">Close assistant</span>
+          <span className="sr-only">关闭助手</span>
         </button>
       </div>
       <ChatThread />

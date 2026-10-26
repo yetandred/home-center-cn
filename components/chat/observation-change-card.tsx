@@ -15,7 +15,7 @@ const CONFIRM_MS = 5000
 function errorText(r: ActionResult): string {
   if (typeof r.error === "string") return r.error
   const all = Object.values(r.error ?? {}).flat().filter(Boolean)
-  return all.length ? all.join(" ") : "Couldn't do that. Try again."
+  return all.length ? all.join(" ") : "操作失败，请重试。"
 }
 
 /// A proposed edit or delete of an existing observation. Nothing changes until
@@ -52,7 +52,7 @@ export function ObservationChangeCard({
         router.refresh()
       } else onChange({ error: errorText(r) })
     } catch {
-      onChange({ error: "Couldn't reach the server. Try again." })
+      onChange({ error: "无法连接服务器，请重试。" })
     } finally {
       setBusy(false)
       disarm()
@@ -70,18 +70,18 @@ export function ObservationChangeCard({
   }
 
   if (card.state === "discarded") {
-    return <p className="text-xs text-muted-foreground">Discarded {isEdit ? "change" : "deletion"} · {t.personName} · {t.before.type} · {t.before.date}</p>
+    return <p className="text-xs text-muted-foreground">已放弃{isEdit ? "更改" : "删除"} · {t.personName} · {t.before.type} · {t.before.date}</p>
   }
 
   const done = card.state === "saved"
-  const title = isEdit ? (done ? "Change applied" : "Proposed change") : done ? "Observation deleted" : "Delete this observation?"
+  const title = isEdit ? (done ? "已应用更改" : "建议的更改") : done ? "观察记录已删除" : "删除这条观察记录？"
 
   return (
     <div className={cn("max-w-md rounded-lg border bg-card text-sm shadow-sm", !isEdit && !done && "border-destructive/40")}>
       <div className="flex items-center gap-2 border-b px-3 py-2">
         {isEdit ? <PencilLine className="h-4 w-4 text-muted-foreground" aria-hidden="true" /> : <Trash2 className="h-4 w-4 text-muted-foreground" aria-hidden="true" />}
         <span className="font-medium">{title}</span>
-        {!done && <span className="ml-auto text-xs text-muted-foreground">Nothing changed yet</span>}
+        {!done && <span className="ml-auto text-xs text-muted-foreground">尚未更改</span>}
       </div>
       <div className="px-3 pt-2 text-xs text-muted-foreground">{t.personName} · {t.before.date} · {t.before.type}</div>
       {isEdit ? (
@@ -92,7 +92,7 @@ export function ObservationChangeCard({
               <dd className="min-w-0 flex-1 break-words">
                 <span className="text-muted-foreground line-through">{formatValue(f, t.before)}</span>
                 <span aria-hidden="true"> → </span>
-                <span className="sr-only"> changes to </span>
+                <span className="sr-only"> 更改为 </span>
                 <span className="font-medium">{formatValue(f, card.after)}</span>
               </dd>
             </div>
@@ -106,8 +106,8 @@ export function ObservationChangeCard({
               <dd className="min-w-0 flex-1 whitespace-pre-wrap break-words">{formatValue(f, t.before)}</dd>
             </div>
           ))}
-          {t.attachments > 0 && <p className="pt-1 text-destructive">Its {t.attachments} attachment{t.attachments === 1 ? "" : "s"} will be deleted too.</p>}
-          {!done && <p className="pt-1 text-muted-foreground">This can&apos;t be undone.</p>}
+          {t.attachments > 0 && <p className="pt-1 text-destructive">其 {t.attachments} 个附件也将被删除。</p>}
+          {!done && <p className="pt-1 text-muted-foreground">此操作无法撤销。</p>}
         </dl>
       )}
       {card.error && <p role="alert" className="px-3 pb-2 text-xs text-destructive">{card.error}</p>}
@@ -115,30 +115,30 @@ export function ObservationChangeCard({
         {done ? (
           <>
             <Check className="h-4 w-4 text-[var(--chart-4)]" aria-hidden="true" />
-            <span className="text-xs">{isEdit ? "Applied" : "Deleted"}</span>
-            {isEdit && <Link className="ml-auto text-xs font-medium underline-offset-2 hover:underline" href={href}>Open entry</Link>}
+            <span className="text-xs">{isEdit ? "已应用" : "已删除"}</span>
+            {isEdit && <Link className="ml-auto text-xs font-medium underline-offset-2 hover:underline" href={href}>打开记录</Link>}
           </>
         ) : (
           <>
             {isEdit ? (
               <Button size="sm" onClick={() => run(() => applyObservationEdit(t.observationId, valuesToForm(card.after), t.updatedAt))} disabled={disabled}>
                 {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : <Check className="h-3.5 w-3.5" aria-hidden="true" />}
-                Apply
+                应用
               </Button>
             ) : (
               <>
                 <Button size="sm" variant="destructive" onClick={onDelete} onBlur={disarm} disabled={disabled}>
                   {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />}
-                  {confirming ? "Confirm delete" : "Delete"}
+                  {confirming ? "确认删除" : "删除"}
                 </Button>
-                <span className="sr-only" aria-live="polite">{confirming ? "Press again to confirm delete" : ""}</span>
+                <span className="sr-only" aria-live="polite">{confirming ? "再次点击以确认删除" : ""}</span>
               </>
             )}
             <Button size="sm" variant="ghost" onClick={() => { disarm(); onChange?.({ state: "discarded", error: undefined }) }} disabled={disabled}>
               <X className="h-3.5 w-3.5" aria-hidden="true" />
-              Discard
+              放弃
             </Button>
-            <span className="ml-auto text-[11px] text-muted-foreground">{live ? "Finishing…" : "Or tell me what to change"}</span>
+            <span className="ml-auto text-[11px] text-muted-foreground">{live ? "即将完成……" : "或告诉我需要修改什么"}</span>
           </>
         )}
       </div>

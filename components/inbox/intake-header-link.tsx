@@ -13,8 +13,8 @@ export function IntakeHeaderLink({ count }: { count: number }) {
     <Link
       href="/intake"
       aria-current={active ? "page" : undefined}
-      aria-label={count ? `Intake, ${count} to review` : "Intake"}
-      title="Intake"
+      aria-label={count ? `收件箱，${count} 条待处理` : "收件箱"}
+      title="收件箱"
       className={cn(
         "group relative inline-flex h-9 w-9 items-center justify-center rounded-lg transition-all duration-150 hover:bg-muted hover:text-foreground",
         active ? "bg-primary/10 text-primary" : "text-muted-foreground"

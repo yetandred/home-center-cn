@@ -15,18 +15,18 @@ export type ObservationLike = {
 }
 
 export const SEVERITIES: FieldOption[] = [
-  { value: "1", label: "1 · Mild" },
+  { value: "1", label: "1 · 轻度" },
   { value: "2", label: "2" },
-  { value: "3", label: "3 · Moderate" },
+  { value: "3", label: "3 · 中度" },
   { value: "4", label: "4" },
-  { value: "5", label: "5 · Severe" },
+  { value: "5", label: "5 · 重度" },
 ]
 
 export const RANGES = [
-  { value: "30", label: "30 days" },
-  { value: "90", label: "90 days" },
-  { value: "365", label: "12 months" },
-  { value: "all", label: "All" },
+  { value: "30", label: "30 天" },
+  { value: "90", label: "90 天" },
+  { value: "365", label: "12 个月" },
+  { value: "all", label: "全部" },
 ] as const
 export type RangeValue = (typeof RANGES)[number]["value"]
 
@@ -40,13 +40,13 @@ export function utcDay(now: Date): number {
   return Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
 }
 
-/** "45 min", "1 h", "1 h 30 min". */
+/** "45 分钟", "1 小时", "1 小时 30 分钟". */
 export function formatDuration(minutes: number | null | undefined): string {
   if (minutes == null) return "—"
   const h = Math.floor(minutes / 60)
   const m = minutes % 60
-  if (!h) return `${m} min`
-  return m ? `${h} h ${m} min` : `${h} h`
+  if (!h) return `${m} 分钟`
+  return m ? `${h} 小时 ${m} 分钟` : `${h} 小时`
 }
 
 /** Types used before, most frequent first — the form offers these as you type. */

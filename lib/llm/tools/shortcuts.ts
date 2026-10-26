@@ -52,7 +52,7 @@ export const searchTool = defineTool({
     query: z.string().min(1).describe("Words to look for, e.g. 'civic' or 'furnace filter'."),
     entities: z.array(z.string()).optional().describe("Only search these entities."),
   }),
-  label: (a) => `Searching for “${a.query}”…`,
+  label: (a) => `正在搜索“${a.query}”…`,
   run: ({ query, entities }, ctx) => searchRecords(query, entities, ctx),
 })
 
@@ -198,7 +198,7 @@ export const costSummaryTool = defineTool({
     category: z.string().optional().describe("A service category, e.g. REPAIR, ROUTINE, OFFICE_VISIT."),
   }),
   aliases: { assetIds: "assets" },
-  label: () => "Adding up costs…",
+  label: () => "正在统计费用…",
   async run(a, ctx) {
     const found: FoundAsset[] = []
     for (const raw of a.assets ?? []) {
@@ -264,7 +264,7 @@ export const assetHistoryTool = defineTool({
     to: z.string().optional().describe("YYYY-MM-DD, inclusive."),
   }),
   aliases: { assetId: "asset" },
-  label: () => "Reading the history…",
+  label: () => "正在读取历史记录…",
   async run(a, ctx) {
     const found = await findAsset(a.asset, ctx, a.assetType ? [toAssetType(a.assetType)] : undefined)
     if ("reply" in found) return found.reply
@@ -312,7 +312,7 @@ export const warrantyStatusTool = defineTool({
     asset: z.string().optional().describe(ASSET_ARG),
   }),
   aliases: { assetId: "asset" },
-  label: () => "Checking warranties…",
+  label: () => "正在检查保修…",
   async run(a, ctx) {
     const scope = await assetScope(a, ctx)
     if ("reply" in scope) return scope.reply
@@ -353,7 +353,7 @@ export const maintenanceStatusTool = defineTool({
     withinDays: z.coerce.number().int().min(0).max(3650).optional().describe("Only items overdue or due within this many days."),
   }),
   aliases: { assetId: "asset" },
-  label: () => "Checking maintenance…",
+  label: () => "正在检查维护…",
   async run(a, ctx) {
     const scope = await assetScope(a, ctx)
     if ("reply" in scope) return scope.reply
@@ -409,7 +409,7 @@ export const healthAlertsTool = defineTool({
     `Health items needing attention: medication refills due within ${HEALTH_WINDOWS.refillDays} days, immunizations due within ${HEALTH_WINDOWS.immunizationDays} days, ` +
     `insurance expiring within ${HEALTH_WINDOWS.insuranceDays} days. Optionally for one person.`,
   schema: z.object({ personId: z.string().optional() }),
-  label: () => "Checking health reminders…",
+  label: () => "正在检查健康提醒…",
   async run(a, ctx) {
     const personId = a.personId ? resolveAssetId((await loadAssetIndex()).names, a.personId, ["PERSON"]) : undefined
     const byPerson = personId ? { personId } : {}
@@ -451,7 +451,7 @@ export const observationLogTool = defineTool({
     from: z.string().optional().describe("YYYY-MM-DD, inclusive."),
     to: z.string().optional().describe("YYYY-MM-DD, inclusive."),
   }),
-  label: (a) => (a.type ? `Reading the ${a.type} log…` : "Reading the observation log…"),
+  label: (a) => (a.type ? `正在读取${a.type}记录…` : "正在读取观察记录…"),
   async run(a, ctx) {
     const personId = a.personId ? resolveAssetId((await loadAssetIndex()).names, a.personId, ["PERSON"]) : undefined
     const range = { from: optionalDay(a.from, "from"), to: optionalDay(a.to, "to") }

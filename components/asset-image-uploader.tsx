@@ -35,10 +35,10 @@ export function AssetImageUploader({
       })
       if (!res.ok) {
         const body = await res.json().catch(() => ({}))
-        toast.error(body.error ?? "Upload failed.")
+        toast.error(body.error ?? "上传失败。")
         return
       }
-      toast.success("Photo updated.")
+      toast.success("照片已更新。")
       router.refresh()
     } finally {
       setBusy(false)
@@ -51,10 +51,10 @@ export function AssetImageUploader({
     try {
       const res = await fetch(`/api/assets/${assetSegment[assetType]}/${assetId}/image`, { method: "DELETE" })
       if (!res.ok) {
-        toast.error("Couldn't remove photo.")
+        toast.error("无法删除照片。")
         return
       }
-      toast.success("Photo removed.")
+      toast.success("照片已删除。")
       router.refresh()
     } finally {
       setBusy(false)
@@ -91,14 +91,14 @@ export function AssetImageUploader({
               onClick={() => inputRef.current?.click()}
               className="inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-3 py-1.5 text-sm font-medium text-white backdrop-blur-sm transition-colors duration-150 hover:bg-white/20"
             >
-              <Camera className="h-3.5 w-3.5" /> {imageFilename ? "Change photo" : "Add photo"}
+              <Camera className="h-3.5 w-3.5" /> {imageFilename ? "更换照片" : "添加照片"}
             </button>
             {imageFilename && (
               <button
                 type="button"
                 onClick={handleRemove}
                 className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-white backdrop-blur-sm transition-colors duration-150 hover:bg-destructive/80"
-                aria-label="Remove photo"
+                aria-label="删除照片"
               >
                 <X className="h-3.5 w-3.5" />
               </button>

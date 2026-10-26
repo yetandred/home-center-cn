@@ -43,7 +43,7 @@ export async function AssetReport({ data, options = DEFAULT_REPORT_OPTIONS }: { 
       <Masthead
         title={asset.name}
         subtitle={asset.subtitle}
-        kind={isPerson ? "Medical summary" : assetLabel[asset.type]}
+        kind={isPerson ? "健康摘要" : assetLabel[asset.type]}
         generatedAt={generatedAt}
         fmt={fmt}
         image={
@@ -61,7 +61,7 @@ export async function AssetReport({ data, options = DEFAULT_REPORT_OPTIONS }: { 
           ) : null
         }
       >
-        <SectionTitle>{isPerson ? "Personal details" : "Asset details"}</SectionTitle>
+        <SectionTitle>{isPerson ? "个人信息" : "资产详情"}</SectionTitle>
         <dl className="mt-3">
           {asset.details.map((row) => (
             <div
@@ -82,15 +82,15 @@ export async function AssetReport({ data, options = DEFAULT_REPORT_OPTIONS }: { 
 
       {(!isPerson || options.expense) && (
       <section className="report-section mt-7">
-        <SectionTitle>Summary</SectionTitle>
+        <SectionTitle>汇总</SectionTitle>
         <div
           className="mt-3 grid grid-cols-4 gap-px overflow-hidden rounded-md border"
           style={{ borderColor: "var(--rule-strong)", background: "var(--rule)" }}
           data-print-color=""
         >
-          <Stat label={isPerson ? "Medical spend to date" : "Service cost to date"} value={fmt.money(lifetime)} />
+          <Stat label={isPerson ? "累计医疗支出" : "累计维护费用"} value={fmt.money(lifetime)} />
           <Stat
-            label={isPerson ? "Visits" : "Service records"}
+            label={isPerson ? "就诊次数" : "维护记录"}
             value={String(services.length)}
             note={
               first && last
@@ -100,32 +100,32 @@ export async function AssetReport({ data, options = DEFAULT_REPORT_OPTIONS }: { 
           />
           {isPerson ? (
             <Stat
-              label="Active conditions"
+              label="当前病症"
               value={String(data.health?.person.conditions.filter((c) => c.status !== "RESOLVED").length ?? 0)}
             />
           ) : (
             <Stat
-              label="Warranties"
-              value={`${activeWarranties} active`}
-              note={warranties.length > activeWarranties ? `${warranties.length} on file` : undefined}
+              label="保修"
+              value={`${activeWarranties} 项有效`}
+              note={warranties.length > activeWarranties ? `共 ${warranties.length} 项` : undefined}
             />
           )}
           {perMeter != null ? (
             <Stat
-              label={`Cost per ${fmt.meterWord(asset.meterUnit!)}`}
+              label={`每 ${fmt.meterWord(asset.meterUnit!)} 成本`}
               value={fmt.money(perMeter)}
             />
           ) : asset.purchasePrice != null ? (
             <Stat
-              label="Total owned cost"
+              label="持有总成本"
               value={fmt.money(asset.purchasePrice + lifetime)}
-              note="purchase + service"
+              note="购入 + 维护"
             />
           ) : (
             <Stat
-              label="Average per month"
+              label="月均支出"
               value={fmt.money(averagePerMonth(costRows, now))}
-              note="since first record"
+              note="自首条记录起"
             />
           )}
         </div>
@@ -134,7 +134,7 @@ export async function AssetReport({ data, options = DEFAULT_REPORT_OPTIONS }: { 
 
       {asset.notes ? (
         <section className="report-section report-break-avoid mt-7">
-          <SectionTitle>Notes</SectionTitle>
+          <SectionTitle>备注</SectionTitle>
           <p className="mt-2 whitespace-pre-wrap text-[10pt]" style={{ color: "var(--ink-soft)" }}>
             {asset.notes}
           </p>
@@ -156,17 +156,17 @@ export async function AssetReport({ data, options = DEFAULT_REPORT_OPTIONS }: { 
       >
         <div className="flex justify-between gap-6">
           <span>
-            {asset.name} · {isPerson ? "medical summary" : `${assetLabel[asset.type]} report`} · generated{" "}
+            {asset.name} · {isPerson ? "健康摘要" : `${assetLabel[asset.type]}报告`} · 生成于{" "}
             {`${fmt.date(generatedAt, { long: true })} ${fmt.time(generatedAt)}`}
           </span>
           <span>HomeCenter</span>
         </div>
         {!isPerson && (
           <p className="mt-1.5">
-            {services.length} service record{services.length === 1 ? "" : "s"} ·{" "}
-            {warranties.length} warrant{warranties.length === 1 ? "y" : "ies"} ·{" "}
-            {schedules.length} maintenance schedule{schedules.length === 1 ? "" : "s"}.{" "}
-            Attachments are named but not embedded; download them from the asset page.
+            {services.length} 条维护记录 ·{" "}
+            {warranties.length} 项保修 ·{" "}
+            {schedules.length} 项维护计划。{" "}
+            附件仅列出文件名，未嵌入文档；可从资产页面下载。
           </p>
         )}
       </footer>
@@ -198,7 +198,7 @@ function Masthead({
         style={{ borderColor: "var(--rule-strong)", color: "var(--ink-faint)" }}
         data-print-color=""
       >
-        <span>HomeCenter · {kind} report</span>
+        <span>HomeCenter · {kind}报告</span>
         <span>{fmt.date(generatedAt, { long: true })}</span>
       </div>
       {/* The photo sits beside the title, not below it, so it uses the room the
@@ -257,7 +257,7 @@ function Files({ attachments }: { attachments: { id: string; originalName: strin
   if (attachments.length === 0) return null
   return (
     <div className="mt-1 text-[8.5pt]" style={{ color: "var(--ink-faint)" }}>
-      Files: {attachments.map((a) => a.originalName).join(", ")}
+      附件：{attachments.map((a) => a.originalName).join("、")}
     </div>
   )
 }
@@ -265,14 +265,14 @@ function Files({ attachments }: { attachments: { id: string; originalName: strin
 function Rooms({ rooms, fmt }: { rooms: ReportRoom[]; fmt: Formatter }) {
   return (
     <section className="report-section mt-7">
-      <SectionTitle>Rooms</SectionTitle>
+      <SectionTitle>房间</SectionTitle>
       <ul className="mt-1">
         {rooms.map((r) => {
           const size = [r.area != null ? fmt.area(r.area) : null, r.dimensions].filter(Boolean).join(" · ")
           const flooring = [
             r.flooringType,
             r.flooringProduct,
-            r.flooringInstalled ? `installed ${fmt.date(r.flooringInstalled, { utc: true })}` : null,
+            r.flooringInstalled ? `${fmt.date(r.flooringInstalled, { utc: true })} 铺设` : null,
           ]
             .filter(Boolean)
             .join(" · ")
@@ -289,12 +289,12 @@ function Rooms({ rooms, fmt }: { rooms: ReportRoom[]; fmt: Formatter }) {
               </div>
               {size ? (
                 <div className="mt-1 text-[9.5pt]" style={{ color: "var(--ink-soft)" }}>
-                  Size: {size}
+                  面积：{size}
                 </div>
               ) : null}
               {flooring ? (
                 <div className="mt-0.5 text-[9.5pt]" style={{ color: "var(--ink-soft)" }}>
-                  Flooring: {flooring}
+                  地面：{flooring}
                 </div>
               ) : null}
               {r.paints.map((p) => (
@@ -333,9 +333,9 @@ function ServiceHistory({
 
   return (
     <section className="report-section mt-7">
-      <SectionTitle>{asset.type === "PERSON" ? "Visits & expenses" : "Service history"}</SectionTitle>
+      <SectionTitle>{asset.type === "PERSON" ? "就诊与支出" : "维护历史"}</SectionTitle>
       {services.length === 0 ? (
-        <Empty>{asset.type === "PERSON" ? "No visits have been recorded." : "No service has been recorded for this asset."}</Empty>
+        <Empty>{asset.type === "PERSON" ? "暂无就诊记录。" : "该资产暂无维护记录。"}</Empty>
       ) : (
         <table className="mt-1 w-full border-collapse text-[10pt]">
           {/* Repeated at the top of every printed page by the browser, which is
@@ -345,13 +345,13 @@ function ServiceHistory({
               className="text-[8pt] uppercase tracking-wide"
               style={{ color: "var(--ink-faint)" }}
             >
-              <th className="w-[94px] py-2 pr-3 text-left font-semibold">Date</th>
-              <th className="py-2 pr-3 text-left font-semibold">Service</th>
-              <th className="w-[104px] py-2 pr-3 text-left font-semibold">Category</th>
+              <th className="w-[94px] py-2 pr-3 text-left font-semibold">日期</th>
+              <th className="py-2 pr-3 text-left font-semibold">维护项目</th>
+              <th className="w-[104px] py-2 pr-3 text-left font-semibold">分类</th>
               {showMeter ? (
                 <th className="w-[84px] py-2 pr-3 text-right font-semibold">{unit}</th>
               ) : null}
-              {showCost ? <th className="w-[84px] py-2 text-right font-semibold">Cost</th> : null}
+              {showCost ? <th className="w-[84px] py-2 text-right font-semibold">费用</th> : null}
             </tr>
           </thead>
           {services.map((s) => (
@@ -394,7 +394,7 @@ function ServiceHistory({
             <tfoot>
               <tr className="border-t-2" style={{ borderColor: "var(--rule-strong)" }}>
                 <td className="py-2.5 text-[9pt] font-semibold uppercase tracking-wide" colSpan={showMeter ? 4 : 3}>
-                  Total
+                  合计
                 </td>
                 <td className="py-2.5 text-right font-semibold tabular-nums">{fmt.money(total)}</td>
               </tr>
@@ -409,9 +409,9 @@ function ServiceHistory({
 function Warranties({ warranties, now, fmt }: { warranties: ReportWarranty[]; now: Date; fmt: Formatter }) {
   return (
     <section className="report-section mt-7">
-      <SectionTitle>Warranties</SectionTitle>
+      <SectionTitle>保修</SectionTitle>
       {warranties.length === 0 ? (
-        <Empty>No warranties are on file for this asset.</Empty>
+        <Empty>该资产暂无保修记录。</Empty>
       ) : (
         <ul className="mt-1">
           {warranties.map((w) => {
@@ -432,22 +432,22 @@ function Warranties({ warranties, now, fmt }: { warranties: ReportWarranty[]; no
                     tone={active ? "good" : "spent"}
                     label={
                       expires == null
-                        ? "No expiry recorded"
+                        ? "未记录到期时间"
                         : active
-                          ? `Active · ${remaining} left`
-                          : "Expired"
+                          ? `有效 · 剩余 ${remaining}`
+                          : "已过期"
                     }
                   />
                 </div>
                 <div className="mt-1 flex flex-wrap gap-x-6 text-[9.5pt]" style={{ color: "var(--ink-soft)" }}>
                   <span>
-                    Purchased{" "}
+                    购买于{" "}
                     {w.purchaseDate
                       ? fmt.date(w.purchaseDate, { utc: true })
                       : "—"}
                   </span>
                   <span>
-                    Expires{" "}
+                    到期于{" "}
                     {expires ? fmt.date(expires, { utc: true }) : "—"}
                   </span>
                 </div>
@@ -488,9 +488,9 @@ function Maintenance({
 
   return (
     <section className="report-section mt-7">
-      <SectionTitle>{asset.type === "PERSON" ? "Health reminders" : "Maintenance schedule"}</SectionTitle>
+      <SectionTitle>{asset.type === "PERSON" ? "健康提醒" : "维护计划"}</SectionTitle>
       {schedules.length === 0 ? (
-        <Empty>{asset.type === "PERSON" ? "No health reminders are scheduled." : "No recurring maintenance is scheduled for this asset."}</Empty>
+        <Empty>{asset.type === "PERSON" ? "暂无健康提醒。" : "该资产暂无定期维护计划。"}</Empty>
       ) : (
         <ul className="mt-1">
           {schedules.map((m) => {
@@ -507,11 +507,11 @@ function Maintenance({
               now
             )
             const interval = [
-              m.intervalDays ? `every ${m.intervalDays} days` : null,
-              m.intervalMiles ? `every ${m.intervalMiles.toLocaleString()} ${unit}` : null,
+              m.intervalDays ? `每 ${m.intervalDays} 天` : null,
+              m.intervalMiles ? `每 ${m.intervalMiles.toLocaleString()} ${unit}` : null,
             ]
               .filter(Boolean)
-              .join(" or ")
+              .join(" 或 ")
 
             return (
               <li
@@ -524,7 +524,7 @@ function Maintenance({
                     {m.title}
                     {!m.isActive ? (
                       <span className="ml-2 text-[9pt] font-normal" style={{ color: "var(--ink-faint)" }}>
-                        (inactive)
+                        （已停用）
                       </span>
                     ) : null}
                   </span>
@@ -537,21 +537,21 @@ function Maintenance({
                 </div>
                 {interval ? (
                   <div className="mt-1 text-[9.5pt]" style={{ color: "var(--ink-soft)" }}>
-                    Interval: {interval}
+                    周期：{interval}
                   </div>
                 ) : null}
                 <div className="mt-0.5 flex flex-wrap gap-x-6 text-[9.5pt]" style={{ color: "var(--ink-soft)" }}>
                   <span>
-                    Last completed{" "}
+                    上次完成{" "}
                     {m.lastCompletedDate
                       ? fmt.date(m.lastCompletedDate, { utc: true })
                       : "—"}
                     {m.lastCompletedMileage != null
-                      ? ` at ${m.lastCompletedMileage.toLocaleString()} ${unit}`
+                      ? ` · ${m.lastCompletedMileage.toLocaleString()} ${unit}`
                       : ""}
                   </span>
                   <span>
-                    Next due{" "}
+                    下次到期{" "}
                     {m.nextDueDate
                       ? fmt.date(m.nextDueDate, { utc: true })
                       : "—"}
@@ -578,30 +578,30 @@ function Maintenance({
 /// with the span so the figure stays one a reader can picture.
 function remainingLife(expires: Date, now: Date): string {
   const days = Math.ceil((expires.getTime() - now.getTime()) / 86400000)
-  if (days < 60) return `${days} day${days === 1 ? "" : "s"}`
+  if (days < 60) return `${days} 天`
   const months = Math.round(days / 30.44)
-  if (months < 24) return `${months} months`
+  if (months < 24) return `${months} 个月`
   const years = Math.floor(days / 365.25)
   const leftoverMonths = Math.round((days - years * 365.25) / 30.44)
-  return leftoverMonths >= 1 ? `${years} yr ${leftoverMonths} mo` : `${years} years`
+  return leftoverMonths >= 1 ? `${years} 年 ${leftoverMonths} 个月` : `${years} 年`
 }
 
 function dueWording(due: ReturnType<typeof scheduleDue>, unit: string): string {
   if (due.overdue) {
     if (due.reason === "mileage" && due.milesLeft != null) {
-      return `Overdue by ${Math.abs(due.milesLeft).toLocaleString()} ${unit}`
+      return `已逾期 ${Math.abs(due.milesLeft).toLocaleString()} ${unit}`
     }
-    return due.daysLeft != null ? `Overdue by ${Math.abs(due.daysLeft)} days` : "Overdue"
+    return due.daysLeft != null ? `已逾期 ${Math.abs(due.daysLeft)} 天` : "已逾期"
   }
   if (due.dueSoon) {
     if (due.reason === "mileage" && due.milesLeft != null) {
-      return `Due in ${due.milesLeft.toLocaleString()} ${unit}`
+      return `还剩 ${due.milesLeft.toLocaleString()} ${unit}`
     }
-    return due.daysLeft != null ? `Due in ${due.daysLeft} days` : "Due soon"
+    return due.daysLeft != null ? `还剩 ${due.daysLeft} 天` : "即将到期"
   }
-  if (due.daysLeft != null) return `Due in ${due.daysLeft} days`
-  if (due.milesLeft != null) return `Due in ${due.milesLeft.toLocaleString()} ${unit}`
-  return "Scheduled"
+  if (due.daysLeft != null) return `还剩 ${due.daysLeft} 天`
+  if (due.milesLeft != null) return `还剩 ${due.milesLeft.toLocaleString()} ${unit}`
+  return "已安排"
 }
 
 /// Status is a word first and a colour second, so the report still says what it

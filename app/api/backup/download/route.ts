@@ -9,11 +9,11 @@ import { listBackups } from "@/lib/backup/store"
 const asciiName = (n: string) => n.replace(/[^\x20-\x7e]|["\\%]/g, "_")
 
 export async function GET(request: NextRequest) {
-  if (!(await adminSession())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!(await adminSession())) return NextResponse.json({ error: "未登录" }, { status: 401 })
   const file = request.nextUrl.searchParams.get("file") ?? ""
   // Only names the folder listing knows; never a path from the client.
   const b = (await listBackups(backupFolder(await loadBackupSettings()))).find((x) => x.file === file)
-  if (!b) return NextResponse.json({ error: "Not found" }, { status: 404 })
+  if (!b) return NextResponse.json({ error: "未找到" }, { status: 404 })
   return new NextResponse(Readable.toWeb(createReadStream(b.path)) as ReadableStream, {
     headers: {
       "Content-Type": "application/octet-stream",

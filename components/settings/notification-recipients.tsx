@@ -24,7 +24,7 @@ export function NotificationRecipients({ users, currentUserId }: { users: Recipi
         toast.error(r.error)
         return
       }
-      toast.success(next ? `${user.name} will get notifications.` : `${user.name} won't get notifications.`)
+      toast.success(next ? `${user.name} 将接收通知。` : `${user.name} 将不再接收通知。`)
     })
   }
 
@@ -32,12 +32,11 @@ export function NotificationRecipients({ users, currentUserId }: { users: Recipi
     <Card className="py-5">
       <CardHeader className="px-5">
         <CardTitle className="flex items-center gap-2">
-          Who gets notifications
-          <Badge variant="outline">{count} of {users.length}</Badge>
+          谁接收通知
+          <Badge variant="outline">{count} / {users.length}</Badge>
         </CardTitle>
         <CardDescription>
-          Checked accounts get reminders in the bell and, if they&apos;ve chosen to, by email. Unchecked
-          accounts get neither.
+          勾选的账户会在通知铃中收到提醒，若其选择开启还会通过邮件接收。未勾选的账户两者都不会收到。
         </CardDescription>
       </CardHeader>
       <CardContent className="px-5">
@@ -54,17 +53,17 @@ export function NotificationRecipients({ users, currentUserId }: { users: Recipi
                 />
                 <span className="min-w-0 flex-1">
                   <span className="font-medium">{u.name}</span>
-                  {u.id === currentUserId && <span className="text-muted-foreground"> (you)</span>}
+                  {u.id === currentUserId && <span className="text-muted-foreground">（你）</span>}
                   <span className="block truncate text-muted-foreground">{u.email}</span>
                 </span>
-                {u.role === "ADMIN" && <Badge variant="secondary">Admin</Badge>}
+                {u.role === "ADMIN" && <Badge variant="secondary">管理员</Badge>}
               </label>
             </li>
           ))}
         </ul>
         {count === 0 && (
           <p className="mt-3 text-sm text-muted-foreground">
-            Nobody is checked, so reminders won&apos;t reach anyone.
+            没有勾选任何账户，提醒将无法送达任何人。
           </p>
         )}
       </CardContent>

@@ -23,7 +23,7 @@ import type { PropertyWithRooms } from "@/lib/rooms-server"
 const NO_PROPERTY = "__none__"
 
 const schema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().min(1, "名称必填"),
   category: z.enum(["APPLIANCE", "HVAC", "WATER", "ELECTRONICS", "TOOL", "OUTDOOR", "SECURITY", "OTHER"]),
   manufacturer: z.string().optional(),
   modelNumber: z.string().optional(),
@@ -105,10 +105,10 @@ export function EquipmentFormDialog({ open, onClose, equipment, properties, defa
       : await createEquipment(payload)
 
     if (result?.error) {
-      toast.error("Please fix the errors and try again.")
+      toast.error("请修正错误后重试。")
       return
     }
-    toast.success(equipment ? "Equipment updated." : "Equipment added.")
+    toast.success(equipment ? "设备已更新。" : "设备已添加。")
     onClose()
     // Pages that list this item (a room's Equipment tab) re-read it without a navigation.
     router.refresh()
@@ -119,7 +119,7 @@ export function EquipmentFormDialog({ open, onClose, equipment, properties, defa
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{equipment ? "Edit Equipment" : "Add Equipment"}</DialogTitle>
+          <DialogTitle>{equipment ? "编辑设备" : "添加设备"}</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
@@ -127,15 +127,15 @@ export function EquipmentFormDialog({ open, onClose, equipment, properties, defa
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="name" render={({ field }) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Name *</FormLabel>
-                  <FormControl><Input placeholder="Kitchen Refrigerator" {...field} /></FormControl>
+                  <FormLabel>名称 *</FormLabel>
+                  <FormControl><Input placeholder="厨房冰箱" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
 
               <FormField control={form.control} name="category" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Category *</FormLabel>
+                  <FormLabel>分类 *</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl><SelectTrigger className="w-full"><SelectValue>{(v: EquipmentCategory) => categoryLabel(v)}</SelectValue></SelectTrigger></FormControl>
                     <SelectContent>
@@ -150,11 +150,11 @@ export function EquipmentFormDialog({ open, onClose, equipment, properties, defa
 
               <FormField control={form.control} name="propertyId" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Property</FormLabel>
+                  <FormLabel>房产</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl><SelectTrigger className="w-full"><SelectValue>{(v: string) => properties.find((p) => p.id === v)?.name ?? "Not assigned"}</SelectValue></SelectTrigger></FormControl>
+                    <FormControl><SelectTrigger className="w-full"><SelectValue>{(v: string) => properties.find((p) => p.id === v)?.name ?? "未分配"}</SelectValue></SelectTrigger></FormControl>
                     <SelectContent>
-                      <SelectItem value={NO_PROPERTY}>Not assigned</SelectItem>
+                      <SelectItem value={NO_PROPERTY}>未分配</SelectItem>
                       {properties.map((p) => (
                         <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
                       ))}
@@ -166,7 +166,7 @@ export function EquipmentFormDialog({ open, onClose, equipment, properties, defa
 
               <FormField control={form.control} name="manufacturer" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Manufacturer</FormLabel>
+                  <FormLabel>制造商</FormLabel>
                   <FormControl><Input placeholder="LG" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -174,7 +174,7 @@ export function EquipmentFormDialog({ open, onClose, equipment, properties, defa
 
               <FormField control={form.control} name="modelNumber" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Model Number</FormLabel>
+                  <FormLabel>型号</FormLabel>
                   <FormControl><Input placeholder="LRFVS3006S" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -182,7 +182,7 @@ export function EquipmentFormDialog({ open, onClose, equipment, properties, defa
 
               <FormField control={form.control} name="serialNumber" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Serial Number</FormLabel>
+                  <FormLabel>序列号</FormLabel>
                   <FormControl><Input {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -190,8 +190,8 @@ export function EquipmentFormDialog({ open, onClose, equipment, properties, defa
 
               <FormField control={form.control} name="location" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Location</FormLabel>
-                  <FormControl><Input placeholder="Kitchen" list={selectedRooms.length ? roomListId : undefined} autoComplete="off" {...field} /></FormControl>
+                  <FormLabel>位置</FormLabel>
+                  <FormControl><Input placeholder="厨房" list={selectedRooms.length ? roomListId : undefined} autoComplete="off" {...field} /></FormControl>
                   {selectedRooms.length > 0 && (
                     <datalist id={roomListId}>
                       {selectedRooms.map((r) => <option key={r.id} value={r.name} />)}
@@ -203,7 +203,7 @@ export function EquipmentFormDialog({ open, onClose, equipment, properties, defa
 
               <FormField control={form.control} name="purchaseDate" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Purchase Date</FormLabel>
+                  <FormLabel>购买日期</FormLabel>
                   <FormControl><Input type="date" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -211,7 +211,7 @@ export function EquipmentFormDialog({ open, onClose, equipment, properties, defa
 
               <FormField control={form.control} name="installDate" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Install Date</FormLabel>
+                  <FormLabel>安装日期</FormLabel>
                   <FormControl><Input type="date" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -219,7 +219,7 @@ export function EquipmentFormDialog({ open, onClose, equipment, properties, defa
 
               <FormField control={form.control} name="purchasePrice" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Purchase Price</FormLabel>
+                  <FormLabel>购买价格</FormLabel>
                   <FormControl><Input type="number" step="0.01" placeholder="2499" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -227,7 +227,7 @@ export function EquipmentFormDialog({ open, onClose, equipment, properties, defa
 
               <FormField control={form.control} name="notes" render={({ field }) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Notes</FormLabel>
+                  <FormLabel>备注</FormLabel>
                   <FormControl><Textarea rows={3} {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -235,10 +235,10 @@ export function EquipmentFormDialog({ open, onClose, equipment, properties, defa
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+              <Button type="button" variant="outline" onClick={onClose}>取消</Button>
               {!equipment && <AddRemindersSubmit pending={form.formState.isSubmitting} onClick={form.handleSubmit((v) => onSubmit(v, "reminders"))} />}
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Saving…" : equipment ? "Save Changes" : "Add Equipment"}
+                {form.formState.isSubmitting ? "保存中…" : equipment ? "保存更改" : "添加设备"}
               </Button>
             </DialogFooter>
           </form>

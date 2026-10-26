@@ -11,8 +11,8 @@ import { COMMON_CURRENCIES, createFormatter, type Regional } from "@/lib/regiona
 
 const DATE_FORMATS = ["MDY_SHORT", "DMY_SHORT", "MDY_NUM", "DMY_NUM", "ISO"] as const
 
-const DISTANCE_LABELS: Record<Regional["distanceUnit"], string> = { MILES: "Miles (mi)", KM: "Kilometres (km)" }
-const AREA_LABELS: Record<Regional["areaUnit"], string> = { SQFT: "Square feet (ft²)", SQM: "Square metres (m²)" }
+const DISTANCE_LABELS: Record<Regional["distanceUnit"], string> = { MILES: "英里（mi）", KM: "千米（km）" }
+const AREA_LABELS: Record<Regional["areaUnit"], string> = { SQFT: "平方英尺（ft²）", SQM: "平方米（m²）" }
 
 function currencyOptions(): string[] {
   const all = Intl.supportedValuesOf("currency")
@@ -38,18 +38,18 @@ export function RegionalSettingsForm({ initial }: { initial: Regional }) {
         toast.error(r.error)
         return
       }
-      toast.success("Regional settings saved.")
+      toast.success("区域设置已保存。")
     })
 
   return (
     <Card className="py-5">
       <CardHeader className="px-5">
-        <CardTitle>Regional</CardTitle>
-        <CardDescription>Currency, units and how dates and times are written across the site.</CardDescription>
+        <CardTitle>区域</CardTitle>
+        <CardDescription>全站使用的货币、单位以及日期和时间的书写方式。</CardDescription>
       </CardHeader>
       <CardContent className="px-5 space-y-4">
         <div className="space-y-1.5">
-          <Label>Currency</Label>
+          <Label>货币</Label>
           <Select value={value.currency} onValueChange={(v) => v && set("currency", v)}>
             <SelectTrigger className="w-full sm:w-64" disabled={pending}>
               <SelectValue suppressHydrationWarning>{(v: string) => currencyLabel(v)}</SelectValue>
@@ -63,7 +63,7 @@ export function RegionalSettingsForm({ initial }: { initial: Regional }) {
         </div>
 
         <div className="space-y-1.5">
-          <Label>Distance</Label>
+          <Label>距离</Label>
           <Select value={value.distanceUnit} onValueChange={(v) => v && set("distanceUnit", v)}>
             <SelectTrigger className="w-full sm:w-64" disabled={pending}>
               <SelectValue>{(v: Regional["distanceUnit"]) => DISTANCE_LABELS[v]}</SelectValue>
@@ -76,7 +76,7 @@ export function RegionalSettingsForm({ initial }: { initial: Regional }) {
         </div>
 
         <div className="space-y-1.5">
-          <Label>Area</Label>
+          <Label>面积</Label>
           <Select value={value.areaUnit} onValueChange={(v) => v && set("areaUnit", v)}>
             <SelectTrigger className="w-full sm:w-64" disabled={pending}>
               <SelectValue>{(v: Regional["areaUnit"]) => AREA_LABELS[v]}</SelectValue>
@@ -86,11 +86,11 @@ export function RegionalSettingsForm({ initial }: { initial: Regional }) {
               <SelectItem value="SQM">{AREA_LABELS.SQM}</SelectItem>
             </SelectContent>
           </Select>
-          <p className="text-xs text-muted-foreground">Changing units relabels existing values; it does not convert them.</p>
+          <p className="text-xs text-muted-foreground">更改单位只会改变已有数值的显示方式，不会进行换算。</p>
         </div>
 
         <div className="space-y-1.5">
-          <Label>Date format</Label>
+          <Label>日期格式</Label>
           <Select value={value.dateFormat} onValueChange={(v) => v && set("dateFormat", v)}>
             <SelectTrigger className="w-full sm:w-64" disabled={pending}>
               <SelectValue>{(v: Regional["dateFormat"]) => dateLabel(v)}</SelectValue>
@@ -111,16 +111,16 @@ export function RegionalSettingsForm({ initial }: { initial: Regional }) {
             disabled={pending}
             onChange={(e) => set("hour12", !e.target.checked)}
           />
-          24-hour clock
+          24 小时制
         </label>
 
         <p className="text-sm text-muted-foreground" suppressHydrationWarning>
-          Preview: {preview.money(1234.56)} · {(12345).toLocaleString()} {preview.distanceShort} · {preview.area(1200)} · {preview.dateTime(now)}
+          预览：{preview.money(1234.56)} · {(12345).toLocaleString()} {preview.distanceShort} · {preview.area(1200)} · {preview.dateTime(now)}
         </p>
 
         {error && <p className="text-sm text-destructive">{error}</p>}
 
-        <Button onClick={save} disabled={pending}>{pending ? "Saving…" : "Save"}</Button>
+        <Button onClick={save} disabled={pending}>{pending ? "保存中…" : "保存"}</Button>
       </CardContent>
     </Card>
   )

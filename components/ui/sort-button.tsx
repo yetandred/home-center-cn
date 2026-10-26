@@ -28,8 +28,8 @@ export function SortButton({
       onClick={onClick}
       aria-label={
         state
-          ? `${label}, sorted ${state === "asc" ? "ascending" : "descending"}. Activate to reverse.`
-          : `Sort by ${label}`
+          ? `已按${label}${state === "asc" ? "升序" : "降序"}排序，点击可切换为${state === "asc" ? "降序" : "升序"}。`
+          : `按${label}排序`
       }
       className={cn(
         "group -mx-1.5 inline-flex items-center gap-1 rounded-md px-1.5 py-1 font-medium transition-colors",

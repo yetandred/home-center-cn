@@ -102,7 +102,7 @@ export function NotificationBell({ notifications }: { notifications: Notificatio
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger
           className="group relative inline-flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-all duration-150 hover:bg-muted hover:text-foreground"
-          aria-label={`${unreadCount} unread notifications`}
+          aria-label={`${unreadCount} 条未读通知`}
         >
           <Bell className="h-4 w-4 transition-transform duration-150 group-hover:scale-110" />
           {unreadCount > 0 && (
@@ -116,10 +116,10 @@ export function NotificationBell({ notifications }: { notifications: Notificatio
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-80 max-w-[calc(100vw-2rem)] p-0">
           <div className="flex items-center justify-between px-3 py-2">
-            <span className="text-sm font-semibold">Notifications</span>
+            <span className="text-sm font-semibold">通知</span>
             {unreadCount > 0 && (
               <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={dismissAll}>
-                Mark all read
+                全部标为已读
               </Button>
             )}
           </div>
@@ -128,7 +128,7 @@ export function NotificationBell({ notifications }: { notifications: Notificatio
             {items.length === 0 ? (
               <div className="p-6 text-center text-sm text-muted-foreground">
                 <Bell className="h-6 w-6 mx-auto mb-2 opacity-40" />
-                No notifications yet
+                暂无通知
               </div>
             ) : (
               items.slice(0, 20).map((n) => {
@@ -160,7 +160,7 @@ export function NotificationBell({ notifications }: { notifications: Notificatio
                         className="h-6 px-1.5 text-[11px] shrink-0"
                         onClick={() => dismiss(n.id)}
                       >
-                        Dismiss
+                        忽略
                       </Button>
                     )}
                   </div>
@@ -174,7 +174,7 @@ export function NotificationBell({ notifications }: { notifications: Notificatio
             onClick={() => setOpen(false)}
             className="block px-3 py-2 text-center text-xs font-medium text-primary hover:underline"
           >
-            View all
+            查看全部
           </Link>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -199,15 +199,15 @@ function BellReminderActions({ reminder, onComplete, onHandled }: {
   return (
     <div className="flex shrink-0 flex-col items-stretch gap-1">
       <Button variant="outline" size="sm" className="h-6 px-2 text-[11px]" onClick={onComplete}>
-        Complete
+        完成
       </Button>
       <DropdownMenuSub>
         <DropdownMenuSubTrigger
           disabled={pending}
           className="h-6 rounded-md border px-2 text-[11px] font-medium [&_svg]:size-3"
-          aria-label={`Snooze "${reminder.schedule.title}"`}
+          aria-label={`稍后提醒“${reminder.schedule.title}”`}
         >
-          <AlarmClockOff /> Snooze
+          <AlarmClockOff /> 稍后提醒
         </DropdownMenuSubTrigger>
         <DropdownMenuSubContent side="left">
           {SNOOZE_OPTIONS.map((o) => (
@@ -218,7 +218,7 @@ function BellReminderActions({ reminder, onComplete, onHandled }: {
           <DropdownMenuSeparator />
           <SkipItem schedule={reminder.schedule} onSkip={skip} />
           <DropdownMenuItem onClick={pause}>
-            <Pause className="mr-2 h-4 w-4" /> Pause
+            <Pause className="mr-2 h-4 w-4" /> 暂停
           </DropdownMenuItem>
         </DropdownMenuSubContent>
       </DropdownMenuSub>

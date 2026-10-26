@@ -12,15 +12,15 @@ import type { InboxListItem } from "@/lib/inbox-server"
 
 // Same four states as the /intake cards, shrunk to fit a dashboard row.
 const CHIP: Record<InboxReadiness, { label: string; className: string }> = {
-  reading: { label: "Reading…", className: "bg-secondary text-secondary-foreground" },
-  failed: { label: "Couldn't read", className: "bg-destructive/10 text-destructive dark:bg-destructive/20" },
-  ready: { label: "Ready", className: "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300" },
-  check: { label: "Needs a look", className: "bg-amber-500/10 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300" },
+  reading: { label: "读取中…", className: "bg-secondary text-secondary-foreground" },
+  failed: { label: "无法读取", className: "bg-destructive/10 text-destructive dark:bg-destructive/20" },
+  ready: { label: "已就绪", className: "bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300" },
+  check: { label: "需检查", className: "bg-amber-500/10 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300" },
 }
 
 function headlineOf(item: InboxListItem, householdNames: string[], fmt: Formatter) {
   const first = item.attachments[0]
-  const fileName = first ? (item.attachments.length > 1 ? `${first.originalName} +${item.attachments.length - 1}` : first.originalName) : "Uploading…"
+  const fileName = first ? (item.attachments.length > 1 ? `${first.originalName} +${item.attachments.length - 1}` : first.originalName) : "上传中…"
   const fields = readFields(item, householdNames)
   return inboxHeadline(
     {
@@ -40,21 +40,21 @@ export async function IntakeCard({ items, householdNames }: { items: InboxListIt
     <Card className="py-5">
       <CardHeader className="px-5 pb-1">
         <CardTitle className="flex items-center justify-between text-[13px] font-medium uppercase tracking-wide text-muted-foreground">
-          Intake
+          收件箱
           <Link
             href="/intake"
             className="rounded-md px-2 py-1 text-xs font-medium normal-case tracking-normal text-muted-foreground transition-colors duration-150 hover:bg-primary/10 hover:text-primary"
           >
-            View all →
+            查看全部 →
           </Link>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3 px-5">
         {count === 0 ? (
-          <p className="text-sm text-muted-foreground">Drop receipts, invoices and manuals here.</p>
+          <p className="text-sm text-muted-foreground">将收据、发票和说明书拖放到此处。</p>
         ) : (
           <div>
-            <p className="px-2 text-sm font-medium">{count} to review</p>
+            <p className="px-2 text-sm font-medium">{count} 项待处理</p>
             <ul className="mt-1 space-y-0.5">
               {newest.map((item) => {
                 const readiness = inboxReadiness(item, householdNames)

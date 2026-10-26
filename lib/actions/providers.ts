@@ -43,7 +43,7 @@ export async function deleteProvider(id: string): Promise<ActionResult> {
   if (!session) redirect("/login")
 
   const provider = await prisma.provider.findUnique({ where: { id }, select: { id: true } })
-  if (!provider) return { error: "Not found" }
+  if (!provider) return { error: "未找到" }
 
   // Every reference is onDelete: SetNull, so visits, conditions and
   // prescriptions keep their history and just lose the link.

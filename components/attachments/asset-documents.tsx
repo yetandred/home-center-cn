@@ -9,7 +9,7 @@ export function AssetDocuments({ assetId, documents, hint }: { assetId: string; 
     <div className="space-y-3">
       <p className="text-sm text-muted-foreground">{hint}</p>
       <div className="rounded-lg border bg-card p-4">
-        <AttachmentList recordId={assetId} recordType="DOCUMENT" attachments={documents} label="Documents" emptyText={emptyStateCopy("documents")} />
+        <AttachmentList recordId={assetId} recordType="DOCUMENT" attachments={documents} label="文档" emptyText={emptyStateCopy("documents")} />
       </div>
     </div>
   )

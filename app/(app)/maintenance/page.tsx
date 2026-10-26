@@ -34,11 +34,11 @@ const SORTABLE: SortMap<Prisma.MaintenanceScheduleOrderByWithRelationInput> = {
 
 function statusOf(due: Due, snoozedUntil: Date | null, now: Date, fmt: Formatter) {
   if (isSnoozed({ snoozedUntil }, now)) {
-    return { label: `Snoozed to ${fmt.date(snoozedUntil!)}`, variant: "outline" as const, icon: AlarmClockOff }
+    return { label: `已稍后提醒至 ${fmt.date(snoozedUntil!)}`, variant: "outline" as const, icon: AlarmClockOff }
   }
   const badge = dueBadge(due, true, fmt)!
   const icon = due.overdue ? AlertTriangle : due.dueSoon ? Clock : CheckCircle2
-  return { ...badge, label: badge.label === "OK" ? "Active" : badge.label, icon }
+  return { ...badge, label: badge.label === "正常" ? "生效中" : badge.label, icon }
 }
 
 export default async function MaintenancePage({
@@ -95,18 +95,18 @@ export default async function MaintenancePage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-heading text-2xl font-semibold">Maintenance</h1>
+        <h1 className="font-heading text-2xl font-semibold">维护</h1>
         <p className="text-sm text-muted-foreground mt-0.5">
-          {total} active schedule{total !== 1 ? "s" : ""}
-          {overdue > 0 && <span className="ml-2 text-destructive font-medium">· {overdue} overdue</span>}
-          {dueSoon > 0 && <span className="ml-2 text-amber-700 dark:text-amber-400 font-medium">· {dueSoon} due soon</span>}
+          {total} 个生效中的计划
+          {overdue > 0 && <span className="ml-2 text-destructive font-medium">· {overdue} 项已逾期</span>}
+          {dueSoon > 0 && <span className="ml-2 text-amber-700 dark:text-amber-400 font-medium">· {dueSoon} 项即将到期</span>}
         </p>
       </div>
 
       {total === 0 ? (
         <div className="rounded-lg border border-dashed p-12 text-center text-muted-foreground">
-          <p className="font-medium">No maintenance schedules</p>
-          <p className="text-sm mt-1">Add schedules from a property, vehicle, or equipment detail page.</p>
+          <p className="font-medium">暂无维护计划</p>
+          <p className="text-sm mt-1">请从房产、车辆或设备详情页添加计划。</p>
         </div>
       ) : (
         <div className="rounded-lg border overflow-hidden bg-card">
@@ -115,17 +115,17 @@ export default async function MaintenancePage({
               <thead className="bg-muted/50 text-muted-foreground">
                 <tr>
                   <Suspense>
-                    <UrlSortHead column="status" label="Status" defaultSort={DEFAULT_SORT} defaultDir={DEFAULT_DIR} />
+                    <UrlSortHead column="status" label="状态" defaultSort={DEFAULT_SORT} defaultDir={DEFAULT_DIR} />
                   </Suspense>
-                  <th scope="col" className="text-left font-medium px-4 py-2.5">Asset</th>
+                  <th scope="col" className="text-left font-medium px-4 py-2.5">资产</th>
                   <Suspense>
-                    <UrlSortHead column="task" label="Task" defaultSort={DEFAULT_SORT} defaultDir={DEFAULT_DIR} />
-                  </Suspense>
-                  <Suspense>
-                    <UrlSortHead column="nextDue" label="Next Due" className="hidden sm:table-cell" defaultSort={DEFAULT_SORT} defaultDir={DEFAULT_DIR} />
+                    <UrlSortHead column="task" label="任务" defaultSort={DEFAULT_SORT} defaultDir={DEFAULT_DIR} />
                   </Suspense>
                   <Suspense>
-                    <UrlSortHead column="lastDone" label="Last Done" className="hidden md:table-cell" initialDir="desc" defaultSort={DEFAULT_SORT} defaultDir={DEFAULT_DIR} />
+                    <UrlSortHead column="nextDue" label="下次到期" className="hidden sm:table-cell" defaultSort={DEFAULT_SORT} defaultDir={DEFAULT_DIR} />
+                  </Suspense>
+                  <Suspense>
+                    <UrlSortHead column="lastDone" label="上次完成" className="hidden md:table-cell" initialDir="desc" defaultSort={DEFAULT_SORT} defaultDir={DEFAULT_DIR} />
                   </Suspense>
                 </tr>
               </thead>
@@ -147,7 +147,7 @@ export default async function MaintenancePage({
                       <td className="px-4 py-3">
                         <Link href={assetHref(s.assetType, s.assetId)} className="flex items-center gap-1.5 hover:underline">
                           <AssetIcon className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                          {assetName ?? <span className="text-muted-foreground italic">Unknown</span>}
+                          {assetName ?? <span className="text-muted-foreground italic">未知</span>}
                         </Link>
                       </td>
                       <td className="px-4 py-3 font-medium">
@@ -160,7 +160,7 @@ export default async function MaintenancePage({
                         {s.nextDueMileage != null && <span className="block text-xs">{s.nextDueMileage.toLocaleString()} {fmt.meterShort(mileage.get(s.assetId)?.unit ?? "MILES")}</span>}
                       </td>
                       <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">
-                        {s.lastCompletedDate ? fmt.date(s.lastCompletedDate) : "Never"}
+                        {s.lastCompletedDate ? fmt.date(s.lastCompletedDate) : "从未"}
                       </td>
                     </tr>
                   )
@@ -170,7 +170,7 @@ export default async function MaintenancePage({
           </div>
 
           <Suspense>
-            <UrlPaginationBar page={page} pageCount={pageCount} total={total} per={per} label="schedules" />
+            <UrlPaginationBar page={page} pageCount={pageCount} total={total} per={per} label="个计划" />
           </Suspense>
         </div>
       )}

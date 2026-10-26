@@ -17,7 +17,7 @@ import { checkRoom } from "@/lib/rooms-server"
 const schema = z.object({
   assetId: z.string().min(1),
   assetType: z.enum(ASSET_TYPES),
-  title: z.string().min(1, "Title is required"),
+  title: z.string().min(1, "标题为必填项"),
   description: z.string().optional(),
   // "" is tried first: coerce would turn a blank field into 0.
   intervalDays: z.literal("").or(z.coerce.number().int().min(1)).optional(),
@@ -109,7 +109,7 @@ export async function completeMaintenanceSchedule(id: string, data: z.input<type
   const v = parsed.data
 
   const schedule = await prisma.maintenanceSchedule.findUnique({ where: { id } })
-  if (!schedule) return { error: "Not found" }
+  if (!schedule) return { error: "未找到" }
 
   const completedDate = new Date(v.completedDate)
   const completedMileage = v.completedMileage === "" || v.completedMileage === undefined ? null : Number(v.completedMileage)
@@ -156,7 +156,7 @@ export async function snoozeMaintenanceSchedule(id: string, snoozeFor: z.input<t
   if (!parsed.success) return { error: "Invalid input" }
 
   const schedule = await prisma.maintenanceSchedule.findUnique({ where: { id }, select: { assetType: true, assetId: true } })
-  if (!schedule) return { error: "Not found" }
+  if (!schedule) return { error: "未找到" }
 
   const snoozedUntil = parsed.data ? snoozeEnd(parsed.data) : null
   await prisma.$transaction([
@@ -176,8 +176,8 @@ export async function skipMaintenanceSchedule(id: string) {
   if (!session) redirect("/login")
 
   const schedule = await prisma.maintenanceSchedule.findUnique({ where: { id } })
-  if (!schedule) return { error: "Not found" }
-  if (!canSkip(schedule)) return { error: "This reminder doesn't repeat, so there's nothing to skip to." }
+  if (!schedule) return { error: "未找到" }
+  if (!canSkip(schedule)) return { error: "此提醒没有重复周期，无法跳过。" }
 
   const vehicle = schedule.assetType === "VEHICLE"
     ? await prisma.vehicle.findUnique({ where: { id: schedule.assetId }, select: { currentMileage: true } })
@@ -198,7 +198,7 @@ export async function setMaintenanceScheduleActive(id: string, isActive: boolean
   if (typeof isActive !== "boolean") return { error: "Invalid input" }
 
   const schedule = await prisma.maintenanceSchedule.findUnique({ where: { id }, select: { assetType: true, assetId: true } })
-  if (!schedule) return { error: "Not found" }
+  if (!schedule) return { error: "未找到" }
 
   await prisma.$transaction([
     // A resumed reminder starts unsnoozed, so it reads the way it looks.
@@ -232,7 +232,7 @@ export async function addTemplateSchedules(assetType: AssetType, assetId: string
   if (!parsed.success) return { error: "Invalid input" }
 
   const target = await loadTemplateTarget(assetType, assetId)
-  if (!target) return { error: "Not found" }
+  if (!target) return { error: "未找到" }
   const byKey = new Map(templatesFor(target.asset).map((t) => [t.key, t]))
 
   const today = new Date()

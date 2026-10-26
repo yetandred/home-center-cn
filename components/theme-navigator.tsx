@@ -37,13 +37,13 @@ export function ThemeNavigator() {
 
   return (
     <div className="flex items-center">
-      <button type="button" onClick={() => setTheme(prevTheme(current))} className={arrowClass} aria-label="Previous theme">
+      <button type="button" onClick={() => setTheme(prevTheme(current))} className={arrowClass} aria-label="上一个主题">
         <ChevronLeft className="h-4 w-4" />
       </button>
       <DropdownMenu>
         <DropdownMenuTrigger
           className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-sm font-medium text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground sm:h-9 sm:w-24 sm:px-1"
-          aria-label={`Choose theme, current: ${label}`}
+          aria-label={`选择主题，当前：${label}`}
         >
           <Palette className="h-4 w-4 sm:hidden" />
           <span className="hidden truncate sm:block">{label}</span>
@@ -58,7 +58,7 @@ export function ThemeNavigator() {
           </DropdownMenuRadioGroup>
         </DropdownMenuContent>
       </DropdownMenu>
-      <button type="button" onClick={() => setTheme(nextTheme(current))} className={arrowClass} aria-label="Next theme">
+      <button type="button" onClick={() => setTheme(nextTheme(current))} className={arrowClass} aria-label="下一个主题">
         <ChevronRight className="h-4 w-4" />
       </button>
     </div>

@@ -9,12 +9,12 @@ const prisma = new PrismaClient({ adapter })
 async function main() {
   const existing = await prisma.user.findFirst({ where: { role: "ADMIN" } })
   if (existing) {
-    console.log("Admin user already exists — skipping seed.")
+    console.log("管理员用户已存在——跳过 seed。")
     return
   }
 
   // Read from env vars; fall back to insecure defaults that force a password reset
-  const name = process.env.ADMIN_NAME ?? "Admin"
+  const name = process.env.ADMIN_NAME ?? "管理员"
   const email = process.env.ADMIN_EMAIL ?? "admin@localhost"
   const password = process.env.ADMIN_PASSWORD ?? "changeme"
   const mustReset = !process.env.ADMIN_PASSWORD // force reset only when using the default
@@ -24,12 +24,12 @@ async function main() {
     data: { name, email, passwordHash, role: "ADMIN", mustResetPassword: mustReset },
   })
 
-  console.log(`Created admin: ${admin.email}`)
+  console.log(`已创建管理员：${admin.email}`)
   if (mustReset) {
-    console.log(`Default password: ${password} — you will be prompted to change it on first login.`)
-    console.log("Tip: set ADMIN_NAME, ADMIN_EMAIL, ADMIN_PASSWORD env vars before seeding to skip this.")
+    console.log(`默认密码：${password}——首次登录时会要求您修改。`)
+    console.log("提示：在 seed 前设置 ADMIN_NAME、ADMIN_EMAIL、ADMIN_PASSWORD 环境变量可跳过此提示。")
   } else {
-    console.log("Admin created with the password you provided.")
+    console.log("已使用您提供的密码创建管理员。")
   }
 }
 

@@ -9,7 +9,7 @@ import { updateFeatureSettings } from "@/lib/actions/feature-settings"
 
 type Values = { healthEnabled: boolean; roomsEnabled: boolean; equipmentTabEnabled: boolean }
 
-const FEATURE_NAMES = { healthEnabled: "Health", roomsEnabled: "Rooms", equipmentTabEnabled: "Equipment tab" } as const
+const FEATURE_NAMES = { healthEnabled: "健康", roomsEnabled: "房间", equipmentTabEnabled: "设备标签页" } as const
 
 export function FeatureSettings({ initial }: { initial: Values }) {
   const [values, setValues] = useState(initial)
@@ -27,7 +27,7 @@ export function FeatureSettings({ initial }: { initial: Values }) {
       }
       // One switch changes per save: say which, and which way.
       const changed = (["healthEnabled", "roomsEnabled", "equipmentTabEnabled"] as const).find((k) => next[k] !== previous[k])
-      if (changed) toast.success(`${FEATURE_NAMES[changed]} turned ${next[changed] ? "on" : "off"}.`)
+      if (changed) toast.success(`已${next[changed] ? "开启" : "关闭"}${FEATURE_NAMES[changed]}。`)
     })
   }
 
@@ -40,11 +40,11 @@ export function FeatureSettings({ initial }: { initial: Values }) {
     <Card className="py-5">
       <CardHeader className="px-5">
         <CardTitle className="flex items-center gap-2">
-          Health
-          {on ? <Badge variant="secondary">On</Badge> : <Badge variant="outline">Off</Badge>}
+          健康
+          {on ? <Badge variant="secondary">开启</Badge> : <Badge variant="outline">关闭</Badge>}
         </CardTitle>
         <CardDescription>
-          People, providers and insurance, with everyone&apos;s visits, reminders, warranties and health records.
+          成员、供应商和保险，以及每个人的就诊、提醒、保修和健康记录。
         </CardDescription>
       </CardHeader>
       <CardContent className="px-5 space-y-2">
@@ -56,11 +56,10 @@ export function FeatureSettings({ initial }: { initial: Values }) {
             disabled={pending}
             onChange={(e) => save({ ...values, healthEnabled: e.target.checked })}
           />
-          Show the Health section
+          显示健康板块
         </label>
         <p className="ml-6 text-xs text-muted-foreground">
-          Turned off, it disappears from the menu, the dashboard, lists, search, notifications and the assistant. Nothing
-          is deleted — turn it back on and it all returns.
+          关闭后，健康板块将从菜单、仪表盘、列表、搜索、通知和 AI 助手中消失。不会删除任何数据 — 重新开启后即可恢复。
         </p>
       </CardContent>
     </Card>
@@ -68,10 +67,10 @@ export function FeatureSettings({ initial }: { initial: Values }) {
     <Card className="py-5">
       <CardHeader className="px-5">
         <CardTitle className="flex items-center gap-2">
-          Rooms
-          {roomsOn ? <Badge variant="secondary">On</Badge> : <Badge variant="outline">Off</Badge>}
+          房间
+          {roomsOn ? <Badge variant="secondary">开启</Badge> : <Badge variant="outline">关闭</Badge>}
         </CardTitle>
-        <CardDescription>Rooms inside properties: paint, flooring, photos.</CardDescription>
+        <CardDescription>房产内的房间：油漆、地板、照片。</CardDescription>
       </CardHeader>
       <CardContent className="px-5 space-y-2">
         <label className="flex items-center gap-2 text-sm font-medium">
@@ -82,11 +81,10 @@ export function FeatureSettings({ initial }: { initial: Values }) {
             disabled={pending}
             onChange={(e) => save({ ...values, roomsEnabled: e.target.checked })}
           />
-          Show Rooms
+          显示房间
         </label>
         <p className="ml-6 text-xs text-muted-foreground">
-          Turned off, rooms disappear from properties, equipment and records. Nothing is deleted — turn it back on and it
-          all returns.
+          关闭后，房间将从房产、设备和记录中消失。不会删除任何数据 — 重新开启后即可恢复。
         </p>
       </CardContent>
     </Card>
@@ -94,10 +92,10 @@ export function FeatureSettings({ initial }: { initial: Values }) {
     <Card className="py-5">
       <CardHeader className="px-5">
         <CardTitle className="flex items-center gap-2">
-          Equipment tab
-          {equipmentTabOn ? <Badge variant="secondary">On</Badge> : <Badge variant="outline">Off</Badge>}
+          设备标签页
+          {equipmentTabOn ? <Badge variant="secondary">开启</Badge> : <Badge variant="outline">关闭</Badge>}
         </CardTitle>
-        <CardDescription>A property&apos;s equipment, and each room&apos;s, listed and edited in place.</CardDescription>
+        <CardDescription>在房产和各房间内列出并直接编辑设备。</CardDescription>
       </CardHeader>
       <CardContent className="px-5 space-y-2">
         <label className="flex items-center gap-2 text-sm font-medium">
@@ -108,25 +106,24 @@ export function FeatureSettings({ initial }: { initial: Values }) {
             disabled={pending}
             onChange={(e) => save({ ...values, equipmentTabEnabled: e.target.checked })}
           />
-          Show the Equipment tab on properties and rooms
+          在房产和房间页面显示设备标签页
         </label>
         <p className="ml-6 text-xs text-muted-foreground">
-          Turned off, the Equipment tab disappears from properties and from the room window. Equipment itself is
-          untouched and still reachable from the Equipment page.
+          关闭后，设备标签页将从房产和房间窗口中消失。设备本身不受影响，仍可从设备页面访问。
         </p>
       </CardContent>
     </Card>
 
     <Card className="py-5">
       <CardHeader className="px-5">
-        <CardTitle>Install as an app</CardTitle>
+        <CardTitle>安装为应用</CardTitle>
         <CardDescription>
-          Add HomeCenter to your iPhone, iPad or phone Home Screen so it opens like an app.
+          将 HomeCenter 添加到 iPhone、iPad 或手机主屏幕，像应用一样打开。
         </CardDescription>
       </CardHeader>
       <CardContent className="px-5">
         <Link href="/settings/install" className="text-sm font-medium text-primary underline-offset-4 hover:underline">
-          How to install →
+          安装方法 →
         </Link>
       </CardContent>
     </Card>

@@ -13,10 +13,10 @@ export function AllergyCallout({ allergies }: { allergies: Allergy[] }) {
       role={severe ? "alert" : undefined}
     >
       <div className={cn("flex items-center gap-1.5 font-semibold", severe && "text-destructive")}>
-        <AlertTriangle className="h-4 w-4" aria-hidden="true" /> Allergies
+        <AlertTriangle className="h-4 w-4" aria-hidden="true" /> 过敏
       </div>
       {allergies.length === 0 ? (
-        <p className="mt-1 text-muted-foreground">None recorded</p>
+        <p className="mt-1 text-muted-foreground">暂无记录</p>
       ) : (
         <ul className="mt-1.5 space-y-1">
           {allergies.map((a) => (

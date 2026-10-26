@@ -80,17 +80,17 @@ export function DocumentSettings({
   }
 
   function switchTo(m: ModelRow) {
-    if (!confirm(`Switch to ${m.label}? Every document is re-processed in the background. Keyword search keeps working meanwhile.`)) return
-    run(() => switchEmbeddingModel(m.id), `Switching to ${m.label}.`)
+    if (!confirm(`切换到 ${m.label}？所有文档将在后台重新处理，期间关键词搜索仍可正常使用。`)) return
+    run(() => switchEmbeddingModel(m.id), `正在切换到 ${m.label}。`)
     void refreshModels()
   }
 
   function remove(m: ModelRow) {
-    if (!confirm(`Delete ${m.label} (${m.sizeMb} MB)? You can download it again later.`)) return
+    if (!confirm(`删除 ${m.label}（${m.sizeMb} MB）？之后可以重新下载。`)) return
     start(async () => {
       const r = await deleteEmbeddingModel(m.id)
       if ("error" in r) toast.error(r.error)
-      else toast.success(`${m.label} deleted.`)
+      else toast.success(`已删除 ${m.label}。`)
       await refreshModels()
     })
   }
@@ -99,11 +99,11 @@ export function DocumentSettings({
     <Card className="py-5">
       <CardHeader className="px-5">
         <CardTitle className="flex items-center gap-2">
-          Documents
-          {on ? <Badge variant="secondary">On</Badge> : <Badge variant="outline">Off</Badge>}
+          文档
+          {on ? <Badge variant="secondary">开启</Badge> : <Badge variant="outline">关闭</Badge>}
         </CardTitle>
         <CardDescription>
-          Reads the text of uploaded files so the assistant can search them. Everything stays on this server.
+          读取上传文件的文本内容，供 AI 助手搜索使用。所有数据都保留在本服务器上。
         </CardDescription>
       </CardHeader>
       <CardContent className="px-5 space-y-4">
@@ -115,7 +115,7 @@ export function DocumentSettings({
             disabled={pending}
             onChange={(e) => save({ ...values, indexingEnabled: e.target.checked })}
           />
-          Index uploaded documents
+          为上传的文档建立索引
         </label>
 
         <div className="space-y-1">
@@ -127,9 +127,9 @@ export function DocumentSettings({
               disabled={pending || !on}
               onChange={(e) => save({ ...values, ocrEnabled: e.target.checked })}
             />
-            Read text from photos and scanned PDFs (OCR)
+            读取照片和扫描版 PDF 中的文字（OCR）
           </label>
-          <p className="ml-6 text-xs text-muted-foreground">Uses noticeable CPU while indexing new uploads.</p>
+          <p className="ml-6 text-xs text-muted-foreground">为新上传的文件建立索引时会占用较多 CPU。</p>
         </div>
 
         <div className="space-y-3 border-t pt-4">
@@ -141,10 +141,10 @@ export function DocumentSettings({
               disabled={pending || !on}
               onChange={(e) => save({ ...values, semanticEnabled: e.target.checked })}
             />
-            Find documents by meaning, not just exact words
+            按语义查找文档，而不只是精确匹配字词
           </label>
           <p className="ml-6 text-xs text-muted-foreground">
-            Runs a small AI model on this server. Nothing leaves it. The model loads when needed and unloads when idle.
+            在本服务器上运行一个小型 AI 模型，数据不会离开服务器。模型按需加载，空闲时自动卸载。
           </p>
           <div className="divide-y rounded-md border text-sm">
             {models.models.map((m) => {
@@ -160,34 +160,34 @@ export function DocumentSettings({
                     <div className="text-xs text-muted-foreground">{m.purpose}</div>
                   </div>
                   <div className="flex items-center gap-2">
-                    {m.active && state !== "downloading" && <Badge variant="secondary">In use</Badge>}
+                    {m.active && state !== "downloading" && <Badge variant="secondary">使用中</Badge>}
                     {state === "downloading" ? (
-                      <span className="text-xs text-muted-foreground">Downloading… {pct}%</span>
+                      <span className="text-xs text-muted-foreground">下载中… {pct}%</span>
                     ) : state === "in-use-missing" ? (
                       <>
-                        <span className="text-xs text-destructive">Files missing — searching by keywords only</span>
+                        <span className="text-xs text-destructive">文件缺失 — 仅支持关键词搜索</span>
                         <Button type="button" variant="outline" size="sm" disabled={pending || Boolean(models.download)} onClick={() => download(m)}>
-                        Download again
+                        重新下载
                       </Button>
                       </>
                     ) : state === "builtin-missing" ? (
                       <span className="text-xs text-destructive">
-                        Files missing{process.env.NODE_ENV === "development" ? " — run npm run models:fetch-builtin" : ""}
+                        文件缺失{process.env.NODE_ENV === "development" ? " — 请运行 npm run models:fetch-builtin" : ""}
                       </span>
                     ) : state === "installed" ? (
                       <>
                         <Button type="button" variant="outline" size="sm" disabled={pending || !on} onClick={() => switchTo(m)}>
-                          Use
+                          使用
                         </Button>
                         {!m.builtIn && (
                           <Button type="button" variant="outline" size="sm" disabled={pending} onClick={() => remove(m)}>
-                            Delete
+                            删除
                           </Button>
                         )}
                       </>
                     ) : state === "available" ? (
                       <Button type="button" variant="outline" size="sm" disabled={pending || Boolean(models.download)} onClick={() => download(m)}>
-                        Download
+                        下载
                       </Button>
                     ) : null}
                   </div>
@@ -200,11 +200,11 @@ export function DocumentSettings({
         <p className="text-sm text-muted-foreground">{stats}</p>
 
         <div className="flex flex-wrap gap-2">
-          <Button type="button" variant="outline" size="sm" disabled={pending || !on} onClick={() => run(retryFailedDocuments, "Retrying failed files.")}>
-            Retry failed
+          <Button type="button" variant="outline" size="sm" disabled={pending || !on} onClick={() => run(retryFailedDocuments, "正在重试失败的文件。")}>
+            重试失败项
           </Button>
-          <Button type="button" variant="outline" size="sm" disabled={pending || !on} onClick={() => run(rebuildDocumentIndex, "Rebuilding the search index.")}>
-            Rebuild index
+          <Button type="button" variant="outline" size="sm" disabled={pending || !on} onClick={() => run(rebuildDocumentIndex, "正在重建搜索索引。")}>
+            重建索引
           </Button>
           <Button
             type="button"
@@ -212,10 +212,10 @@ export function DocumentSettings({
             size="sm"
             disabled={pending || !on}
             onClick={() => {
-              if (confirm("Read every uploaded file again? This can take a while and uses CPU.")) run(reextractDocuments, "Re-reading all files.")
+              if (confirm("要重新读取所有已上传的文件吗？可能需要较长时间并占用 CPU。")) run(reextractDocuments, "正在重新读取所有文件。")
             }}
           >
-            Re-extract all
+            全部重新提取
           </Button>
           <Button
             type="button"
@@ -223,10 +223,10 @@ export function DocumentSettings({
             size="sm"
             disabled={pending || on}
             onClick={() => {
-              if (confirm("Delete all extracted text and the search index? The files themselves are kept.")) run(clearExtractedText, "Extracted text cleared.")
+              if (confirm("要删除所有已提取的文本和搜索索引吗？文件本身会保留。")) run(clearExtractedText, "已清除提取的文本。")
             }}
           >
-            Clear extracted text
+            清除提取文本
           </Button>
         </div>
       </CardContent>

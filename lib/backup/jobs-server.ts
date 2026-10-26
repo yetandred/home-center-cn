@@ -176,7 +176,7 @@ export async function runBackupJob(runId: string): Promise<void> {
       console.error("[backup] couldn't record the failure:", e2)
     }
     try {
-      await raiseBackupAlert(`run:${runId}`, "Backup failed", `${trigger === "SCHEDULE" ? "The scheduled backup" : "A backup"} didn't finish: ${message}`)
+      await raiseBackupAlert(`run:${runId}`, "备份失败", `${trigger === "SCHEDULE" ? "计划备份" : "一次备份"}未完成：${message}`)
     } catch (e3) {
       console.error("[backup] couldn't raise the failure alert:", e3)
     }
@@ -194,8 +194,8 @@ export async function runBackupJob(runId: string): Promise<void> {
 export async function markInterruptedRuns(): Promise<number> {
   const stuck = await prisma.backupRun.findMany({ where: { status: "RUNNING", ...(state.running ? { id: { not: state.running } } : {}) }, select: { id: true, kind: true } })
   for (const r of stuck) {
-    await prisma.backupRun.update({ where: { id: r.id }, data: { status: "INTERRUPTED", finishedAt: new Date(), error: "HomeCenter restarted while this was running." } })
-    if (r.kind === "BACKUP") await raiseBackupAlert(`run:${r.id}`, "Backup interrupted", "HomeCenter restarted during a backup. The next scheduled backup will run as usual.")
+    await prisma.backupRun.update({ where: { id: r.id }, data: { status: "INTERRUPTED", finishedAt: new Date(), error: "HomeCenter 在运行期间重启。" } })
+    if (r.kind === "BACKUP") await raiseBackupAlert(`run:${r.id}`, "备份被中断", "备份期间 HomeCenter 发生了重启。下次计划备份将照常运行。")
   }
   // A job started during the boot delay owns its partial files.
   if (!isJobRunning()) await cleanupPartials(backupFolder(await loadBackupSettings()))

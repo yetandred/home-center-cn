@@ -32,7 +32,7 @@ function formatBytes(bytes: number) {
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`
 }
 
-export function AttachmentList({ recordId, recordType, attachments: initial, label = "Attachments", emptyText }: Props) {
+export function AttachmentList({ recordId, recordType, attachments: initial, label = "附件", emptyText }: Props) {
   const [attachments, setAttachments] = useState(initial)
   const [uploading, setUploading] = useState(false)
   const [isPending, startTransition] = useTransition()
@@ -46,9 +46,9 @@ export function AttachmentList({ recordId, recordType, attachments: initial, lab
         try {
           const attachment = await uploadFile(file, recordType, recordId)
           setAttachments((prev) => [...prev, attachment])
-          toast.success(`"${file.name}" uploaded.`)
+          toast.success(`已上传“${file.name}”。`)
         } catch (err) {
-          toast.error(err instanceof Error ? err.message : "Upload failed")
+          toast.error(err instanceof Error ? err.message : "上传失败")
         }
       }
     } finally {
@@ -63,16 +63,16 @@ export function AttachmentList({ recordId, recordType, attachments: initial, lab
 
   // A file dropped on this list attaches straight to this record.
   const { setElement: setDropElement, over: dropOver } = useDropZone({
-    label: recordType === "DOCUMENT" ? "Add to this asset's documents" : "Attach to this record",
+    label: recordType === "DOCUMENT" ? "添加到该资产的文档" : "添加到该记录的附件",
     onFiles: (files) => void upload(files),
   })
 
   async function handleDelete(id: string, originalName: string) {
-    if (!confirm(`Remove "${originalName}"?`)) return
+    if (!confirm(`移除“${originalName}”？`)) return
     startTransition(async () => {
       await deleteAttachment(id)
       setAttachments((prev) => prev.filter((a) => a.id !== id))
-      toast.success("Attachment removed.")
+      toast.success("附件已移除。")
     })
   }
 
@@ -102,7 +102,7 @@ export function AttachmentList({ recordId, recordType, attachments: initial, lab
             onClick={() => inputRef.current?.click()}
           >
             <Upload className="h-3.5 w-3.5 mr-1.5" />
-            {uploading ? "Uploading…" : "Attach file"}
+            {uploading ? "上传中…" : "添加附件"}
           </Button>
         </label>
       </div>
@@ -130,7 +130,7 @@ export function AttachmentList({ recordId, recordType, attachments: initial, lab
                   type="button"
                   onClick={() => handleDelete(a.id, a.originalName)}
                   disabled={isPending}
-                  aria-label={`Remove "${a.originalName}"`}
+                  aria-label={`移除“${a.originalName}”`}
                   className="shrink-0 text-muted-foreground hover:text-destructive transition-colors"
                 >
                   <Trash2 className="h-3.5 w-3.5" />

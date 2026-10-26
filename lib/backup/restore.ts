@@ -72,10 +72,10 @@ async function dryRunInner(i: { archivePath: string; secret: UnlockSecret; paths
 
   const size = (await stat(i.archivePath)).size
   const fs = await statfs(i.paths.restoreDir)
-  if (Number(fs.bavail) * Number(fs.bsize) < size * 2) return { ok: false, error: "Not enough free disk space to restore this backup (about twice its size is needed)." }
+  if (Number(fs.bavail) * Number(fs.bsize) < size * 2) return { ok: false, error: "磁盘可用空间不足，无法恢复此备份（约需其两倍空间）。" }
 
   const kind = await detectProtection(i.archivePath)
-  if (kind === "unknown") return { ok: false, error: "This isn't a HomeCenter backup." }
+  if (kind === "unknown") return { ok: false, error: "这不是 HomeCenter 备份。" }
   const plain = path.join(d.work, "archive.hcbackup")
   if (kind === "none") {
     // Keep the source where it is; stage reads it from dryrun.json.
@@ -347,7 +347,7 @@ export async function applyPending(
       if (path.dirname(u) !== path.resolve(paths.restoreDir) || !path.basename(u).startsWith("pre-")) throw new Error("bad undoOf")
     }
   } catch {
-    return finish({ ...base, status: "failed", error: "The pending restore file is unreadable, so nothing was changed.", rolledBack: true, recoveryDirs: [] })
+    return finish({ ...base, status: "failed", error: "待恢复文件无法读取，因此未做任何更改。", rolledBack: true, recoveryDirs: [] })
   }
   base.backupCreatedAt = meta.backupCreatedAt
   base.source = meta.source

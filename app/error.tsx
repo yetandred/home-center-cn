@@ -15,11 +15,11 @@ export default function GlobalError({ reset }: { error: Error & { digest?: strin
         </div>
         <div className="rounded-lg border bg-card p-8">
           <TriangleAlert className="h-8 w-8 mx-auto mb-3 text-destructive" strokeWidth={1.5} />
-          <p className="font-medium">Something went wrong</p>
+          <p className="font-medium">出了点问题</p>
           <p className="text-sm text-muted-foreground mt-1">
-            An unexpected error occurred. You can try again, or head back to the dashboard.
+            发生了意外错误。您可以重试，或返回仪表盘。
           </p>
-          <Button onClick={reset} className="mt-5">Try Again</Button>
+          <Button onClick={reset} className="mt-5">重试</Button>
         </div>
       </div>
     </div>

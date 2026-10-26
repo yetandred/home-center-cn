@@ -37,7 +37,7 @@ export async function updateInsurancePolicy(id: string, values: FormValues): Pro
   const parsed = insuranceSchema.safeParse(values)
   if (!parsed.success) return { error: parsed.error.flatten().fieldErrors }
   const existing = await prisma.insurancePolicy.findUnique({ where: { id }, select: { id: true } })
-  if (!existing) return { error: "Not found" }
+  if (!existing) return { error: "未找到" }
 
   const { memberIds, ...data } = parsed.data
   await prisma.insurancePolicy.update({
@@ -53,7 +53,7 @@ export async function deleteInsurancePolicy(id: string): Promise<ActionResult> {
   if (!session) redirect("/login")
 
   const existing = await prisma.insurancePolicy.findUnique({ where: { id }, select: { id: true } })
-  if (!existing) return { error: "Not found" }
+  if (!existing) return { error: "未找到" }
 
   await prisma.insurancePolicy.delete({ where: { id: existing.id } })
   await removeUploadDir("insurance", existing.id)

@@ -89,10 +89,9 @@ export default async function SettingsPage({
   if (!me) {
     return (
       <div className="space-y-4 max-w-3xl">
-        <h1 className="font-heading text-2xl font-semibold">Settings</h1>
+        <h1 className="font-heading text-2xl font-semibold">设置</h1>
         <p className="text-sm text-muted-foreground">
-          The account you&apos;re signed in as no longer exists. Sign out from the menu in the top
-          right, then sign in again.
+          您登录的账户已不存在。请从右上角菜单退出登录，然后重新登录。
         </p>
       </div>
     )
@@ -101,7 +100,7 @@ export default async function SettingsPage({
   return (
     <div className="max-w-5xl space-y-6">
       <div>
-        <h1 className="font-heading text-2xl font-semibold">Settings</h1>
+        <h1 className="font-heading text-2xl font-semibold">设置</h1>
         <p className="mt-0.5 text-sm text-muted-foreground">{section.description}</p>
       </div>
 
@@ -131,16 +130,16 @@ export default async function SettingsPage({
             <div className="space-y-6">
               <PlacementSettings
                 prefKey="intake"
-                title="Intake"
-                description="Where Intake, with its count of receipts to review, sits. Saved for this browser only."
+                title="收件箱"
+                description="收件箱（含待处理的收据数量）在页面上的位置。仅保存在当前浏览器。"
                 initial={appearance.intake}
               />
               <PlacementSettings
                 prefKey="assistant"
-                title="Assistant button"
+                title="AI 助手按钮"
                 description={
-                  "Where the button that opens the assistant sits. Saved for this browser only." +
-                  (appearance.assistantShown ? "" : " The assistant is currently hidden, so neither shows.")
+                  "打开 AI 助手的按钮在页面上的位置。仅保存在当前浏览器。" +
+                  (appearance.assistantShown ? "" : " AI 助手当前已隐藏，因此两种位置都不会显示。")
                 }
                 initial={appearance.assistant}
               />

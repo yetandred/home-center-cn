@@ -86,7 +86,7 @@ export async function createInboxItem(asset?: { assetType: AssetType; assetId: s
     const parsed = fileSchema.safeParse(asset)
     if (!parsed.success) throw new Error("Invalid input")
     const name = await assetName(parsed.data.assetType, parsed.data.assetId)
-    if (name === null) throw new Error("That asset no longer exists.")
+    if (name === null) throw new Error("该资产已不存在。")
     suggestion = userAssetSuggestion(parsed.data, name)
   }
   const item = await prisma.inboxItem.create({ data: { createdById: session.user.id, ...suggestion }, select: { id: true } })
@@ -111,7 +111,7 @@ async function moveOut(
       where: { id: itemId },
       select: { id: true, attachments: { select: { id: true, filename: true } } },
     })
-    if (!item) return { error: "Not found" }
+    if (!item) return { error: "未找到" }
     const root = uploadRoot()
     const plans = item.attachments.map((a) => planMove(root, { recordType: "INBOX", recordId: item.id }, targetDir(target), a.filename))
     const ids = item.attachments.map((a) => a.id)
@@ -145,14 +145,14 @@ export type FileInboxResult =
 export async function fileInboxItem(id: string, data: ServiceRecordInput): Promise<FileInboxResult> {
   const session = await requireUser()
   const prepared = await prepareNewServiceRecord(data, session.user.id)
-  if ("error" in prepared) return { error: "Check the highlighted fields.", fieldErrors: prepared.error }
+  if ("error" in prepared) return { error: "请检查标红的字段。", fieldErrors: prepared.error }
   const { row } = prepared.ok
-  if (!(await assetExists(row.assetType, row.assetId))) return { error: "That asset no longer exists." }
+  if (!(await assetExists(row.assetType, row.assetId))) return { error: "该资产已不存在。" }
 
   const recordId = newRecordId()
   const done = await moveOut(id, { kind: "SERVICE", recordId }, () => [...newServiceRecordWrites(prepared.ok, recordId)], {
     log: "filing",
-    message: "Couldn't file this item. Nothing was changed; try again.",
+    message: "归档此项目失败，内容未更改，请重试。",
   })
   if ("error" in done) return done
   revalidateNewServiceRecord(prepared.ok)
@@ -166,12 +166,12 @@ export async function keepAsDocument(id: string, assetType: AssetType, assetId: 
   await requireUser()
   const parsed = fileSchema.safeParse({ assetType, assetId })
   if (!parsed.success) return { error: "Invalid input" }
-  if (!(await assetExists(parsed.data.assetType, parsed.data.assetId))) return { error: "That asset no longer exists." }
+  if (!(await assetExists(parsed.data.assetType, parsed.data.assetId))) return { error: "该资产已不存在。" }
 
   const target: FileTarget = { kind: "DOCUMENT", assetType: parsed.data.assetType, assetId: parsed.data.assetId }
   const done = await moveOut(id, target, () => [], {
     log: "keep as document",
-    message: "Couldn't move this item. Nothing was changed; try again.",
+    message: "移动此项目失败，内容未更改，请重试。",
   })
   if ("error" in done) return done
   const href = assetHref(parsed.data.assetType, parsed.data.assetId)
@@ -202,7 +202,7 @@ export async function attachToRecord(itemId: string, recordType: AttachKind, rec
   if (!parsed.success) return { error: "Invalid input" }
   const { recordType: kind, recordId: id } = parsed.data
   const owner = await attachableRecord(kind, id)
-  if (!owner) return { error: "That record no longer exists." }
+  if (!owner) return { error: "该记录已不存在。" }
 
   const done = await moveOut(
     itemId,
@@ -213,7 +213,7 @@ export async function attachToRecord(itemId: string, recordType: AttachKind, rec
         ? prisma.serviceRecord.update({ where: { id }, data: {}, select: { id: true } })
         : prisma.warranty.update({ where: { id }, data: {}, select: { id: true } }),
     ],
-    { log: "attach to record", message: "Couldn't attach this item. Nothing was changed; try again." }
+    { log: "attach to record", message: "附加此项目失败，内容未更改，请重试。" }
   )
   if ("error" in done) return done
   revalidatePath(assetHref(owner.assetType, owner.assetId))
@@ -226,7 +226,7 @@ export async function listAttachCandidates(assetType: AssetType, assetId: string
   await requireUser()
   const parsed = fileSchema.safeParse({ assetType, assetId })
   if (!parsed.success) return { error: "Invalid input" }
-  if (!(await assetExists(parsed.data.assetType, parsed.data.assetId))) return { error: "That asset no longer exists." }
+  if (!(await assetExists(parsed.data.assetType, parsed.data.assetId))) return { error: "该资产已不存在。" }
   const where = { assetType: parsed.data.assetType, assetId: parsed.data.assetId }
   const [records, warranties] = await Promise.all([
     prisma.serviceRecord.findMany({ where, orderBy: { date: "desc" }, take: 25, select: { id: true, date: true, title: true, cost: true } }),
@@ -245,7 +245,7 @@ export async function listAttachCandidates(assetType: AssetType, assetId: string
 export async function discardInboxItem(id: string): Promise<{ success: true } | { error: string }> {
   await requireUser()
   const item = await prisma.inboxItem.findUnique({ where: { id }, select: { id: true, attachments: { select: { id: true } } } })
-  if (!item) return { error: "Not found" }
+  if (!item) return { error: "未找到" }
   // Cascades to the attachments and their extracted text.
   await prisma.inboxItem.delete({ where: { id: item.id } })
   await removeUploadDir("inbox", item.id)
@@ -259,11 +259,11 @@ export async function discardInboxItem(id: string): Promise<{ success: true } | 
 /** "Re-read": runs the receipt reader and asset match again, e.g. after changing the setting. */
 export async function reparseInboxItem(id: string): Promise<{ success: true; status: InboxStatus } | { error: string }> {
   await requireUser()
-  if (!(await prisma.inboxItem.findUnique({ where: { id }, select: { id: true } }))) return { error: "Not found" }
+  if (!(await prisma.inboxItem.findUnique({ where: { id }, select: { id: true } }))) return { error: "未找到" }
   await processInboxItem(id)
   const after = await prisma.inboxItem.findUnique({ where: { id }, select: { status: true } })
   revalidatePath("/intake")
-  return after ? { success: true, status: after.status } : { error: "Not found" }
+  return after ? { success: true, status: after.status } : { error: "未找到" }
 }
 
 const parserSchema = z.enum(["OFF", "BASIC", "LLM"])
@@ -274,7 +274,7 @@ export async function setCaptureParser(mode: CaptureParser): Promise<{ success: 
   const parsed = parserSchema.safeParse(mode)
   if (!parsed.success) return { error: "Invalid input." }
   if (!captureParserAllowed(parsed.data, isLlmReady(await loadLlmConfig()))) {
-    return { error: "Set up the assistant's model under Assistant first." }
+    return { error: "请先在“AI 助手”中配置模型。" }
   }
   await prisma.documentSettings.upsert({
     where: { id: DOCUMENT_SETTINGS_ID },

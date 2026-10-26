@@ -62,19 +62,19 @@ export function RoomList({ rooms, propertyId, propertyName, showEquipment, servi
       <div className="mb-4 flex items-center justify-between gap-3">
         <div className="relative w-full max-w-xs">
           <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-          <Input value={filter} onChange={(e) => setFilter(e.target.value)} placeholder="Filter rooms" aria-label="Filter rooms" className="pl-8" />
+          <Input value={filter} onChange={(e) => setFilter(e.target.value)} placeholder="筛选房间" aria-label="筛选房间" className="pl-8" />
         </div>
         <Button size="sm" onClick={() => { setEditingId(null); setDialogOpen(true) }}>
-          <Plus className="mr-1 h-3.5 w-3.5" /> Add room
+          <Plus className="mr-1 h-3.5 w-3.5" /> 添加房间
         </Button>
       </div>
 
       {rooms.length === 0 ? (
         <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-          No rooms yet. Add one to keep its paint colors, flooring and photos in one place.
+          暂无房间。添加房间后，可将涂料颜色、地面材料和照片集中保存。
         </div>
       ) : shown.length === 0 ? (
-        <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">No rooms match “{filter}”.</div>
+        <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">没有匹配“{filter}”的房间。</div>
       ) : (
         <ul className="divide-y overflow-hidden rounded-lg border bg-card">
           {shown.map((room) => (
@@ -105,7 +105,7 @@ function RoomRow({ room, onOpen }: { room: RoomWithDetails; onOpen: () => void }
   const photo = roomPhoto(room)
   const flooring = [room.flooringType, room.flooringProduct].filter(Boolean).join(" · ")
   const size = [room.dimensions, room.area ? fmt.area(room.area) : null].filter(Boolean).join(" · ")
-  const paint = room.paints.length > 0 ? `${paintLabel(room.paints[0])}${room.paints.length > 1 ? ` +${room.paints.length - 1} more` : ""}` : null
+  const paint = room.paints.length > 0 ? `${paintLabel(room.paints[0])}${room.paints.length > 1 ? ` 等 ${room.paints.length - 1} 项` : ""}` : null
   return (
     <li>
       <button
@@ -127,13 +127,13 @@ function RoomRow({ room, onOpen }: { room: RoomWithDetails; onOpen: () => void }
             {room.level && <span className="shrink-0 text-xs text-muted-foreground">{room.level}</span>}
             {size && <span className="hidden shrink-0 text-xs text-muted-foreground sm:inline">{size}</span>}
           </div>
-          {paint && <p className="truncate text-muted-foreground"><span className="text-xs">Paint:</span> {paint}</p>}
-          {flooring && <p className="truncate text-muted-foreground"><span className="text-xs">Floor:</span> {flooring}</p>}
-          {!paint && !flooring && <p className="text-xs text-muted-foreground">No paint or flooring recorded</p>}
+          {paint && <p className="truncate text-muted-foreground"><span className="text-xs">涂料：</span> {paint}</p>}
+          {flooring && <p className="truncate text-muted-foreground"><span className="text-xs">地面：</span> {flooring}</p>}
+          {!paint && !flooring && <p className="text-xs text-muted-foreground">未记录涂料或地面材料</p>}
         </div>
         <div className="hidden shrink-0 flex-col items-end gap-1 text-xs text-muted-foreground sm:flex">
-          <span className="inline-flex items-center gap-1"><Package className="h-3 w-3" /> {room.equipment.length} equipment</span>
-          <span className="inline-flex items-center gap-1"><Paperclip className="h-3 w-3" /> {room.attachments.length} file{room.attachments.length !== 1 ? "s" : ""}</span>
+          <span className="inline-flex items-center gap-1"><Package className="h-3 w-3" /> {room.equipment.length} 台设备</span>
+          <span className="inline-flex items-center gap-1"><Paperclip className="h-3 w-3" /> {room.attachments.length} 个文件</span>
         </div>
       </button>
     </li>

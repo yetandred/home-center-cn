@@ -18,11 +18,11 @@ async function request(formData: FormData) {
 
 const MESSAGES: Record<string, { text: string; ok?: boolean }> = {
   sent: {
-    text: `If that email belongs to an account, a reset link is on its way. It works once and expires in ${RESET_TOKEN_MINUTES} minutes.`,
+    text: `如果该邮箱对应某个账户，重置链接将很快发送到您的邮箱。链接仅可使用一次，${RESET_TOKEN_MINUTES} 分钟内有效。`,
     ok: true,
   },
-  throttled: { text: "Too many reset requests. Wait an hour, then try again." },
-  invalid: { text: "Enter a valid email address." },
+  throttled: { text: "重置请求过于频繁，请等待一小时后再试。" },
+  invalid: { text: "请输入有效的邮箱地址。" },
 }
 
 export default async function ForgotPasswordPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
@@ -39,25 +39,25 @@ export default async function ForgotPasswordPage({ searchParams }: { searchParam
             <Home className="h-5 w-5" />
           </div>
           <h1 className="font-heading text-2xl font-semibold tracking-tight">HomeCenter</h1>
-          <p className="text-sm text-muted-foreground">Reset your password</p>
+          <p className="text-sm text-muted-foreground">重置密码</p>
         </div>
 
         <Card>
           <CardHeader className="pb-4">
-            <CardTitle className="text-base">Forgot your password?</CardTitle>
+            <CardTitle className="text-base">忘记密码？</CardTitle>
             <CardDescription className={message ? (message.ok ? "text-emerald-700 dark:text-emerald-400" : "text-destructive") : undefined}>
-              {message?.text ?? "Enter your email and we'll send you a link to choose a new one."}
+              {message?.text ?? "请输入您的邮箱，我们会向您发送设置新密码的链接。"}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <form action={request} className="space-y-4">
               <div className="space-y-1.5">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">邮箱</Label>
                 <Input id="email" name="email" type="email" autoComplete="email" required />
               </div>
-              <Button type="submit" className="w-full">Email me a reset link</Button>
+              <Button type="submit" className="w-full">向我发送重置链接</Button>
             </form>
-            <Link href="/login" className="block text-center text-sm text-muted-foreground hover:underline">Back to sign in</Link>
+            <Link href="/login" className="block text-center text-sm text-muted-foreground hover:underline">返回登录</Link>
           </CardContent>
         </Card>
       </div>

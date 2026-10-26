@@ -110,7 +110,7 @@ export function TooltipCard({
       </dl>
       {tip.content.total ? (
         <div className="mt-1.5 flex items-center justify-between border-t pt-1.5 text-xs font-medium">
-          <span>Total</span>
+          <span>合计</span>
           <span className="tabular-nums">{tip.content.total}</span>
         </div>
       ) : null}

@@ -7,7 +7,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "HomeCenter",
-  description: "Track and manage your homes and vehicles",
+  description: "记录并管理您的房产与车辆",
   // iOS ignores most of the manifest: these make Add to Home Screen open
   // full-screen with the right name and icon.
   appleWebApp: { capable: true, title: "HomeCenter", statusBarStyle: "default" },

@@ -34,11 +34,11 @@ export type DropDestination =
   | { kind: "zone"; targetId: string; label: string }
   | { kind: "intake"; asset: DropAsset | null; label: string }
 
-export const BLOCKED_LABEL = "This form doesn't take files"
+export const BLOCKED_LABEL = "此表单不接受文件"
 
 export function intakeLabel(asset: DropAsset | null): string {
   const name = asset?.name.trim()
-  return name ? `Add to Intake — for ${name}` : "Add to Intake"
+  return name ? `添加到收件箱——${name}` : "添加到收件箱"
 }
 
 export function resolveDrop(input: DropInput): DropDestination {
@@ -74,16 +74,16 @@ export function splitDroppedFiles<T extends { name: string }>(files: T[]): { acc
 }
 
 export function intakeAddedMessage(count: number): string {
-  return `Added ${count} file${count === 1 ? "" : "s"} to Intake`
+  return `已将 ${count} 个文件添加到收件箱`
 }
 
 const SHOWN_REJECTS = 3
 
 export function rejectedFilesMessage(names: string[]): string {
-  const quoted = names.map((n) => `"${n}"`)
+  const quoted = names.map((n) => `“${n}”`)
   if (quoted.length > SHOWN_REJECTS + 1) {
-    return `HomeCenter doesn't accept ${quoted.slice(0, SHOWN_REJECTS).join(", ")} and ${quoted.length - SHOWN_REJECTS} more.`
+    return `HomeCenter 不接受 ${quoted.slice(0, SHOWN_REJECTS).join("、")} 等 ${quoted.length - SHOWN_REJECTS} 个文件。`
   }
-  const list = quoted.length > 1 ? `${quoted.slice(0, -1).join(", ")} and ${quoted[quoted.length - 1]}` : quoted[0] ?? ""
-  return `HomeCenter doesn't accept ${list}.`
+  const list = quoted.length > 1 ? `${quoted.slice(0, -1).join("、")} 和 ${quoted[quoted.length - 1]}` : quoted[0] ?? ""
+  return `HomeCenter 不接受 ${list}。`
 }

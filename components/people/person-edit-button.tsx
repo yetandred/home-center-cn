@@ -16,14 +16,14 @@ export function PersonEditButton({ person, providers }: { person: Person; provid
         onClick={() => setOpen(true)}
         className="inline-flex shrink-0 items-center gap-1.5 rounded-md border bg-background px-3 py-1.5 text-sm font-medium hover:bg-muted transition-colors"
       >
-        <Pencil className="h-3.5 w-3.5" /> Edit
+        <Pencil className="h-3.5 w-3.5" /> 编辑
       </button>
       <EntityFormDialog
         open={open}
         onClose={() => setOpen(false)}
-        title="Edit Person"
-        submitLabel="Save Changes"
-        successMessage="Person updated."
+        title="编辑成员"
+        submitLabel="保存更改"
+        successMessage="成员已更新。"
         fields={personFields(providers)}
         initial={personInitial(person)}
         onSubmit={(values) => updatePerson(person.id, values)}

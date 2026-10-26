@@ -26,14 +26,14 @@ import { MedicationEffectsView } from "./medication-effects"
 export type MedicationRow = Medication & { attachments: Attachment[]; prescriber: { name: string } | null; condition: { name: string } | null }
 
 const VIEWS: { value: MedicationView; label: string; icon: React.ElementType }[] = [
-  { value: "list", label: "List", icon: List },
-  { value: "timeline", label: "Timeline", icon: ChartGantt },
-  { value: "effects", label: "Before & after", icon: GitCompareArrows },
+  { value: "list", label: "列表", icon: List },
+  { value: "timeline", label: "时间线", icon: ChartGantt },
+  { value: "effects", label: "前后对比", icon: GitCompareArrows },
 ]
 
 function ViewToggle({ value, onChange }: { value: MedicationView; onChange: (v: MedicationView) => void }) {
   return (
-    <div role="group" aria-label="Medications view" className="inline-flex items-center rounded-lg border bg-card p-0.5">
+    <div role="group" aria-label="用药视图" className="inline-flex items-center rounded-lg border bg-card p-0.5">
       {VIEWS.map((option) => {
         const Icon = option.icon
         const active = value === option.value
@@ -67,13 +67,13 @@ function RefillCell({ m }: { m: MedicationRow }) {
   const now = new Date()
   if (!refillDue(m, now)) return <span className="text-muted-foreground">{shown}</span>
   return daysUntil(m.nextRefillDate, now) < 0
-    ? <Badge variant="destructive">Overdue · {shown}</Badge>
-    : <Badge variant="secondary">Due {shown}</Badge>
+    ? <Badge variant="destructive">已逾期 · {shown}</Badge>
+    : <Badge variant="secondary">即将到期 {shown}</Badge>
 }
 
 const columnsFor = (fmt: Formatter): EntityColumn<MedicationRow>[] => [
   {
-    key: "name", label: "Medication",
+    key: "name", label: "用药",
     cell: (m) => (
       <div>
         <div className="font-medium">{m.name}</div>
@@ -83,11 +83,11 @@ const columnsFor = (fmt: Formatter): EntityColumn<MedicationRow>[] => [
       </div>
     ),
   },
-  { key: "started", label: "Started", className: "whitespace-nowrap text-muted-foreground", cell: (m) => (m.startDate ? fmt.date(m.startDate, { utc: true }) : "—") },
-  { key: "for", label: "For", className: "text-muted-foreground", cell: (m) => m.condition?.name ?? "—" },
-  { key: "prescriber", label: "Prescriber", className: "text-muted-foreground", cell: (m) => m.prescriber?.name ?? "—" },
-  { key: "refill", label: "Next refill", className: "whitespace-nowrap", cell: (m) => <RefillCell m={m} /> },
-  { key: "files", label: "Files", cell: (m) => <AttachmentCount attachments={m.attachments} /> },
+  { key: "started", label: "开始日期", className: "whitespace-nowrap text-muted-foreground", cell: (m) => (m.startDate ? fmt.date(m.startDate, { utc: true }) : "—") },
+  { key: "for", label: "针对病症", className: "text-muted-foreground", cell: (m) => m.condition?.name ?? "—" },
+  { key: "prescriber", label: "处方医生", className: "text-muted-foreground", cell: (m) => m.prescriber?.name ?? "—" },
+  { key: "refill", label: "下次续药", className: "whitespace-nowrap", cell: (m) => <RefillCell m={m} /> },
+  { key: "files", label: "附件", cell: (m) => <AttachmentCount attachments={m.attachments} /> },
 ]
 
 const pastColumnsFor = (fmt: Formatter): EntityColumn<MedicationRow>[] => {
@@ -95,7 +95,7 @@ const pastColumnsFor = (fmt: Formatter): EntityColumn<MedicationRow>[] => {
   return [
   COLUMNS[0],
   COLUMNS[1],
-  { key: "ended", label: "Stopped", className: "whitespace-nowrap text-muted-foreground", cell: (m) => (m.endDate ? fmt.date(m.endDate, { utc: true }) : "—") },
+  { key: "ended", label: "停用日期", className: "whitespace-nowrap text-muted-foreground", cell: (m) => (m.endDate ? fmt.date(m.endDate, { utc: true }) : "—") },
   COLUMNS[2],
   COLUMNS[COLUMNS.length - 1],
   ]
@@ -154,30 +154,30 @@ export function MedicationsSection({ personId, medications, providers, condition
   const past = sortChronologically(medications.filter((m) => !isMedicationActive(m, now)), "desc")
 
   const fields: FieldConfig[] = [
-    { name: "name", label: "Medication", kind: "text", required: true, placeholder: "Metformin", wide: true },
-    { name: "dosage", label: "Dosage", kind: "text", placeholder: "500 mg" },
-    { name: "frequency", label: "Frequency", kind: "text", placeholder: "Twice daily" },
-    { name: "prescriberId", label: "Prescriber", kind: "select", options: providers.map((p) => ({ value: p.id, label: p.name })) },
-    { name: "conditionId", label: "For condition", kind: "select", options: conditions.map((c) => ({ value: c.id, label: c.name })) },
-    { name: "startDate", label: "Started", kind: "date" },
-    { name: "endDate", label: "Stopped", kind: "date" },
-    { name: "refillIntervalDays", label: "Refill every (days)", kind: "number", placeholder: "30" },
-    { name: "nextRefillDate", label: "Next refill", kind: "date" },
-    { name: "pharmacy", label: "Pharmacy", kind: "text", placeholder: "Walgreens on Main", wide: true },
-    { name: "notes", label: "Notes", kind: "textarea", wide: true },
+    { name: "name", label: "用药", kind: "text", required: true, placeholder: "二甲双胍", wide: true },
+    { name: "dosage", label: "剂量", kind: "text", placeholder: "500 mg" },
+    { name: "frequency", label: "频次", kind: "text", placeholder: "每日两次" },
+    { name: "prescriberId", label: "处方医生", kind: "select", options: providers.map((p) => ({ value: p.id, label: p.name })) },
+    { name: "conditionId", label: "针对病症", kind: "select", options: conditions.map((c) => ({ value: c.id, label: c.name })) },
+    { name: "startDate", label: "开始日期", kind: "date" },
+    { name: "endDate", label: "停用日期", kind: "date" },
+    { name: "refillIntervalDays", label: "续药间隔（天）", kind: "number", placeholder: "30" },
+    { name: "nextRefillDate", label: "下次续药", kind: "date" },
+    { name: "pharmacy", label: "药房", kind: "text", placeholder: "市中心药店", wide: true },
+    { name: "notes", label: "备注", kind: "textarea", wide: true },
   ]
 
   async function handleDelete(m: MedicationRow) {
-    if (!confirm(`Delete "${m.name}"? To keep its history, set a Stopped date instead.`)) return
+    if (!confirm(`确定删除“${m.name}”吗？如需保留历史，可改为设置停用日期。`)) return
     const result = await deleteMedication(m.id)
-    if (result.error) { toast.error("Delete failed."); return }
-    toast.success("Medication deleted.")
+    if (result.error) { toast.error("删除失败。"); return }
+    toast.success("用药记录已删除。")
   }
 
   async function handleRefilled(m: MedicationRow) {
     const result = await markMedicationRefilled(m.id)
-    if (result.error) { toast.error(typeof result.error === "string" ? result.error : "Update failed."); return }
-    toast.success(`${m.name}: next refill in ${m.refillIntervalDays} days.`)
+    if (result.error) { toast.error(typeof result.error === "string" ? result.error : "更新失败。"); return }
+    toast.success(`${m.name}：${m.refillIntervalDays} 天后需再次续药。`)
   }
 
   const openEdit = (m: MedicationRow) => { setEditing(m); setOpen(true) }
@@ -187,9 +187,9 @@ export function MedicationsSection({ personId, medications, providers, condition
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-3">
           <ViewToggle value={view} onChange={chooseView} />
-          <p className="whitespace-nowrap text-sm text-muted-foreground">{active.length} current · {past.length} past</p>
+          <p className="whitespace-nowrap text-sm text-muted-foreground">在用 {active.length} · 已停用 {past.length}</p>
         </div>
-        <Button size="sm" onClick={() => { setEditing(null); setOpen(true) }}>Add Medication</Button>
+        <Button size="sm" onClick={() => { setEditing(null); setOpen(true) }}>添加用药</Button>
       </div>
 
       {view === "timeline" ? (
@@ -208,10 +208,10 @@ export function MedicationsSection({ personId, medications, providers, condition
         describe={(m) => m.name}
         onEdit={openEdit}
         onDelete={handleDelete}
-        empty="No current medications."
+        empty="暂无在用药物。"
         extraActions={(m) =>
           m.refillIntervalDays ? (
-            <Button variant="outline" size="sm" className="h-7" onClick={() => handleRefilled(m)}>Refilled</Button>
+            <Button variant="outline" size="sm" className="h-7" onClick={() => handleRefilled(m)}>已续药</Button>
           ) : null
         }
         renderExpanded={(m) => <AttachmentList recordId={m.id} recordType="MEDICATION" attachments={m.attachments} />}
@@ -219,7 +219,7 @@ export function MedicationsSection({ personId, medications, providers, condition
 
       {past.length > 0 && (
         <div className="mt-6 space-y-2">
-          <h3 className="text-sm font-medium text-muted-foreground">Past medications</h3>
+          <h3 className="text-sm font-medium text-muted-foreground">历史用药</h3>
           <EntityTable rows={past} columns={pastColumnsFor(fmt)} describe={(m) => m.name} onEdit={openEdit} onDelete={handleDelete} empty="" renderExpanded={(m) => <AttachmentList recordId={m.id} recordType="MEDICATION" attachments={m.attachments} />} />
         </div>
       )}
@@ -229,9 +229,9 @@ export function MedicationsSection({ personId, medications, providers, condition
       <EntityFormDialog
         open={open}
         onClose={() => setOpen(false)}
-        title={editing ? "Edit Medication" : "Add Medication"}
-        submitLabel={editing ? "Save Changes" : "Add Medication"}
-        successMessage={editing ? "Medication updated." : "Medication added."}
+        title={editing ? "编辑用药" : "添加用药"}
+        submitLabel={editing ? "保存更改" : "添加用药"}
+        successMessage={editing ? "用药记录已更新。" : "用药记录已添加。"}
         fields={fields}
         initial={initialFor(editing)}
         onSubmit={(values) => (editing ? updateMedication(editing.id, values) : createMedication(personId, values))}

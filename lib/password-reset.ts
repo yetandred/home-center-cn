@@ -41,30 +41,30 @@ export type RequestResult = "sent" | "throttled" | "unavailable" | "invalid"
 
 export function resetEmail(name: string | null, token: string, appUrl: string | null) {
   const link = appUrl ? `${appUrl}/reset-password?token=${encodeURIComponent(token)}` : null
-  const greeting = name ? `Hi ${name},` : "Hi,"
+  const greeting = name ? `${name}，您好：` : "您好："
   const how = link
-    ? `Choose a new password here:\n${link}`
-    : `Open HomeCenter's reset page (Sign in, then "Reset password") and paste this code:\n${token}`
+    ? `请通过以下链接设置新密码：\n${link}`
+    : `打开 HomeCenter 的重置页面（先登录，再点击“重置密码”），输入以下代码：\n${token}`
   const text = [
     greeting,
     "",
-    "A password reset was requested for your HomeCenter account.",
+    "收到了重置您 HomeCenter 账户密码的请求。",
     how,
     "",
-    `It works once and expires in ${RESET_TOKEN_MINUTES} minutes.`,
-    "If you didn't ask for this, ignore this email — your password hasn't changed.",
+    `链接仅可使用一次，${RESET_TOKEN_MINUTES} 分钟后失效。`,
+    "如果您没有发起此请求，请忽略本邮件——您的密码未被更改。",
   ].join("\n")
   // The name is user-entered; the link and token are URL-safe.
   const safeName = name?.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`)
   const html =
-    `<p>${safeName ? `Hi ${safeName},` : "Hi,"}</p>` +
-    "<p>A password reset was requested for your HomeCenter account.</p>" +
+    `<p>${safeName ? `${safeName}，您好：` : "您好："}</p>` +
+    "<p>收到了重置您 HomeCenter 账户密码的请求。</p>" +
     (link
-      ? `<p><a href="${link}">Choose a new password</a></p>`
-      : `<p>Open HomeCenter's reset page (Sign in, then &quot;Reset password&quot;) and paste this code:<br><code>${token}</code></p>`) +
-    `<p>It works once and expires in ${RESET_TOKEN_MINUTES} minutes.</p>` +
-    "<p>If you didn't ask for this, ignore this email — your password hasn't changed.</p>"
-  return { subject: "Reset your HomeCenter password", text, html }
+      ? `<p><a href="${link}">设置新密码</a></p>`
+      : `<p>打开 HomeCenter 的重置页面（先登录，再点击“重置密码”），输入以下代码：<br><code>${token}</code></p>`) +
+    `<p>链接仅可使用一次，${RESET_TOKEN_MINUTES} 分钟后失效。</p>` +
+    "<p>如果您没有发起此请求，请忽略本邮件——您的密码未被更改。</p>"
+  return { subject: "重置您的 HomeCenter 密码", text, html }
 }
 
 export async function requestPasswordReset(emailInput: unknown, ip: string, deps: RequestDeps): Promise<RequestResult> {

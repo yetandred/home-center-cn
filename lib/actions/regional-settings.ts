@@ -10,7 +10,7 @@ import { isValidCurrency } from "@/lib/regional"
 import { syncEntities } from "@/lib/search/entities/sync-server"
 
 const schema = z.object({
-  currency: z.string().refine(isValidCurrency, "Unknown currency code."),
+  currency: z.string().refine(isValidCurrency, "未知货币代码。"),
   distanceUnit: z.enum(["MILES", "KM"]),
   areaUnit: z.enum(["SQFT", "SQM"]),
   dateFormat: z.enum(["MDY_SHORT", "DMY_SHORT", "MDY_NUM", "DMY_NUM", "ISO"]),

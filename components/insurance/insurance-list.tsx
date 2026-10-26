@@ -17,11 +17,11 @@ import { useFormat } from "@/components/regional-provider"
 export type PolicyRow = InsurancePolicy & { members: { id: string; name: string }[]; attachments: Attachment[] }
 
 function coverageStatus(p: PolicyRow) {
-  if (!p.endDate) return { label: "Active", variant: "outline" as const }
+  if (!p.endDate) return { label: "生效中", variant: "outline" as const }
   const days = daysUntil(p.endDate, new Date())
-  if (days < 0) return { label: "Ended", variant: "secondary" as const }
-  if (days <= HEALTH_WINDOWS.insuranceDays) return { label: days === 0 ? "Ends today" : `Ends in ${days}d`, variant: "destructive" as const }
-  return { label: "Active", variant: "outline" as const }
+  if (days < 0) return { label: "已结束", variant: "secondary" as const }
+  if (days <= HEALTH_WINDOWS.insuranceDays) return { label: days === 0 ? "今天结束" : `${days} 天后结束`, variant: "destructive" as const }
+  return { label: "生效中", variant: "outline" as const }
 }
 
 function initialFor(p: PolicyRow | null): FormValues {
@@ -61,56 +61,56 @@ export function InsuranceList({ policies, people, openId }: Props) {
   }
 
   const fields: FieldConfig[] = [
-    { name: "carrier", label: "Carrier", kind: "text", required: true, placeholder: "Blue Cross" },
-    { name: "planName", label: "Plan", kind: "text", placeholder: "PPO Family" },
-    { name: "kind", label: "Type", kind: "select", required: true, options: INSURANCE_KINDS },
-    { name: "memberId", label: "Member ID", kind: "text" },
-    { name: "groupNumber", label: "Group number", kind: "text" },
-    { name: "policyNumber", label: "Policy number", kind: "text" },
-    { name: "phone", label: "Member services phone", kind: "tel" },
-    { name: "startDate", label: "Coverage starts", kind: "date" },
-    { name: "endDate", label: "Coverage ends", kind: "date" },
-    { name: "deductible", label: `Deductible (${fmt.currencySymbol})`, kind: "number" },
-    { name: "outOfPocketMax", label: `Out-of-pocket max (${fmt.currencySymbol})`, kind: "number" },
-    { name: "memberIds", label: "Covers", kind: "checkboxes", options: people.map((p) => ({ value: p.id, label: p.name })), wide: true },
-    { name: "notes", label: "Notes", kind: "textarea", wide: true },
+    { name: "carrier", label: "保险公司", kind: "text", required: true, placeholder: "蓝十字" },
+    { name: "planName", label: "计划", kind: "text", placeholder: "PPO 家庭计划" },
+    { name: "kind", label: "类型", kind: "select", required: true, options: INSURANCE_KINDS },
+    { name: "memberId", label: "会员号", kind: "text" },
+    { name: "groupNumber", label: "团体号", kind: "text" },
+    { name: "policyNumber", label: "保单号", kind: "text" },
+    { name: "phone", label: "会员服务电话", kind: "tel" },
+    { name: "startDate", label: "保障开始", kind: "date" },
+    { name: "endDate", label: "保障结束", kind: "date" },
+    { name: "deductible", label: `免赔额（${fmt.currencySymbol}）`, kind: "number" },
+    { name: "outOfPocketMax", label: `自付上限（${fmt.currencySymbol}）`, kind: "number" },
+    { name: "memberIds", label: "涵盖成员", kind: "checkboxes", options: people.map((p) => ({ value: p.id, label: p.name })), wide: true },
+    { name: "notes", label: "备注", kind: "textarea", wide: true },
   ]
 
   async function handleDelete(p: PolicyRow) {
-    if (!confirm(`Delete the ${p.carrier} policy and its files?`)) return
+    if (!confirm(`删除 ${p.carrier} 的保单及其文件？`)) return
     const result = await deleteInsurancePolicy(p.id)
-    if (result.error) { toast.error("Delete failed."); return }
-    toast.success("Policy deleted.")
+    if (result.error) { toast.error("删除失败。"); return }
+    toast.success("保单已删除。")
   }
 
   return (
     <>
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="font-heading text-2xl font-semibold">Insurance</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Medical, dental and vision coverage, with card images.</p>
+          <h1 className="font-heading text-2xl font-semibold">保险</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">医疗、牙科和视力保险，支持上传保险卡照片。</p>
         </div>
-        <Button onClick={() => { setEditing(null); setOpen(true) }}>Add Policy</Button>
+        <Button onClick={() => { setEditing(null); setOpen(true) }}>添加保单</Button>
       </div>
 
       {policies.length === 0 ? (
         <div className="rounded-lg border border-dashed p-12 text-center text-muted-foreground">
-          <p className="font-medium">No policies yet</p>
-          <p className="text-sm mt-1">Add a policy, then attach photos of the front and back of the card.</p>
+          <p className="font-medium">暂无保单</p>
+          <p className="text-sm mt-1">添加保单，然后上传保险卡正反面照片。</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           {policies.map((p) => {
             const status = coverageStatus(p)
             const rows: [string, string | null][] = [
-              ["Member ID", p.memberId],
-              ["Group", p.groupNumber],
-              ["Policy", p.policyNumber],
-              ["Phone", p.phone],
-              ["Deductible", p.deductible != null ? fmt.money(p.deductible) : null],
-              ["Out-of-pocket max", p.outOfPocketMax != null ? fmt.money(p.outOfPocketMax) : null],
-              ["Coverage", p.startDate || p.endDate ? `${p.startDate ? fmt.date(p.startDate, { utc: true }) : "—"} – ${p.endDate ? fmt.date(p.endDate, { utc: true }) : "—"}` : null],
-              ["Covers", p.members.length > 0 ? p.members.map((m) => m.name).join(", ") : "Nobody yet"],
+              ["会员号", p.memberId],
+              ["团体号", p.groupNumber],
+              ["保单号", p.policyNumber],
+              ["电话", p.phone],
+              ["免赔额", p.deductible != null ? fmt.money(p.deductible) : null],
+              ["自付上限", p.outOfPocketMax != null ? fmt.money(p.outOfPocketMax) : null],
+              ["保障期", p.startDate || p.endDate ? `${p.startDate ? fmt.date(p.startDate, { utc: true }) : "—"} – ${p.endDate ? fmt.date(p.endDate, { utc: true }) : "—"}` : null],
+              ["涵盖成员", p.members.length > 0 ? p.members.map((m) => m.name).join(", ") : "暂无"],
             ]
             return (
               <Card key={p.id}>
@@ -124,10 +124,10 @@ export function InsuranceList({ policies, people, openId }: Props) {
                       </div>
                     </div>
                     <div className="flex gap-1">
-                      <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={`Edit ${p.carrier} policy`} onClick={() => { setEditing(p); setOpen(true) }}>
+                      <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={`编辑 ${p.carrier} 保单`} onClick={() => { setEditing(p); setOpen(true) }}>
                         <Pencil className="h-3.5 w-3.5" />
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" aria-label={`Delete ${p.carrier} policy`} onClick={() => handleDelete(p)}>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" aria-label={`删除 ${p.carrier} 保单`} onClick={() => handleDelete(p)}>
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>
                     </div>
@@ -138,7 +138,7 @@ export function InsuranceList({ policies, people, openId }: Props) {
                     {rows.filter(([, v]) => v).map(([label, value]) => (
                       <div key={label} className="contents">
                         <dt className="text-muted-foreground">{label}</dt>
-                        <dd className={label === "Member ID" || label === "Group" || label === "Policy" ? "font-mono" : undefined}>{value}</dd>
+                        <dd className={label === "会员号" || label === "团体号" || label === "保单号" ? "font-mono" : undefined}>{value}</dd>
                       </div>
                     ))}
                   </dl>
@@ -153,9 +153,9 @@ export function InsuranceList({ policies, people, openId }: Props) {
       <EntityFormDialog
         open={open}
         onClose={() => setOpen(false)}
-        title={editing ? "Edit Policy" : "Add Policy"}
-        submitLabel={editing ? "Save Changes" : "Add Policy"}
-        successMessage={editing ? "Policy updated." : "Policy added. Attach card images on its card."}
+        title={editing ? "编辑保单" : "添加保单"}
+        submitLabel={editing ? "保存更改" : "添加保单"}
+        successMessage={editing ? "保单已更新。" : "保单已添加。可在卡片上上传保险卡照片。"}
         fields={fields}
         initial={initialFor(editing)}
         onSubmit={(values) => (editing ? updateInsurancePolicy(editing.id, values) : createInsurancePolicy(values))}

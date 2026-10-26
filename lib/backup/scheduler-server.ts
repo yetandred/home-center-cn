@@ -21,8 +21,8 @@ async function tick(now = new Date()) {
   if (isStale(s, newestAt, s.enabledAt ?? s.updatedAt, now)) {
     await raiseBackupAlert(
       `stale:${newest?.createdAt ?? "none"}`,
-      "Backups are behind",
-      newestAt ? `The last backup is from ${(await getFormat()).date(newestAt)}. Check Settings → Data.` : "No backup has been made yet. Check Settings → Data.",
+      "备份已滞后",
+      newestAt ? `上次备份时间是 ${(await getFormat()).date(newestAt)}。请查看“设置 → 数据”。` : "尚未进行过备份。请查看“设置 → 数据”。",
     )
   }
 }

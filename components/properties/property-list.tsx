@@ -19,7 +19,7 @@ import { useFormat } from "@/components/regional-provider"
 import type { Formatter } from "@/lib/regional"
 
 const typeLabel: Record<string, string> = {
-  HOUSE: "House", CONDO: "Condo", TOWNHOUSE: "Townhouse", LOT: "Lot / Land", OTHER: "Other",
+  HOUSE: "独栋住宅", CONDO: "公寓", TOWNHOUSE: "联排住宅", LOT: "地块 / 土地", OTHER: "其他",
 }
 
 const ACCESSORS: Record<string, Accessor<Property>> = {
@@ -32,12 +32,12 @@ const ACCESSORS: Record<string, Accessor<Property>> = {
 }
 
 const columnsFor = (fmt: Formatter): AssetColumn<Property>[] => [
-  { key: "name", label: "Name", cell: (p) => <span className="font-medium">{p.name}</span> },
-  { key: "type", label: "Type", cell: (p) => <Badge variant="secondary" className="text-xs">{typeLabel[p.type]}</Badge> },
-  { key: "address", label: "Address", className: "text-muted-foreground max-w-[280px] truncate", cell: (p) => p.address },
-  { key: "sqFt", label: fmt.areaShort === "ft²" ? "Sq Ft" : fmt.areaShort, className: "text-muted-foreground whitespace-nowrap", cell: (p) => (p.sqFt ? p.sqFt.toLocaleString() : "—") },
-  { key: "yearBuilt", label: "Built", className: "text-muted-foreground whitespace-nowrap", cell: (p) => p.yearBuilt ?? "—" },
-  { key: "purchasePrice", label: "Price", className: "text-muted-foreground whitespace-nowrap tabular-nums", cell: (p) => (p.purchasePrice ? fmt.moneyWhole(p.purchasePrice) : "—") },
+  { key: "name", label: "名称", cell: (p) => <span className="font-medium">{p.name}</span> },
+  { key: "type", label: "类型", cell: (p) => <Badge variant="secondary" className="text-xs">{typeLabel[p.type]}</Badge> },
+  { key: "address", label: "地址", className: "text-muted-foreground max-w-[280px] truncate", cell: (p) => p.address },
+  { key: "sqFt", label: "面积", className: "text-muted-foreground whitespace-nowrap", cell: (p) => (p.sqFt ? p.sqFt.toLocaleString() : "—") },
+  { key: "yearBuilt", label: "建成年份", className: "text-muted-foreground whitespace-nowrap", cell: (p) => p.yearBuilt ?? "—" },
+  { key: "purchasePrice", label: "价格", className: "text-muted-foreground whitespace-nowrap tabular-nums", cell: (p) => (p.purchasePrice ? fmt.moneyWhole(p.purchasePrice) : "—") },
 ]
 
 const INITIAL_DIRS = { sqFt: "desc" as const, yearBuilt: "desc" as const, purchasePrice: "desc" as const }
@@ -49,7 +49,7 @@ function toCard(p: Property, fmt: Formatter) {
     meta: [
       { icon: MapPin, text: p.address, clamp: true },
       ...(p.sqFt ? [{ text: fmt.area(p.sqFt) }] : []),
-      ...(p.yearBuilt ? [{ text: `Built ${p.yearBuilt}` }] : []),
+      ...(p.yearBuilt ? [{ text: `建成于 ${p.yearBuilt}` }] : []),
       ...(p.purchasePrice ? [{ text: fmt.moneyWhole(p.purchasePrice) }] : []),
     ],
   }
@@ -68,9 +68,9 @@ export function PropertyList({ properties, initialView }: Props) {
   const [dialogOpen, setDialogOpen] = useState(false)
 
   async function handleDelete(id: string, name: string) {
-    if (!confirm(`Delete "${name}"? This will also delete all associated records. Equipment in it is kept.`)) return
+    if (!confirm(`删除“${name}”？将同时删除所有关联记录。其中的设备会保留。`)) return
     await deleteProperty(id)
-    toast.success(`"${name}" deleted.`)
+    toast.success(`“${name}”已删除。`)
   }
 
   function openNew() { setEditing(null); setDialogOpen(true) }
@@ -80,7 +80,7 @@ export function PropertyList({ properties, initialView }: Props) {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger
-          aria-label={`More actions for "${p.name}"`}
+          aria-label={`“${p.name}”的更多操作`}
           className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md hover:bg-muted transition-colors"
           onClick={(e) => e.stopPropagation()}
         >
@@ -88,10 +88,10 @@ export function PropertyList({ properties, initialView }: Props) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
           <DropdownMenuItem onClick={() => openEdit(p)}>
-            <Pencil className="h-4 w-4 mr-2" /> Edit
+            <Pencil className="h-4 w-4 mr-2" /> 编辑
           </DropdownMenuItem>
           <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(p.id, p.name)}>
-            <Trash2 className="h-4 w-4 mr-2" /> Delete
+            <Trash2 className="h-4 w-4 mr-2" /> 删除
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -102,21 +102,19 @@ export function PropertyList({ properties, initialView }: Props) {
     <>
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="font-heading text-2xl font-semibold">Properties</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            {properties.length} {properties.length === 1 ? "property" : "properties"}
-          </p>
+          <h1 className="font-heading text-2xl font-semibold">房产</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">{properties.length} 处房产</p>
         </div>
         <div className="flex items-center gap-2">
           {properties.length > 0 && <AssetViewToggle value={view} onChange={setView} />}
-          <Button onClick={openNew}>Add Property</Button>
+          <Button onClick={openNew}>添加房产</Button>
         </div>
       </div>
 
       {properties.length === 0 ? (
         <div className="rounded-lg border border-dashed p-12 text-center text-muted-foreground">
-          <p className="font-medium">No properties yet</p>
-          <p className="text-sm mt-1">Add your first property to get started.</p>
+          <p className="font-medium">暂无房产</p>
+          <p className="text-sm mt-1">添加第一处房产即可开始。</p>
         </div>
       ) : (
         <AssetCollection
@@ -132,7 +130,7 @@ export function PropertyList({ properties, initialView }: Props) {
           initialDirs={INITIAL_DIRS}
           renderActions={renderActions}
           onOpen={(p) => router.push(`/assets/properties/${p.id}`)}
-          label="properties"
+          label="房产"
         />
       )}
 

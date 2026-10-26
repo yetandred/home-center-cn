@@ -50,15 +50,15 @@ export default async function EquipmentDetailPage({
         <AssetImageUploader assetType="EQUIPMENT" assetId={id} imageFilename={equipment.imageFilename} alt={equipment.name} />
 
         <div className="space-y-2">
-          <Stat icon={Wrench} label="Category" value={categoryLabel(equipment.category)} />
-          {equipment.manufacturer && <Stat icon={Factory} label="Manufacturer" value={equipment.manufacturer} />}
-          {equipment.modelNumber && <Stat icon={Tag} label="Model" value={equipment.modelNumber} mono />}
-          {equipment.serialNumber && <Stat icon={Fingerprint} label="Serial" value={equipment.serialNumber} mono />}
-          {locationLabel(equipment) && <Stat icon={MapPin} label="Location" value={locationLabel(equipment)} />}
+          <Stat icon={Wrench} label="分类" value={categoryLabel(equipment.category)} />
+          {equipment.manufacturer && <Stat icon={Factory} label="制造商" value={equipment.manufacturer} />}
+          {equipment.modelNumber && <Stat icon={Tag} label="型号" value={equipment.modelNumber} mono />}
+          {equipment.serialNumber && <Stat icon={Fingerprint} label="序列号" value={equipment.serialNumber} mono />}
+          {locationLabel(equipment) && <Stat icon={MapPin} label="位置" value={locationLabel(equipment)} />}
           {equipment.property && (
             <Stat
               icon={Building2}
-              label="Property"
+              label="房产"
               value={
                 <Link href={`/assets/properties/${equipment.property.id}`} className="hover:underline">
                   {equipment.property.name}
@@ -66,10 +66,10 @@ export default async function EquipmentDetailPage({
               }
             />
           )}
-          {equipment.installDate && <Stat icon={Calendar} label="Installed" value={fmt.date(equipment.installDate)} />}
-          {equipment.purchaseDate && <Stat icon={Calendar} label="Purchased" value={fmt.date(equipment.purchaseDate)} />}
+          {equipment.installDate && <Stat icon={Calendar} label="安装日期" value={fmt.date(equipment.installDate)} />}
+          {equipment.purchaseDate && <Stat icon={Calendar} label="购入日期" value={fmt.date(equipment.purchaseDate)} />}
           {equipment.purchasePrice != null && (
-            <Stat icon={DollarSign} label="Price" value={fmt.moneyWhole(equipment.purchasePrice)} />
+            <Stat icon={DollarSign} label="价格" value={fmt.moneyWhole(equipment.purchasePrice)} />
           )}
         </div>
 
@@ -91,24 +91,24 @@ export default async function EquipmentDetailPage({
               href={`/reports/equipment/${id}`}
               className="inline-flex shrink-0 items-center gap-1.5 rounded-md border bg-background px-3 py-1.5 text-sm font-medium hover:bg-muted transition-colors"
             >
-              <FileText className="h-3.5 w-3.5" /> Report
+              <FileText className="h-3.5 w-3.5" /> 报告
             </Link>
             <a
               href={`/api/assets/equipment/${id}/download`}
               download
               className="inline-flex shrink-0 items-center gap-1.5 rounded-md border bg-background px-3 py-1.5 text-sm font-medium hover:bg-muted transition-colors"
             >
-              <Download className="h-3.5 w-3.5" /> Download all files
+              <Download className="h-3.5 w-3.5" /> 下载全部文件
             </a>
           </div>
         </div>
 
         <Tabs defaultValue={tab ?? "service"}>
           <TabsList variant="line" className="w-full justify-start border-b">
-            <TabsTrigger value="service">Service ({serviceRecords.length})</TabsTrigger>
-            <TabsTrigger value="warranties">Warranties ({warranties.length})</TabsTrigger>
-            <TabsTrigger value="maintenance">Maintenance Reminders ({maintenanceSchedules.length})</TabsTrigger>
-            <TabsTrigger value="documents">Documents ({documents.length})</TabsTrigger>
+            <TabsTrigger value="service">维护记录 ({serviceRecords.length})</TabsTrigger>
+            <TabsTrigger value="warranties">保修 ({warranties.length})</TabsTrigger>
+            <TabsTrigger value="maintenance">维护提醒 ({maintenanceSchedules.length})</TabsTrigger>
+            <TabsTrigger value="documents">文档 ({documents.length})</TabsTrigger>
           </TabsList>
           <TabsContent value="service" className="mt-4">
             <ServiceRecordList records={serviceRecords} assetId={id} assetType="EQUIPMENT" roomOptions={roomOptions} defaultRoomId={equipment.roomId} reminders={maintenanceSchedules} openId={tab === "service" ? open : undefined} />
@@ -120,7 +120,7 @@ export default async function EquipmentDetailPage({
             <MaintenanceList schedules={maintenanceSchedules} assetId={id} assetType="EQUIPMENT" roomOptions={roomOptions} defaultRoomId={equipment.roomId} currentMileage={null} openId={tab === "maintenance" ? open : undefined} />
           </TabsContent>
           <TabsContent value="documents" className="mt-4">
-            <AssetDocuments assetId={id} documents={documents} hint="Manual, install guide, spec sheet: files for the equipment itself, not one service." />
+            <AssetDocuments assetId={id} documents={documents} hint="说明书、安装指南、规格表：设备本身的文件，而非单次维护。" />
           </TabsContent>
         </Tabs>
       </div>

@@ -17,9 +17,9 @@ import { recoveryKitText } from "./recovery-kit"
 
 type Mode = "NONE" | "KEY" | "PASSWORD"
 const OPTIONS: { mode: Mode; icon: React.ElementType; title: string; body: string }[] = [
-  { mode: "NONE", icon: ShieldOff, title: "No protection", body: "Plain zip. Opens anywhere. Anyone who gets the file can read it." },
-  { mode: "KEY", icon: KeyRound, title: "Recovery key", body: "You keep a key file. The server can make backups but can't open them. Strongest." },
-  { mode: "PASSWORD", icon: Lock, title: "Password zip", body: "Opens in 7-Zip, WinRAR or Keka with your password. The server stores the password to make scheduled backups." },
+  { mode: "NONE", icon: ShieldOff, title: "无保护", body: "普通 zip 文件，任何地方都能打开。拿到文件的人都可以读取内容。" },
+  { mode: "KEY", icon: KeyRound, title: "恢复密钥", body: "由你保管密钥文件。服务器可以创建备份但无法打开。最安全。" },
+  { mode: "PASSWORD", icon: Lock, title: "密码 zip", body: "凭密码可在 7-Zip、WinRAR 或 Keka 中打开。服务器会保存密码以便创建定时备份。" },
 ]
 
 export function BackupProtection({ data, onSaved }: { data: BackupOverview; onSaved: () => Promise<void> }) {
@@ -30,11 +30,11 @@ export function BackupProtection({ data, onSaved }: { data: BackupOverview; onSa
   function choose(mode: Mode) {
     if (mode === current && mode !== "KEY" && mode !== "PASSWORD") return
     if (mode === "NONE") {
-      if (!window.confirm("Turn protection off? New backups will be readable by anyone who gets the file. Existing protected backups stay protected.")) return
+      if (!window.confirm("确定关闭保护？新备份将可被任何拿到文件的人读取。已有的受保护备份仍保持保护状态。")) return
       start(async () => {
         const r = await setProtectionNone()
         if ("error" in r) toast.error(r.error)
-        else toast.success("Protection turned off for new backups.")
+        else toast.success("新备份已关闭保护。")
         await onSaved()
       })
       return
@@ -45,8 +45,8 @@ export function BackupProtection({ data, onSaved }: { data: BackupOverview; onSa
   return (
     <Card className="py-5">
       <CardHeader className="px-5">
-        <CardTitle>Protection</CardTitle>
-        <CardDescription>Applies to new backups. Each backup in the list shows how it was protected.</CardDescription>
+        <CardTitle>保护</CardTitle>
+        <CardDescription>仅对新备份生效。列表中每个备份都会显示其保护方式。</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-3 px-5 sm:grid-cols-3">
         {OPTIONS.map((o) => (
@@ -61,9 +61,9 @@ export function BackupProtection({ data, onSaved }: { data: BackupOverview; onSa
             <span className="flex items-center gap-2 text-sm font-medium"><o.icon className="h-4 w-4" aria-hidden="true" />{o.title}</span>
             <span className="mt-1 block text-xs text-muted-foreground">{o.body}</span>
             {current === o.mode && o.mode === "KEY" && data.settings.keyFingerprint && (
-              <span className="mt-2 block text-xs">Key {data.settings.keyFingerprint} · <span className="underline">make a new key</span></span>
+              <span className="mt-2 block text-xs">密钥 {data.settings.keyFingerprint} · <span className="underline">生成新密钥</span></span>
             )}
-            {current === o.mode && o.mode === "PASSWORD" && <span className="mt-2 block text-xs underline">Change password</span>}
+            {current === o.mode && o.mode === "PASSWORD" && <span className="mt-2 block text-xs underline">更改密码</span>}
           </button>
         ))}
       </CardContent>
@@ -106,7 +106,7 @@ function KeyDialog({ onClose, onSaved, replacing }: { onClose: () => void; onSav
     start(async () => {
       const r = await setProtectionKey({ publicKey: kit.recipient, fingerprint: kit.fingerprint })
       if ("error" in r) return void toast.error(r.error)
-      toast.success(`Recovery key ${kit.fingerprint} is now used for new backups.`)
+      toast.success(`新备份将使用恢复密钥 ${kit.fingerprint}。`)
       setKit(null) // drop the private key from memory
       await onSaved()
       onClose()
@@ -117,27 +117,27 @@ function KeyDialog({ onClose, onSaved, replacing }: { onClose: () => void; onSav
     <Dialog open onOpenChange={(v) => !v && onClose()}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{replacing ? "Make a new recovery key" : "Set up a recovery key"}</DialogTitle>
+          <DialogTitle>{replacing ? "生成新的恢复密钥" : "设置恢复密钥"}</DialogTitle>
           <DialogDescription>
-            HomeCenter makes the key in this browser and keeps only its public half. You download the key itself, once.
-            {replacing ? " Older backups still need the old key file." : ""}
+            HomeCenter 在此浏览器中生成密钥，只保留公钥部分。密钥本身需要你下载一次并妥善保管。
+            {replacing ? " 旧的备份仍需旧的密钥文件才能打开。" : ""}
           </DialogDescription>
         </DialogHeader>
         {!kit ? (
-          <Button onClick={() => void make()}>Make my key</Button>
+          <Button onClick={() => void make()}>生成我的密钥</Button>
         ) : (
           <div className="space-y-3 text-sm">
-            <p>Fingerprint <span className="font-mono">{kit.fingerprint}</span></p>
-            <Button variant="outline" onClick={download}><Download className="h-4 w-4" aria-hidden="true" />Download recovery key</Button>
+            <p>指纹 <span className="font-mono">{kit.fingerprint}</span></p>
+            <Button variant="outline" onClick={download}><Download className="h-4 w-4" aria-hidden="true" />下载恢复密钥</Button>
             <label className="flex items-start gap-2">
               <input type="checkbox" className="mt-0.5 h-4 w-4 accent-primary" checked={saved} disabled={!downloaded} onChange={(e) => setSaved(e.target.checked)} />
-              <span>I saved the key somewhere other than this server. I understand backups made with it can&apos;t be opened without it.</span>
+              <span>我已将密钥保存在本服务器以外的地方。我了解没有该密钥将无法打开用它创建的备份。</span>
             </label>
           </div>
         )}
         <DialogFooter>
-          <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button disabled={!kit || !saved || pending} onClick={finish}>Use this key</Button>
+          <Button variant="outline" onClick={onClose}>取消</Button>
+          <Button disabled={!kit || !saved || pending} onClick={finish}>使用此密钥</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -149,14 +149,14 @@ function PasswordDialog({ onClose, onSaved }: { onClose: () => void; onSaved: ()
   const [again, setAgain] = useState("")
   const [pending, start] = useTransition()
   const problem = pw ? passwordProblem(pw) : null
-  const mismatch = again && pw !== again ? "The passwords don't match." : null
+  const mismatch = again && pw !== again ? "两次输入的密码不一致。" : null
 
   function save(e: React.FormEvent) {
     e.preventDefault()
     start(async () => {
       const r = await setProtectionPassword({ password: pw })
       if ("error" in r) return void toast.error(r.error)
-      toast.success("New backups will be password zips.")
+      toast.success("新备份将使用密码 zip。")
       await onSaved()
       onClose()
     })
@@ -167,24 +167,24 @@ function PasswordDialog({ onClose, onSaved }: { onClose: () => void; onSaved: ()
       <DialogContent>
         <form onSubmit={save} className="space-y-4">
           <DialogHeader>
-            <DialogTitle>Password for backups</DialogTitle>
+            <DialogTitle>备份密码</DialogTitle>
             <DialogDescription>
-              At least 6 characters. HomeCenter stores it encrypted to make scheduled backups, so anyone with both your data folder and AUTH_SECRET could open them.
+              至少 6 个字符。HomeCenter 会加密保存该密码以创建定时备份，因此同时掌握你的数据目录和 AUTH_SECRET 的人可以打开这些备份。
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-1.5">
-            <Label htmlFor="bk-pw">Password</Label>
+            <Label htmlFor="bk-pw">密码</Label>
             <Input id="bk-pw" type="password" autoComplete="new-password" value={pw} onChange={(e) => setPw(e.target.value)} />
             {problem && <p className="text-xs text-destructive">{problem}</p>}
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="bk-pw2">Same password again</Label>
+            <Label htmlFor="bk-pw2">再次输入密码</Label>
             <Input id="bk-pw2" type="password" autoComplete="new-password" value={again} onChange={(e) => setAgain(e.target.value)} />
             {mismatch && <p className="text-xs text-destructive">{mismatch}</p>}
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
-            <Button type="submit" disabled={pending || !pw || !!problem || pw !== again}>Save password</Button>
+            <Button type="button" variant="outline" onClick={onClose}>取消</Button>
+            <Button type="submit" disabled={pending || !pw || !!problem || pw !== again}>保存密码</Button>
           </DialogFooter>
         </form>
       </DialogContent>

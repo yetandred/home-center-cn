@@ -14,7 +14,7 @@ interface Props {
   filters?: { key: string; placeholder: string; options: FilterOption[] }[]
 }
 
-export function SearchBar({ placeholder = "Search…", filters = [] }: Props) {
+export function SearchBar({ placeholder = "搜索…", filters = [] }: Props) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
@@ -59,7 +59,7 @@ export function SearchBar({ placeholder = "Search…", filters = [] }: Props) {
       ))}
       {hasFilters && (
         <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={() => router.push(pathname)}>
-          <X className="h-3.5 w-3.5 mr-1" /> Clear
+          <X className="h-3.5 w-3.5 mr-1" /> 清除
         </Button>
       )}
     </div>

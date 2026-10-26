@@ -29,25 +29,25 @@ export type CategoryKey = ServiceCategory | typeof UNCATEGORIZED
 
 /// Categories for houses, vehicles and equipment.
 export const ASSET_CATEGORIES: { value: ServiceCategory; label: string }[] = [
-  { value: "ROUTINE", label: "Routine" },
-  { value: "REPAIR", label: "Repair" },
-  { value: "UPGRADE", label: "Upgrade" },
-  { value: "INSPECTION", label: "Inspection" },
-  { value: "PARTS", label: "Parts" },
-  { value: "OTHER", label: "Other" },
+  { value: "ROUTINE", label: "常规保养" },
+  { value: "REPAIR", label: "维修" },
+  { value: "UPGRADE", label: "升级改造" },
+  { value: "INSPECTION", label: "检查" },
+  { value: "PARTS", label: "配件" },
+  { value: "OTHER", label: "其他" },
 ]
 
 const MEDICAL_ONLY: { value: ServiceCategory; label: string }[] = [
-  { value: "OFFICE_VISIT", label: "Office visit" },
-  { value: "PRESCRIPTION", label: "Prescription" },
-  { value: "LAB", label: "Lab / imaging" },
-  { value: "DENTAL", label: "Dental" },
-  { value: "VISION", label: "Vision" },
-  { value: "PROCEDURE", label: "Procedure" },
-  { value: "THERAPY", label: "Therapy" },
+  { value: "OFFICE_VISIT", label: "门诊" },
+  { value: "PRESCRIPTION", label: "处方" },
+  { value: "LAB", label: "化验 / 影像" },
+  { value: "DENTAL", label: "口腔" },
+  { value: "VISION", label: "视力" },
+  { value: "PROCEDURE", label: "手术处置" },
+  { value: "THERAPY", label: "治疗" },
 ]
 
-const OTHER_CATEGORY = { value: "OTHER" as ServiceCategory, label: "Other" }
+const OTHER_CATEGORY = { value: "OTHER" as ServiceCategory, label: "其他" }
 
 /// Categories for people's visits and medical expenses.
 export const MEDICAL_CATEGORIES = [...MEDICAL_ONLY, OTHER_CATEGORY]

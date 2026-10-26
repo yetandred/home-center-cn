@@ -17,7 +17,7 @@ export function remindersHref(assetType: AssetType, assetId: string) {
 export function AddRemindersSubmit({ pending, onClick }: { pending: boolean; onClick: () => void }) {
   return (
     <Button type="button" variant="secondary" disabled={pending} onClick={onClick}>
-      <BellPlus /> Save + add reminders
+      <BellPlus /> 保存并添加提醒
     </Button>
   )
 }

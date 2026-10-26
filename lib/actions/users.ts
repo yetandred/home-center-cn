@@ -33,7 +33,7 @@ export async function updateSelf(data: { name: string; email: string }) {
   const conflict = await prisma.user.findFirst({
     where: { email: parsed.data.email, NOT: { id: session.user.id } },
   })
-  if (conflict) return { error: { email: ["That email is already in use."] } }
+  if (conflict) return { error: { email: ["该邮箱已被使用。"] } }
 
   await prisma.user.update({
     where: { id: session.user.id },
@@ -49,7 +49,7 @@ export async function updateEmailDigest(digest: string) {
 
   // Anyone can set their own cadence — it only ever affects their own mail.
   const parsed = z.enum(["OFF", "ASAP", "DAILY", "WEEKLY"]).safeParse(digest)
-  if (!parsed.success) return { error: "Invalid option." }
+  if (!parsed.success) return { error: "无效选项。" }
 
   await prisma.user.update({
     where: { id: session.user.id },
@@ -65,7 +65,7 @@ export async function updateNotificationRepeat(repeat: string) {
 
   // Like the email cadence, this only ever affects the caller's own reminders.
   const parsed = z.enum(["ONCE", "REACHED_AND_DUE", "UNTIL_DISMISSED"]).safeParse(repeat)
-  if (!parsed.success) return { error: "Invalid option." }
+  if (!parsed.success) return { error: "无效选项。" }
 
   await prisma.user.update({
     where: { id: session.user.id },
@@ -80,13 +80,13 @@ export async function setReceivesNotifications(id: string, receives: boolean) {
   await requireAdmin()
 
   const parsed = z.object({ id: z.string().min(1), receives: z.boolean() }).safeParse({ id, receives })
-  if (!parsed.success) return { error: "Invalid request." }
+  if (!parsed.success) return { error: "无效请求。" }
 
   const updated = await prisma.user.updateMany({
     where: { id: parsed.data.id },
     data: { receivesNotifications: parsed.data.receives },
   })
-  if (updated.count === 0) return { error: "That user no longer exists." }
+  if (updated.count === 0) return { error: "该用户已不存在。" }
   revalidatePath("/settings")
   return { success: true }
 }
@@ -102,7 +102,7 @@ export async function createUser(data: { name: string; email: string; role: stri
   if (!parsed.success) return { error: parsed.error.flatten().fieldErrors }
 
   const exists = await prisma.user.findUnique({ where: { email: parsed.data.email } })
-  if (exists) return { error: { email: ["A user with this email already exists."] } }
+  if (exists) return { error: { email: ["该邮箱的用户已存在。"] } }
 
   const tempPassword = generateTempPassword()
   const passwordHash = await bcrypt.hash(tempPassword, 12)
@@ -116,10 +116,10 @@ export async function createUser(data: { name: string; email: string; role: stri
 
 export async function updateUserRole(id: string, role: string) {
   const session = await requireAdmin()
-  if (id === session.user.id) return { error: "Cannot change your own role." }
+  if (id === session.user.id) return { error: "不能更改自己的角色。" }
 
   const parsed = z.enum(["ADMIN", "USER"]).safeParse(role)
-  if (!parsed.success) return { error: "Invalid role." }
+  if (!parsed.success) return { error: "无效角色。" }
 
   await prisma.user.update({ where: { id }, data: { role: parsed.data } })
   revalidatePath("/settings")
@@ -158,7 +158,7 @@ export async function changeOwnPassword(input: { current: string; next: string; 
 
 export async function resetUserPassword(id: string) {
   const session = await requireAdmin()
-  if (id === session.user.id) return { error: "Use Change Password instead." }
+  if (id === session.user.id) return { error: "请改用“修改密码”功能。" }
 
   const tempPassword = generateTempPassword()
   const passwordHash = await bcrypt.hash(tempPassword, 12)
@@ -170,7 +170,7 @@ export async function resetUserPassword(id: string) {
 
 export async function deleteUser(id: string) {
   const session = await requireAdmin()
-  if (id === session.user.id) return { error: "Cannot delete your own account." }
+  if (id === session.user.id) return { error: "不能删除自己的账户。" }
 
   await prisma.user.delete({ where: { id } })
   revalidatePath("/settings")

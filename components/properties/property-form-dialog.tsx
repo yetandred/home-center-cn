@@ -18,13 +18,13 @@ import type { Property } from "@/app/generated/prisma/client"
 import { AddRemindersSubmit, remindersHref } from "@/components/maintenance/add-reminders-submit"
 
 const TYPE_LABELS: Record<string, string> = {
-  HOUSE: "House", CONDO: "Condo", TOWNHOUSE: "Townhouse", LOT: "Lot / Land", OTHER: "Other",
+  HOUSE: "独栋住宅", CONDO: "公寓", TOWNHOUSE: "联排住宅", LOT: "地块 / 土地", OTHER: "其他",
 }
 
 const schema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().min(1, "名称必填"),
   type: z.enum(["HOUSE", "CONDO", "TOWNHOUSE", "LOT", "OTHER"]),
-  address: z.string().min(1, "Address is required"),
+  address: z.string().min(1, "地址必填"),
   purchaseDate: z.string().optional(),
   purchasePrice: z.string().optional(),
   yearBuilt: z.string().optional(),
@@ -74,10 +74,10 @@ export function PropertyFormDialog({ open, onClose, property }: Props) {
       : await createProperty(values as unknown as Parameters<typeof createProperty>[0])
 
     if (result?.error) {
-      toast.error("Please fix the errors and try again.")
+      toast.error("请修正错误后重试。")
       return
     }
-    toast.success(property ? "Property updated." : "Property added.")
+    toast.success(property ? "房产已更新。" : "房产已添加。")
     onClose()
     if (then === "reminders" && result && "id" in result && typeof result.id === "string") router.push(remindersHref("PROPERTY", result.id))
   }
@@ -86,7 +86,7 @@ export function PropertyFormDialog({ open, onClose, property }: Props) {
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{property ? "Edit Property" : "Add Property"}</DialogTitle>
+          <DialogTitle>{property ? "编辑房产" : "添加房产"}</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
@@ -94,23 +94,23 @@ export function PropertyFormDialog({ open, onClose, property }: Props) {
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="name" render={({ field }) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Name *</FormLabel>
-                  <FormControl><Input placeholder="Main House" {...field} /></FormControl>
+                  <FormLabel>名称 *</FormLabel>
+                  <FormControl><Input placeholder="主宅" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
 
               <FormField control={form.control} name="type" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Type *</FormLabel>
+                  <FormLabel>类型 *</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl><SelectTrigger><SelectValue>{(v: string) => TYPE_LABELS[v] ?? v}</SelectValue></SelectTrigger></FormControl>
                     <SelectContent>
-                      <SelectItem value="HOUSE">House</SelectItem>
-                      <SelectItem value="CONDO">Condo</SelectItem>
-                      <SelectItem value="TOWNHOUSE">Townhouse</SelectItem>
-                      <SelectItem value="LOT">Lot / Land</SelectItem>
-                      <SelectItem value="OTHER">Other</SelectItem>
+                      <SelectItem value="HOUSE">独栋住宅</SelectItem>
+                      <SelectItem value="CONDO">公寓</SelectItem>
+                      <SelectItem value="TOWNHOUSE">联排住宅</SelectItem>
+                      <SelectItem value="LOT">地块 / 土地</SelectItem>
+                      <SelectItem value="OTHER">其他</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -119,7 +119,7 @@ export function PropertyFormDialog({ open, onClose, property }: Props) {
 
               <FormField control={form.control} name="yearBuilt" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Year Built</FormLabel>
+                  <FormLabel>建成年份</FormLabel>
                   <FormControl><Input type="number" placeholder="1995" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -127,15 +127,15 @@ export function PropertyFormDialog({ open, onClose, property }: Props) {
 
               <FormField control={form.control} name="address" render={({ field }) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Address *</FormLabel>
-                  <FormControl><Input placeholder="123 Main St, City, State" {...field} /></FormControl>
+                  <FormLabel>地址 *</FormLabel>
+                  <FormControl><Input placeholder="省市区街道门牌" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
 
               <FormField control={form.control} name="purchaseDate" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Purchase Date</FormLabel>
+                  <FormLabel>购买日期</FormLabel>
                   <FormControl><Input type="date" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -143,7 +143,7 @@ export function PropertyFormDialog({ open, onClose, property }: Props) {
 
               <FormField control={form.control} name="purchasePrice" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Purchase Price</FormLabel>
+                  <FormLabel>购买价格</FormLabel>
                   <FormControl><Input type="number" placeholder="350000" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -159,7 +159,7 @@ export function PropertyFormDialog({ open, onClose, property }: Props) {
 
               <FormField control={form.control} name="notes" render={({ field }) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Notes</FormLabel>
+                  <FormLabel>备注</FormLabel>
                   <FormControl><Textarea rows={3} {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -167,10 +167,10 @@ export function PropertyFormDialog({ open, onClose, property }: Props) {
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+              <Button type="button" variant="outline" onClick={onClose}>取消</Button>
               {!property && <AddRemindersSubmit pending={form.formState.isSubmitting} onClick={form.handleSubmit((v) => onSubmit(v, "reminders"))} />}
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Saving…" : property ? "Save Changes" : "Add Property"}
+                {form.formState.isSubmitting ? "保存中…" : property ? "保存更改" : "添加房产"}
               </Button>
             </DialogFooter>
           </form>

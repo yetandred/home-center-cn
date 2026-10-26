@@ -23,11 +23,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { type, id } = await params
   const assetType = parseAssetSegment(type)
-  if (!assetType) return { title: "Report" }
+  if (!assetType) return { title: "报告" }
   const data = await loadReport(assetType, id)
   // The document title is what the browser puts on the printed page and offers
   // as the PDF's filename, so it is worth getting right.
-  return { title: data ? `${data.asset.name} — ${assetType === "PERSON" ? "Medical Summary" : "Asset Report"}` : "Report" }
+  return { title: data ? `${data.asset.name} — ${assetType === "PERSON" ? "医疗摘要" : "资产报告"}` : "报告" }
 }
 
 export default async function ReportPage({
@@ -61,7 +61,7 @@ export default async function ReportPage({
             className="pointer-events-auto inline-flex items-center gap-1.5 rounded-md border bg-background px-3 py-1.5 text-sm text-muted-foreground shadow-sm transition-colors hover:text-foreground"
           >
             <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
-            Back to {data.asset.name}
+            返回 {data.asset.name}
           </Link>
         </div>
       </div>

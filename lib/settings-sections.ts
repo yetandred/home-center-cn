@@ -14,15 +14,15 @@ export type SettingsSection = {
 }
 
 export const SETTINGS_SECTIONS: SettingsSection[] = [
-  { id: "notifications", label: "Notifications", description: "How often you're emailed about due items", icon: Bell, adminOnly: false },
-  { id: "appearance", label: "Appearance", description: "How the site is laid out on this device", icon: Palette, adminOnly: false },
-  { id: "features", label: "Features", description: "Turn optional parts of the site on or off", icon: ToggleRight, adminOnly: true },
-  { id: "regional", label: "Regional", description: "Currency, units and date format", icon: Globe, adminOnly: true },
-  { id: "mail", label: "Mail server", description: "SMTP server used to send reminders", icon: Mail, adminOnly: true },
-  { id: "assistant", label: "Assistant", description: "The AI assistant's model and behavior", icon: Bot, adminOnly: true },
-  { id: "documents", label: "Documents & search", description: "Reading uploads, OCR and semantic search", icon: FileSearch, adminOnly: true },
-  { id: "users", label: "Users", description: "Who can sign in, and their roles", icon: Users, adminOnly: true },
-  { id: "data", label: "Data & backups", description: "Backups, restore and export of everything in HomeCenter", icon: DatabaseBackup, adminOnly: true },
+  { id: "notifications", label: "通知", description: "到期事项的邮件通知频率", icon: Bell, adminOnly: false },
+  { id: "appearance", label: "外观", description: "本设备上的界面布局", icon: Palette, adminOnly: false },
+  { id: "features", label: "功能", description: "开启或关闭站点的可选功能", icon: ToggleRight, adminOnly: true },
+  { id: "regional", label: "区域", description: "货币、单位与日期格式", icon: Globe, adminOnly: true },
+  { id: "mail", label: "邮件服务器", description: "用于发送提醒的 SMTP 服务器", icon: Mail, adminOnly: true },
+  { id: "assistant", label: "AI 助手", description: "AI 助手的模型与行为", icon: Bot, adminOnly: true },
+  { id: "documents", label: "文档与搜索", description: "读取上传文件、OCR 与语义搜索", icon: FileSearch, adminOnly: true },
+  { id: "users", label: "用户", description: "谁可以登录及其角色", icon: Users, adminOnly: true },
+  { id: "data", label: "数据与备份", description: "HomeCenter 全部数据的备份、恢复与导出", icon: DatabaseBackup, adminOnly: true },
 ]
 
 export function visibleSections(isAdmin: boolean): SettingsSection[] {

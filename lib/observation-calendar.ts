@@ -69,7 +69,7 @@ export function calendarRanges(dates: Date[], now: Date): { value: string; label
   lastYear.setUTCFullYear(lastYear.getUTCFullYear() - 1)
   const years = [...new Set(dates.map((d) => new Date(d).getUTCFullYear()))].sort((a, b) => b - a)
   return [
-    { value: "12m", label: "Last 12 months", from: lastYear.getTime() + DAY, to: today },
+    { value: "12m", label: "最近 12 个月", from: lastYear.getTime() + DAY, to: today },
     ...years.map((y) => ({ value: String(y), label: String(y), from: Date.UTC(y, 0, 1), to: Math.min(Date.UTC(y, 11, 31), today) })),
   ]
 }

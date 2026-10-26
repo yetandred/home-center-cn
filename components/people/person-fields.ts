@@ -4,16 +4,16 @@ import type { Person } from "@/app/generated/prisma/client"
 
 export function personFields(providers: { id: string; name: string }[]): FieldConfig[] {
   return [
-    { name: "name", label: "Name", kind: "text", required: true, placeholder: "Jordan Rivera", wide: true },
-    { name: "relationship", label: "Relationship", kind: "select", required: true, options: RELATIONSHIPS },
-    { name: "dateOfBirth", label: "Date of birth", kind: "date" },
-    { name: "sex", label: "Sex", kind: "text", placeholder: "F" },
-    { name: "bloodType", label: "Blood type", kind: "text", placeholder: "O+" },
+    { name: "name", label: "姓名", kind: "text", required: true, placeholder: "王小明", wide: true },
+    { name: "relationship", label: "关系", kind: "select", required: true, options: RELATIONSHIPS },
+    { name: "dateOfBirth", label: "出生日期", kind: "date" },
+    { name: "sex", label: "性别", kind: "text", placeholder: "女" },
+    { name: "bloodType", label: "血型", kind: "text", placeholder: "O+" },
     {
-      name: "primaryProviderId", label: "Primary care provider", kind: "select", wide: true,
+      name: "primaryProviderId", label: "家庭医生", kind: "select", wide: true,
       options: providers.map((p) => ({ value: p.id, label: p.name })),
     },
-    { name: "notes", label: "Notes", kind: "textarea", wide: true },
+    { name: "notes", label: "备注", kind: "textarea", wide: true },
   ]
 }
 

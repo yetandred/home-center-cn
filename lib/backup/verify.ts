@@ -14,7 +14,7 @@ export async function verifyArchive(plainPath: string, opts: { workDir: string; 
   try {
     r = await ArchiveReader.open(plainPath, opts.password)
   } catch {
-    return { ok: false, error: "Not a HomeCenter archive (it can't be opened as a zip)." }
+    return { ok: false, error: "不是 HomeCenter 归档（无法按 zip 打开）。" }
   }
   try {
     let manifest: Manifest
@@ -33,7 +33,7 @@ export async function verifyArchive(plainPath: string, opts: { workDir: string; 
       if (got.size !== f.size || got.sha256 !== f.sha256) return { ok: false, error: `Damaged in the archive: ${f.path}` }
     }
     if (manifest.kind === "backup") {
-      if (!names.has(DB_ENTRY)) return { ok: false, error: "The backup has no database." }
+      if (!names.has(DB_ENTRY)) return { ok: false, error: "备份中没有数据库。" }
       await mkdir(opts.workDir, { recursive: true })
       const tmp = path.join(opts.workDir, `verify-${randomUUID()}.db`)
       try {
@@ -54,11 +54,11 @@ export type Compat = { ok: true } | { ok: false; reason: string }
 
 /** Older backups are upgraded by migrations at boot; newer or unknown ones are refused. */
 export function checkCompatibility(manifest: Manifest, known: string[]): Compat {
-  if (manifest.kind !== "backup") return { ok: false, reason: "This is an export. Exports can be browsed but not restored." }
-  if (!manifest.migration) return { ok: false, reason: "This backup doesn't say which database version it holds." }
+  if (manifest.kind !== "backup") return { ok: false, reason: "这是一份导出文件，可浏览但无法恢复。" }
+  if (!manifest.migration) return { ok: false, reason: "备份未注明其数据库版本。" }
   if (known.includes(manifest.migration)) return { ok: true }
   const latest = known.at(-1) ?? ""
   return manifest.migration > latest
-    ? { ok: false, reason: "This backup was made by a newer HomeCenter. Update HomeCenter first, then restore." }
-    : { ok: false, reason: "This backup holds a database version this HomeCenter doesn't know." }
+    ? { ok: false, reason: "此备份由更新版本的 HomeCenter 创建，请先升级 HomeCenter 再恢复。" }
+    : { ok: false, reason: "此备份的数据库版本超出了本 HomeCenter 的识别范围。" }
 }

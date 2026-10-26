@@ -21,11 +21,11 @@ export type ConditionRow = HealthCondition & { attachments: Attachment[]; provid
 const STATUS_VARIANT = { ACTIVE: "destructive", MANAGED: "secondary", RESOLVED: "outline" } as const
 
 const columnsFor = (fmt: Formatter): EntityColumn<ConditionRow>[] => [
-  { key: "name", label: "Condition", cell: (c) => <span className="font-medium">{c.name}</span> },
-  { key: "status", label: "Status", cell: (c) => <Badge variant={STATUS_VARIANT[c.status]}>{labelFor(CONDITION_STATUSES, c.status)}</Badge> },
-  { key: "diagnosed", label: "Diagnosed", className: "whitespace-nowrap text-muted-foreground", cell: (c) => (c.diagnosedDate ? fmt.date(c.diagnosedDate, { utc: true }) : "—") },
-  { key: "provider", label: "Provider", className: "text-muted-foreground", cell: (c) => c.provider?.name ?? "—" },
-  { key: "files", label: "Files", cell: (c) => <AttachmentCount attachments={c.attachments} /> },
+  { key: "name", label: "病症", cell: (c) => <span className="font-medium">{c.name}</span> },
+  { key: "status", label: "状态", cell: (c) => <Badge variant={STATUS_VARIANT[c.status]}>{labelFor(CONDITION_STATUSES, c.status)}</Badge> },
+  { key: "diagnosed", label: "确诊日期", className: "whitespace-nowrap text-muted-foreground", cell: (c) => (c.diagnosedDate ? fmt.date(c.diagnosedDate, { utc: true }) : "—") },
+  { key: "provider", label: "医生", className: "text-muted-foreground", cell: (c) => c.provider?.name ?? "—" },
+  { key: "files", label: "附件", cell: (c) => <AttachmentCount attachments={c.attachments} /> },
 ]
 
 function initialFor(c: ConditionRow | null): FormValues {
@@ -53,26 +53,26 @@ export function ConditionsSection({ personId, conditions, providers, observation
   const [open, setOpen] = useState(false)
 
   const fields: FieldConfig[] = [
-    { name: "name", label: "Condition", kind: "text", required: true, placeholder: "Type 2 diabetes", wide: true },
-    { name: "status", label: "Status", kind: "select", required: true, options: CONDITION_STATUSES },
-    { name: "providerId", label: "Treating provider", kind: "select", options: providers.map((p) => ({ value: p.id, label: p.name })) },
-    { name: "diagnosedDate", label: "Diagnosed", kind: "date" },
-    { name: "resolvedDate", label: "Resolved", kind: "date" },
-    { name: "notes", label: "Notes", kind: "textarea", wide: true },
+    { name: "name", label: "病症", kind: "text", required: true, placeholder: "2 型糖尿病", wide: true },
+    { name: "status", label: "状态", kind: "select", required: true, options: CONDITION_STATUSES },
+    { name: "providerId", label: "主治医生", kind: "select", options: providers.map((p) => ({ value: p.id, label: p.name })) },
+    { name: "diagnosedDate", label: "确诊日期", kind: "date" },
+    { name: "resolvedDate", label: "痊愈日期", kind: "date" },
+    { name: "notes", label: "备注", kind: "textarea", wide: true },
   ]
 
   async function handleDelete(c: ConditionRow) {
-    if (!confirm(`Delete "${c.name}" and its files? Visits and medications linked to it are kept.`)) return
+    if (!confirm(`确定删除“${c.name}”及其附件吗？关联的就诊和用药记录会保留。`)) return
     const result = await deleteCondition(c.id)
-    if (result.error) { toast.error("Delete failed."); return }
-    toast.success("Condition deleted.")
+    if (result.error) { toast.error("删除失败。"); return }
+    toast.success("病症已删除。")
   }
 
   return (
     <>
       <div className="flex items-center justify-between mb-4">
-        <p className="text-sm text-muted-foreground">{conditions.length} condition{conditions.length === 1 ? "" : "s"}</p>
-        <Button size="sm" onClick={() => { setEditing(null); setOpen(true) }}>Add Condition</Button>
+        <p className="text-sm text-muted-foreground">{conditions.length} 项病症</p>
+        <Button size="sm" onClick={() => { setEditing(null); setOpen(true) }}>添加病症</Button>
       </div>
 
       <EntityTable
@@ -81,11 +81,11 @@ export function ConditionsSection({ personId, conditions, providers, observation
         describe={(c) => c.name}
         onEdit={(c) => { setEditing(c); setOpen(true) }}
         onDelete={handleDelete}
-        empty="No conditions recorded."
+        empty="暂无病症记录。"
         renderExpanded={(c) => (
           <div className="space-y-3">
             {c.notes && <p className="text-sm text-muted-foreground whitespace-pre-wrap">{c.notes}</p>}
-            {c.resolvedDate && <p className="text-sm text-muted-foreground">Resolved {fmt.date(c.resolvedDate, { utc: true })}</p>}
+            {c.resolvedDate && <p className="text-sm text-muted-foreground">痊愈于 {fmt.date(c.resolvedDate, { utc: true })}</p>}
             <LinkedObservations rows={observations.filter((o) => o.conditionId === c.id)} />
             <AttachmentList recordId={c.id} recordType="CONDITION" attachments={c.attachments} />
           </div>
@@ -95,9 +95,9 @@ export function ConditionsSection({ personId, conditions, providers, observation
       <EntityFormDialog
         open={open}
         onClose={() => setOpen(false)}
-        title={editing ? "Edit Condition" : "Add Condition"}
-        submitLabel={editing ? "Save Changes" : "Add Condition"}
-        successMessage={editing ? "Condition updated." : "Condition added."}
+        title={editing ? "编辑病症" : "添加病症"}
+        submitLabel={editing ? "保存更改" : "添加病症"}
+        successMessage={editing ? "病症已更新。" : "病症已添加。"}
         fields={fields}
         initial={initialFor(editing)}
         onSubmit={(values) => (editing ? updateCondition(editing.id, values) : createCondition(personId, values))}
@@ -116,7 +116,7 @@ function LinkedObservations({ rows }: { rows: ObservationLike[] }) {
   return (
     <div className="text-sm">
       <p className="text-muted-foreground">
-        {rows.length} observation{rows.length === 1 ? "" : "s"} linked · {recent} in the last 30 days (see the Observations tab)
+        {rows.length} 条观察记录已关联 · 最近 30 天 {recent} 条（见“观察记录”标签页）
       </p>
       <ul className="mt-1 space-y-0.5">
         {rows.slice(0, 5).map((o, i) => (

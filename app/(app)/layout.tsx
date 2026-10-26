@@ -79,7 +79,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               {showAssistant && !floatingAssistant && <ChatToggle />}
               {showIntake && !intakeInSidebar && <IntakeHeaderLink count={inbox} />}
               <NotificationBell notifications={notificationItems} />
-              <UserMenu name={session.user.name ?? "User"} email={session.user.email ?? ""} />
+              <UserMenu name={session.user.name ?? "用户"} email={session.user.email ?? ""} />
             </div>
           </header>
           {/* The page and the docked assistant sit side by side; opening the assistant narrows the page. */}
@@ -108,7 +108,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
                   className="inline-flex items-center gap-1 justify-self-end whitespace-nowrap underline-offset-2 hover:text-foreground hover:underline"
                 >
                   <Coffee className="h-3 w-3" aria-hidden="true" />
-                  Buy me a coffee
+                  请我喝杯咖啡
                 </a>
               </footer>
             </div>

@@ -22,21 +22,21 @@ export async function addFileToInbox(
 ): Promise<boolean> {
   const id = `upload-${file.name}-${file.size}-${file.lastModified}`
   if (!extensionForFilename(file.name)) {
-    toast.error(`"${file.name}" isn't a file type HomeCenter accepts.`, { id })
+    toast.error(`“${file.name}”不是 HomeCenter 支持的文件类型。`, { id })
     return false
   }
-  toast.loading(`Uploading ${file.name}…`, { id })
+  toast.loading(`正在上传 ${file.name}……`, { id })
   let itemId: string | null = null
   try {
     itemId = (await createInboxItem(asset)).id
     await uploadFile(file, "INBOX", itemId)
-    if (successToast) toast.success(`Added ${file.name}. Reading it now.`, { id })
+    if (successToast) toast.success(`已添加 ${file.name}，正在读取。`, { id })
     else toast.dismiss(id)
     return true
   } catch (error) {
     // Don't leave an empty item behind (it would sit there "Uploading…").
     if (itemId) await discardInboxItem(itemId).catch(() => {})
-    toast.error(error instanceof Error ? error.message : `Couldn't upload ${file.name}.`, { id })
+    toast.error(error instanceof Error ? error.message : `无法上传 ${file.name}。`, { id })
     return false
   }
 }

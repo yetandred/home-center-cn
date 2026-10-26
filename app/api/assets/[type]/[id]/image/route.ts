@@ -34,11 +34,11 @@ export async function POST(
   { params }: { params: Promise<{ type: string; id: string }> }
 ) {
   const session = await auth()
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!session) return NextResponse.json({ error: "未登录" }, { status: 401 })
 
   const { type, id } = await params
   if (!isValidType(type)) {
-    return NextResponse.json({ error: "Invalid asset type" }, { status: 400 })
+    return NextResponse.json({ error: "无效的资产类型" }, { status: 400 })
   }
 
   const maxBytes = maxUploadBytes()
@@ -47,17 +47,17 @@ export async function POST(
   const formData = await request.formData()
   const file = formData.get("file") as File | null
 
-  if (!file) return NextResponse.json({ error: "No file provided" }, { status: 400 })
+  if (!file) return NextResponse.json({ error: "未提供文件" }, { status: 400 })
   const ext = extensionForFilename(file.name)
   if (!ext || !mimeForFilename(file.name)?.startsWith("image/")) {
-    return NextResponse.json({ error: "File type not allowed. Use JPG, PNG, WEBP or HEIC." }, { status: 400 })
+    return NextResponse.json({ error: "不支持的文件类型，请使用 JPG、PNG、WEBP 或 HEIC。" }, { status: 400 })
   }
   if (file.size > maxBytes) {
-    return NextResponse.json({ error: `File exceeds maximum size of ${Math.round(maxBytes / 1024 / 1024)} MB.` }, { status: 400 })
+    return NextResponse.json({ error: `文件超过 ${Math.round(maxBytes / 1024 / 1024)} MB 的大小限制。` }, { status: 400 })
   }
 
   const asset = await findAsset(type, id)
-  if (!asset?.record) return NextResponse.json({ error: "Not found" }, { status: 404 })
+  if (!asset?.record) return NextResponse.json({ error: "未找到" }, { status: 404 })
 
   const dirPath = resolveUploadPath(asset.subdir, id)
   await mkdir(dirPath, { recursive: true })
@@ -79,15 +79,15 @@ export async function DELETE(
   { params }: { params: Promise<{ type: string; id: string }> }
 ) {
   const session = await auth()
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!session) return NextResponse.json({ error: "未登录" }, { status: 401 })
 
   const { type, id } = await params
   if (!isValidType(type)) {
-    return NextResponse.json({ error: "Invalid asset type" }, { status: 400 })
+    return NextResponse.json({ error: "无效的资产类型" }, { status: 400 })
   }
 
   const asset = await findAsset(type, id)
-  if (!asset?.record) return NextResponse.json({ error: "Not found" }, { status: 404 })
+  if (!asset?.record) return NextResponse.json({ error: "未找到" }, { status: 404 })
 
   if (asset.record.imageFilename) {
     await rm(resolveUploadPath(asset.subdir, id, asset.record.imageFilename), { force: true })

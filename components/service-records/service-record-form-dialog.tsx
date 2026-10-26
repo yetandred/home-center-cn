@@ -32,8 +32,8 @@ const NO_LINK = "__none__"
 const schema = z.object({
   assetId: z.string(),
   assetType: z.enum(ASSET_TYPES),
-  date: z.string().min(1, "Date is required"),
-  title: z.string().min(1, "Title is required"),
+  date: z.string().min(1, "日期必填"),
+  title: z.string().min(1, "标题必填"),
   description: z.string().optional(),
   vendor: z.string().optional(),
   cost: z.string().optional(),
@@ -86,7 +86,7 @@ function formatBytes(bytes: number) {
   return `${(bytes / 1024 / 1024).toFixed(1)} MB`
 }
 
-export function ServiceRecordFormDialog({ open, onClose, assetId, assetType, record, attachments: initialAttachments = [], onAttachmentDeleted, equipmentOptions, propertyName = "This property", roomOptions = [], defaultRoomId, meterUnit = "MILES", providerOptions, conditionOptions, reminderOptions = [] }: Props) {
+export function ServiceRecordFormDialog({ open, onClose, assetId, assetType, record, attachments: initialAttachments = [], onAttachmentDeleted, equipmentOptions, propertyName = "本房产", roomOptions = [], defaultRoomId, meterUnit = "MILES", providerOptions, conditionOptions, reminderOptions = [] }: Props) {
   const isPerson = assetType === "PERSON"
   const [stagedFiles, setStagedFiles] = useState<File[]>([])
   const [removedIds, setRemovedIds] = useState<Set<string>>(new Set())
@@ -157,7 +157,7 @@ export function ServiceRecordFormDialog({ open, onClose, assetId, assetType, rec
 
   // A file dropped anywhere while this is open joins the files staged above.
   useDropTarget({
-    label: "Add to this record's files",
+    label: "添加到此记录的文件",
     onFiles: (files) => setStagedFiles((prev) => [...prev, ...files]),
     enabled: open,
   })
@@ -167,13 +167,13 @@ export function ServiceRecordFormDialog({ open, onClose, assetId, assetType, rec
   }
 
   async function handleDeleteExisting(attachment: Attachment) {
-    if (!confirm(`Remove "${attachment.originalName}"?`)) return
+    if (!confirm(`移除“${attachment.originalName}”？`)) return
     if (!record) return
     const result = await deleteAttachment(attachment.id)
     if (result?.error) { toast.error(result.error); return }
     setRemovedIds((prev) => new Set(prev).add(attachment.id))
     onAttachmentDeleted?.(record.id, attachment.id)
-    toast.success("Attachment removed.")
+    toast.success("附件已移除。")
   }
 
   async function onSubmit(values: FormValues) {
@@ -194,7 +194,7 @@ export function ServiceRecordFormDialog({ open, onClose, assetId, assetType, rec
 
     if (result?.error) {
       const roomError = typeof result.error === "object" && "roomId" in result.error ? result.error.roomId?.[0] : undefined
-      toast.error(roomError ?? "Please fix the errors and try again.")
+      toast.error(roomError ?? "请修正错误后重试。")
       return
     }
 
@@ -211,7 +211,7 @@ export function ServiceRecordFormDialog({ open, onClose, assetId, assetType, rec
           const res = await fetch("/api/uploads", { method: "POST", body: formData })
           if (!res.ok) {
             const json = await res.json().catch(() => ({}))
-            throw new Error(json.error ?? `Failed to upload "${file.name}"`)
+            throw new Error(json.error ?? `上传“${file.name}”失败`)
           }
           return file
         })
@@ -224,13 +224,13 @@ export function ServiceRecordFormDialog({ open, onClose, assetId, assetType, rec
 
       const firstFailure = uploads.find((u): u is PromiseRejectedResult => u.status === "rejected")
       if (firstFailure) {
-        toast.error(firstFailure.reason instanceof Error ? firstFailure.reason.message : "Some files failed to upload.")
+        toast.error(firstFailure.reason instanceof Error ? firstFailure.reason.message : "部分文件上传失败。")
         return
       }
     }
 
     const completed = !existingId && values.scheduleId ? reminderOptions.find((r) => r.id === values.scheduleId) : undefined
-    toast.success(record ? "Record updated." : completed ? `Service record added. "${completed.title}" marked complete.` : isPerson ? "Visit added." : "Service record added.")
+    toast.success(record ? "记录已更新。" : completed ? `维护记录已添加。“${completed.title}”已标记完成。` : isPerson ? "就诊已添加。" : "维护记录已添加。")
     // Saved without a receipt: once, point at dropping it on the page next time.
     maybeShowReceiptTip(stagedFiles.length > 0, { isNew: !existingId })
     router.refresh()
@@ -248,13 +248,13 @@ export function ServiceRecordFormDialog({ open, onClose, assetId, assetType, rec
     <Dialog open={open} onOpenChange={(v) => !v && handleClose()} disablePointerDismissal={filePickerOpen}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{record ? (isPerson ? "Edit Visit" : "Edit Service Record") : (isPerson ? "Add Visit / Expense" : "Add Service Record")}</DialogTitle>
+          <DialogTitle>{record ? (isPerson ? "编辑就诊" : "编辑维护记录") : (isPerson ? "添加就诊 / 支出" : "添加维护记录")}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             {equipmentOptions && equipmentOptions.length > 0 && (
               <FormItem>
-                <FormLabel>For</FormLabel>
+                <FormLabel>对象</FormLabel>
                 <Select
                   value={targetKey(form.watch("assetType"), form.watch("assetId"))}
                   onValueChange={(value) => {
@@ -290,7 +290,7 @@ export function ServiceRecordFormDialog({ open, onClose, assetId, assetType, rec
             {!record && targetReminders.length > 0 && (
               <FormField control={form.control} name="scheduleId" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Completes reminder</FormLabel>
+                  <FormLabel>完成提醒</FormLabel>
                   <Select
                     value={field.value || NO_LINK}
                     onValueChange={(v) => {
@@ -302,11 +302,11 @@ export function ServiceRecordFormDialog({ open, onClose, assetId, assetType, rec
                   >
                     <FormControl>
                       <SelectTrigger className="w-full">
-                        <SelectValue>{(v: string) => targetReminders.find((r) => r.id === v)?.title ?? "None"}</SelectValue>
+                        <SelectValue>{(v: string) => targetReminders.find((r) => r.id === v)?.title ?? "无"}</SelectValue>
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value={NO_LINK}>None</SelectItem>
+                      <SelectItem value={NO_LINK}>无</SelectItem>
                       {targetReminders.map((r) => <SelectItem key={r.id} value={r.id}>{r.title}</SelectItem>)}
                     </SelectContent>
                   </Select>
@@ -318,7 +318,7 @@ export function ServiceRecordFormDialog({ open, onClose, assetId, assetType, rec
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="date" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Date *</FormLabel>
+                  <FormLabel>日期 *</FormLabel>
                   <FormControl><Input type="date" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -326,13 +326,13 @@ export function ServiceRecordFormDialog({ open, onClose, assetId, assetType, rec
 
               <FormField control={form.control} name="title" render={({ field }) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Title *</FormLabel>
-                  <FormControl><Input placeholder={isPerson ? "Annual physical" : "Oil Change"} {...field} /></FormControl>
+                  <FormLabel>标题 *</FormLabel>
+                  <FormControl><Input placeholder={isPerson ? "年度体检" : "更换机油"} {...field} /></FormControl>
                   <FormMessage />
                   {suggested && (
                     <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground" aria-live="polite">
                       <BellRing className="h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />
-                      <span>Looks like the reminder &ldquo;{suggested.title}&rdquo;.</span>
+                      <span>似乎是提醒“{suggested.title}”。</span>
                       <Button
                         type="button"
                         variant="link"
@@ -340,7 +340,7 @@ export function ServiceRecordFormDialog({ open, onClose, assetId, assetType, rec
                         className="h-auto p-0 text-xs"
                         onClick={() => form.setValue("scheduleId", suggested.id, { shouldDirty: true })}
                       >
-                        Mark it complete
+                        标记完成
                       </Button>
                     </p>
                   )}
@@ -349,15 +349,15 @@ export function ServiceRecordFormDialog({ open, onClose, assetId, assetType, rec
 
               <FormField control={form.control} name="vendor" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{isPerson ? "Facility" : "Vendor / Shop"}</FormLabel>
-                  <FormControl><Input placeholder={isPerson ? "City Medical Center" : "Jiffy Lube"} {...field} /></FormControl>
+                  <FormLabel>{isPerson ? "机构" : "商家 / 维修店"}</FormLabel>
+                  <FormControl><Input placeholder={isPerson ? "市医疗中心" : "汽车快修店"} {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
 
               <FormField control={form.control} name="cost" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{`Cost (${fmt.currencySymbol})`}</FormLabel>
+                  <FormLabel>{`费用（${fmt.currencySymbol}）`}</FormLabel>
                   <FormControl><Input type="number" step="0.01" placeholder="89.99" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -365,17 +365,17 @@ export function ServiceRecordFormDialog({ open, onClose, assetId, assetType, rec
 
               <FormField control={form.control} name="category" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Category</FormLabel>
+                  <FormLabel>分类</FormLabel>
                   <Select value={field.value} onValueChange={(v) => field.onChange(v ?? NO_CATEGORY)}>
                     <FormControl>
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Uncategorized">
-                          {(v: string) => SERVICE_CATEGORIES.find((c) => c.value === v)?.label ?? "Uncategorized"}
+                        <SelectValue placeholder="未分类">
+                          {(v: string) => SERVICE_CATEGORIES.find((c) => c.value === v)?.label ?? "未分类"}
                         </SelectValue>
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value={NO_CATEGORY}>Uncategorized</SelectItem>
+                      <SelectItem value={NO_CATEGORY}>未分类</SelectItem>
                       {categoriesFor(assetType).map((c) => (
                         <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
                       ))}
@@ -388,15 +388,15 @@ export function ServiceRecordFormDialog({ open, onClose, assetId, assetType, rec
               {providerOptions && (
                 <FormField control={form.control} name="providerId" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Provider</FormLabel>
+                    <FormLabel>供应商</FormLabel>
                     <Select value={field.value || NO_LINK} onValueChange={(v) => field.onChange(!v || v === NO_LINK ? "" : v)}>
                       <FormControl>
                         <SelectTrigger className="w-full">
-                          <SelectValue>{(v: string) => providerOptions.find((p) => p.id === v)?.name ?? "None"}</SelectValue>
+                          <SelectValue>{(v: string) => providerOptions.find((p) => p.id === v)?.name ?? "无"}</SelectValue>
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value={NO_LINK}>None</SelectItem>
+                        <SelectItem value={NO_LINK}>无</SelectItem>
                         {providerOptions.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
                       </SelectContent>
                     </Select>
@@ -407,15 +407,15 @@ export function ServiceRecordFormDialog({ open, onClose, assetId, assetType, rec
               {conditionOptions && conditionOptions.length > 0 && (
                 <FormField control={form.control} name="conditionId" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>For condition</FormLabel>
+                    <FormLabel>相关病症</FormLabel>
                     <Select value={field.value || NO_LINK} onValueChange={(v) => field.onChange(!v || v === NO_LINK ? "" : v)}>
                       <FormControl>
                         <SelectTrigger className="w-full">
-                          <SelectValue>{(v: string) => conditionOptions.find((c) => c.id === v)?.name ?? "None"}</SelectValue>
+                          <SelectValue>{(v: string) => conditionOptions.find((c) => c.id === v)?.name ?? "无"}</SelectValue>
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value={NO_LINK}>None</SelectItem>
+                        <SelectItem value={NO_LINK}>无</SelectItem>
                         {conditionOptions.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                       </SelectContent>
                     </Select>
@@ -426,7 +426,7 @@ export function ServiceRecordFormDialog({ open, onClose, assetId, assetType, rec
               {assetType === "VEHICLE" && (
                 <FormField control={form.control} name="mileageAtService" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{fmt.meterNoun(meterUnit)} at Service</FormLabel>
+                    <FormLabel>{fmt.meterNoun(meterUnit)}（维护时）</FormLabel>
                     <FormControl><Input type="number" placeholder={meterUnit === "HOURS" ? "1250" : "45230"} {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
@@ -435,7 +435,7 @@ export function ServiceRecordFormDialog({ open, onClose, assetId, assetType, rec
 
               <FormField control={form.control} name="description" render={({ field }) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Notes</FormLabel>
+                  <FormLabel>备注</FormLabel>
                   <FormControl><Textarea rows={3} {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -446,7 +446,7 @@ export function ServiceRecordFormDialog({ open, onClose, assetId, assetType, rec
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
                   <Paperclip className="h-3.5 w-3.5" />
-                  Attachments {(existingAttachments.length + stagedFiles.length) > 0 && <span className="inline-flex items-center justify-center rounded-full bg-secondary px-1.5 py-0.5 text-xs font-medium">{existingAttachments.length + stagedFiles.length}</span>}
+                  附件 {(existingAttachments.length + stagedFiles.length) > 0 && <span className="inline-flex items-center justify-center rounded-full bg-secondary px-1.5 py-0.5 text-xs font-medium">{existingAttachments.length + stagedFiles.length}</span>}
                 </div>
                 <label>
                   <input
@@ -463,7 +463,7 @@ export function ServiceRecordFormDialog({ open, onClose, assetId, assetType, rec
                     onClick={openFilePicker}
                   >
                     <Upload className="h-3.5 w-3.5 mr-1.5" />
-                    Attach file
+                    添加附件
                   </Button>
                 </label>
               </div>
@@ -488,7 +488,7 @@ export function ServiceRecordFormDialog({ open, onClose, assetId, assetType, rec
                         <button
                           type="button"
                           onClick={() => handleDeleteExisting(a)}
-                          aria-label={`Remove "${a.originalName}"`}
+                          aria-label={`移除“${a.originalName}”`}
                           className="shrink-0 text-muted-foreground hover:text-destructive transition-colors"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
@@ -511,7 +511,7 @@ export function ServiceRecordFormDialog({ open, onClose, assetId, assetType, rec
                         <button
                           type="button"
                           onClick={() => removeStagedFile(index)}
-                          aria-label={`Remove "${file.name}"`}
+                          aria-label={`移除“${file.name}”`}
                           className="shrink-0 text-muted-foreground hover:text-destructive transition-colors"
                         >
                           <X className="h-3.5 w-3.5" />
@@ -524,9 +524,9 @@ export function ServiceRecordFormDialog({ open, onClose, assetId, assetType, rec
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={handleClose}>Cancel</Button>
+              <Button type="button" variant="outline" onClick={handleClose}>取消</Button>
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Saving…" : record ? "Save Changes" : "Add Record"}
+                {form.formState.isSubmitting ? "保存中…" : record ? "保存更改" : "添加记录"}
               </Button>
             </DialogFooter>
           </form>

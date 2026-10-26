@@ -21,7 +21,7 @@ const SEGMENT_GAP = 2
 export function CompositionBar({
   entries,
   activeKey,
-  emptyMessage = "Nothing to show yet.",
+  emptyMessage = "暂无数据",
   caption,
 }: {
   entries: CompositionSlice[]
@@ -60,10 +60,10 @@ export function CompositionBar({
             const content = {
               title: entry.label,
               rows: [
-                { label: "Spend", value: fmt.money(entry.total), color },
-                { label: "Share", value: percent.toFixed(1) + "%", muted: true },
+                { label: "支出", value: fmt.money(entry.total), color },
+                { label: "占比", value: percent.toFixed(1) + "%", muted: true },
                 {
-                  label: entry.count === 1 ? "1 record" : entry.count + " records",
+                  label: entry.count === 1 ? "1 条记录" : entry.count + " 条记录",
                   value: "",
                   muted: true,
                 },
@@ -135,10 +135,10 @@ export function CompositionBar({
       <ChartTable
         caption={caption}
         columns={[
-          { key: "label", label: "Category" },
-          { key: "total", label: "Spend", align: "right" },
-          { key: "share", label: "Share", align: "right" },
-          { key: "count", label: "Records", align: "right" },
+          { key: "label", label: "分类" },
+          { key: "total", label: "支出", align: "right" },
+          { key: "share", label: "占比", align: "right" },
+          { key: "count", label: "记录", align: "right" },
         ]}
         rows={entries.map((entry) => ({
           label: entry.label,

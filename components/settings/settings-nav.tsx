@@ -7,7 +7,7 @@ import { settingsHref, type SettingsSection, type SettingsSectionId } from "@/li
 // each section is bookmarkable and the server loads only what it shows.
 export function SettingsNav({ sections, active }: { sections: SettingsSection[]; active: SettingsSectionId }) {
   return (
-    <nav aria-label="Settings sections" className="-mx-1 overflow-x-auto px-1 md:mx-0 md:overflow-visible md:px-0">
+    <nav aria-label="设置分区" className="-mx-1 overflow-x-auto px-1 md:mx-0 md:overflow-visible md:px-0">
       <ul className="flex gap-1 md:flex-col">
         {sections.map((s) => {
           const Icon = s.icon

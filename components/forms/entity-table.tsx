@@ -46,7 +46,7 @@ export function EntityTable<T extends { id: string }>({
               {columns.map((c) => (
                 <TableHead key={c.key} className={c.className}>{c.label}</TableHead>
               ))}
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="text-right">操作</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -61,16 +61,16 @@ export function EntityTable<T extends { id: string }>({
                     <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center justify-end gap-1">
                         {extraActions?.(row)}
-                        <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={`Edit ${describe(row)}`} onClick={() => onEdit(row)}>
+                        <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={`编辑${describe(row)}`} onClick={() => onEdit(row)}>
                           <Pencil className="h-3.5 w-3.5" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" aria-label={`Delete ${describe(row)}`} onClick={() => onDelete(row)}>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" aria-label={`删除${describe(row)}`} onClick={() => onDelete(row)}>
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                         {renderExpanded && (
                           <Button
                             variant="ghost" size="icon" className="h-7 w-7"
-                            aria-label={expanded ? "Hide details" : "Show details"} aria-expanded={expanded}
+                            aria-label={expanded ? "收起详情" : "展开详情"} aria-expanded={expanded}
                             onClick={() => setExpandedId(expanded ? null : row.id)}
                           >
                             <ChevronDown className={`h-3.5 w-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} />

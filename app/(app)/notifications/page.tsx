@@ -49,9 +49,9 @@ export default async function NotificationsPage({
     <div className="space-y-6 max-w-2xl">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-semibold">Notifications</h1>
+          <h1 className="font-heading text-2xl font-semibold">通知</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            {unread > 0 ? `${unread} unread` : "All caught up"}
+            {unread > 0 ? `${unread} 条未读` : "全部已读"}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -61,12 +61,12 @@ export default async function NotificationsPage({
               className={buttonVariants({ variant: "ghost", size: "sm" })}
             >
               {showHidden ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              {showHidden ? "Hide dismissed" : `Show hidden (${hiddenCount})`}
+              {showHidden ? "隐藏已关闭" : `显示已关闭 (${hiddenCount})`}
             </Link>
           )}
           {unread > 0 && (
             <form action={markAllNotificationsRead}>
-              <Button variant="outline" size="sm" type="submit">Mark all read</Button>
+              <Button variant="outline" size="sm" type="submit">全部标为已读</Button>
             </form>
           )}
         </div>
@@ -75,7 +75,7 @@ export default async function NotificationsPage({
       {notifications.length === 0 ? (
         <div className="rounded-lg border border-dashed p-12 text-center text-muted-foreground">
           <Bell className="h-8 w-8 mx-auto mb-2 opacity-40" />
-          <p className="font-medium">{hiddenCount > 0 ? "Nothing new — dismissed notifications are hidden" : "No notifications yet"}</p>
+          <p className="font-medium">{hiddenCount > 0 ? "暂无新通知 — 已关闭的通知已隐藏" : "暂无通知"}</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -97,8 +97,8 @@ export default async function NotificationsPage({
                   <Link href={hrefs.get(n.id) ?? "#"} className="block hover:underline">
                     <div className="flex items-center gap-2">
                       <p className={cn("text-sm font-medium", !n.isRead && "text-foreground")}>{n.title}</p>
-                      {!n.isRead && <Badge variant="secondary" className="h-4 px-1.5 text-xs">New</Badge>}
-                      {dismissed && <Badge variant="outline" className="h-4 px-1.5 text-xs">Dismissed</Badge>}
+                      {!n.isRead && <Badge variant="secondary" className="h-4 px-1.5 text-xs">新</Badge>}
+                      {dismissed && <Badge variant="outline" className="h-4 px-1.5 text-xs">已关闭</Badge>}
                     </div>
                     <p className="text-sm text-muted-foreground mt-0.5">{n.message}</p>
                     <p className="text-xs text-muted-foreground mt-1">{fmt.dateTime(n.createdAt)}</p>
@@ -113,7 +113,7 @@ export default async function NotificationsPage({
                 ) : (
                   <form action={(dismissed ? restoreNotification : dismissNotification).bind(null, n.id)}>
                     <Button variant="ghost" size="sm" className="h-7 text-xs shrink-0" type="submit">
-                      {dismissed ? "Restore" : "Dismiss"}
+                      {dismissed ? "恢复" : "关闭"}
                     </Button>
                   </form>
                 )}

@@ -78,7 +78,7 @@ export function AttachRecordDialog({
         toast.error(r.error)
         return
       }
-      toast.success(`Attached to ${chosen.title}.`, { action: { label: "View", onClick: () => router.push(r.href) } })
+      toast.success(`已附加到 ${chosen.title}。`, { action: { label: "查看", onClick: () => router.push(r.href) } })
       onClose()
       router.refresh()
     })
@@ -88,25 +88,25 @@ export function AttachRecordDialog({
     <Dialog open onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Attach to record</DialogTitle>
+          <DialogTitle>附加到已有记录</DialogTitle>
           <DialogDescription>
-            Adds <span className="font-medium text-foreground">{fileName}</span> to a service record or warranty you already entered. The record itself isn&apos;t changed.
+            将 <span className="font-medium text-foreground">{fileName}</span> 添加到你已录入的维护记录或保修上。记录本身不会更改。
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor={`attach-${itemId}`}>For</Label>
+            <Label htmlFor={`attach-${itemId}`}>所属</Label>
             <AssetSelect id={`attach-${itemId}`} assets={assets} value={choices.assetKey} onChange={changeAsset} />
           </div>
           {choices.assetKey && (
             <fieldset className="space-y-2">
-              <legend className="mb-2 text-sm font-medium">Record</legend>
+              <legend className="mb-2 text-sm font-medium">记录</legend>
               {loading ? (
-                <p className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" />Loading records…</p>
+                <p className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" />正在加载记录……</p>
               ) : choices.error ? (
                 <p className="text-sm text-destructive">{choices.error}</p>
               ) : !choices.candidates.length ? (
-                <p className="text-sm text-muted-foreground">No service records or warranties on this asset yet. Choose &ldquo;New service record&rdquo; on the card to create one.</p>
+                <p className="text-sm text-muted-foreground">该资产还没有维护记录或保修。在卡片上选择“新建维护记录”即可创建。</p>
               ) : (
                 <ul className="max-h-72 space-y-1 overflow-y-auto rounded-md border p-1">
                   {choices.candidates.map((c) => {
@@ -122,10 +122,10 @@ export function AttachRecordDialog({
                             onChange={() => setChoices((cur) => ({ ...cur, selected: key }))}
                             className="accent-primary"
                           />
-                          <span className="w-24 shrink-0 text-muted-foreground">{c.date ? fmt.date(c.date, { utc: true }) : "No date"}</span>
+                          <span className="w-24 shrink-0 text-muted-foreground">{c.date ? fmt.date(c.date, { utc: true }) : "无日期"}</span>
                           <span className="min-w-0 flex-1 truncate font-medium">{c.title}</span>
                           <span className="shrink-0 text-xs text-muted-foreground">
-                            {c.kind === "WARRANTY" ? "Warranty" : c.cost != null ? fmt.money(c.cost) : "—"}
+                            {c.kind === "WARRANTY" ? "保修" : c.cost != null ? fmt.money(c.cost) : "—"}
                           </span>
                         </label>
                       </li>
@@ -137,9 +137,9 @@ export function AttachRecordDialog({
           )}
         </div>
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+          <Button type="button" variant="outline" onClick={onClose}>取消</Button>
           <Button type="button" disabled={!chosen || loading || pending} onClick={submit}>
-            {pending ? "Attaching…" : "Attach"}
+            {pending ? "附加中……" : "附加"}
           </Button>
         </DialogFooter>
       </DialogContent>

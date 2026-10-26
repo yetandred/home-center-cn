@@ -15,7 +15,7 @@ export function inboxTool(includeHealth: boolean): RegisteredTool {
     name: "intake",
     description: INBOX_TOOL_DESCRIPTION,
     schema: z.object({}),
-    label: () => "Checking Intake…",
+    label: () => "正在检查收件箱…",
     async run() {
       // Unlike listInboxItems, no clean-up of abandoned uploads: a tool call only reads.
       const [rows, index] = await Promise.all([

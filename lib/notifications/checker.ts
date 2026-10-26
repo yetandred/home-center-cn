@@ -12,15 +12,15 @@ import { cycleKeyOf, decide, maintenanceCycleKey, type NotificationRepeat, type 
 const WARRANTY_WARN_DAYS = 60
 const MAINTENANCE_WINDOW_DAYS = 30
 
-const plural = (n: number, unit: string) => `${n.toLocaleString()} ${unit}${n !== 1 ? "s" : ""}`
+const plural = (n: number, unit: string) => `${n.toLocaleString()} ${unit}`
 
 const DAY = 86_400_000
 
 // "is due in 3 days" / "is due today" / "was due 2 days ago".
 function dueWhen(days: number) {
-  if (days < 0) return `was due ${plural(-days, "day")} ago`
-  if (days === 0) return "is due today"
-  return `is due in ${plural(days, "day")}`
+  if (days < 0) return `已逾期 ${plural(-days, "天")}`
+  if (days === 0) return "今天到期"
+  return `${plural(days, "天")}后到期`
 }
 
 // Says which of the two clocks ran out, so "due soon" on an oil change reads
@@ -29,13 +29,13 @@ function dueMessage(title: string, due: Due, fmt: Formatter) {
   if (due.reason === "mileage" && due.milesLeft != null) {
     const word = fmt.meterWord(due.meterUnit ?? "MILES")
     return due.milesLeft < 0
-      ? `"${title}" was due ${plural(Math.abs(due.milesLeft), word)} ago.`
-      : `"${title}" is due in ${plural(due.milesLeft, word)}.`
+      ? `“${title}”已逾期 ${plural(Math.abs(due.milesLeft), word)}。`
+      : `“${title}”将在 ${plural(due.milesLeft, word)}后到期。`
   }
-  if (due.daysLeft == null) return `"${title}" is due.`
+  if (due.daysLeft == null) return `“${title}”已到期。`
   return due.daysLeft < 0
-    ? `"${title}" was due ${plural(Math.abs(due.daysLeft), "day")} ago.`
-    : `"${title}" is due in ${plural(due.daysLeft, "day")}.`
+    ? `“${title}”已逾期 ${plural(Math.abs(due.daysLeft), "天")}。`
+    : `“${title}”将在 ${plural(due.daysLeft, "天")}后到期。`
 }
 
 const dedupKey = (userId: string, type: string, entityId: string) => `${userId}:${type}:${entityId}`
@@ -126,7 +126,7 @@ export async function checkAndNotify(): Promise<number> {
       wanted.push({
         userId: user.id,
         type: "MAINTENANCE_DUE",
-        title: due.overdue ? `Overdue: ${s.title}` : stage === "DUE" ? `Due today: ${s.title}` : `Due soon: ${s.title}`,
+        title: due.overdue ? `已逾期：${s.title}` : stage === "DUE" ? `今天到期：${s.title}` : `即将到期：${s.title}`,
         message: dueMessage(s.title, due, fmt),
         relatedEntityId: s.id,
         relatedEntityType: "MaintenanceSchedule",
@@ -144,10 +144,10 @@ export async function checkAndNotify(): Promise<number> {
       wanted.push({
         userId: user.id,
         type: "WARRANTY_EXPIRING",
-        title: `Warranty expiring: ${w.productName}`,
+        title: `保修即将到期：${w.productName}`,
         message: daysLeft <= 0
-          ? `Warranty for "${w.productName}" expires today.`
-          : `Warranty for "${w.productName}" expires in ${plural(daysLeft, "day")}.`,
+          ? `“${w.productName}”的保修今天到期。`
+          : `“${w.productName}”的保修将在 ${plural(daysLeft, "天")}后到期。`,
         relatedEntityId: w.id,
         relatedEntityType: "Warranty",
         cycleKey: cycleKeyOf(w.expirationDate),
@@ -163,8 +163,8 @@ export async function checkAndNotify(): Promise<number> {
       wanted.push({
         userId: user.id,
         type: "MEDICATION_REFILL",
-        title: `Refill: ${m.name} (${m.person.name})`,
-        message: `${m.person.name}'s ${m.name} refill ${dueWhen(days)}.`,
+        title: `续药提醒：${m.name}（${m.person.name}）`,
+        message: `${m.person.name}的${m.name}${dueWhen(days)}。`,
         relatedEntityId: m.id,
         relatedEntityType: "Medication",
         cycleKey: cycleKeyOf(m.nextRefillDate),
@@ -180,8 +180,8 @@ export async function checkAndNotify(): Promise<number> {
       wanted.push({
         userId: user.id,
         type: "IMMUNIZATION_DUE",
-        title: `Vaccine due: ${i.vaccine} (${i.person.name})`,
-        message: `${i.person.name}'s ${i.vaccine} ${dueWhen(days)}.`,
+        title: `疫苗接种到期：${i.vaccine}（${i.person.name}）`,
+        message: `${i.person.name}的${i.vaccine}${dueWhen(days)}。`,
         relatedEntityId: i.id,
         relatedEntityType: "Immunization",
         cycleKey: cycleKeyOf(i.nextDueDate),
@@ -198,8 +198,8 @@ export async function checkAndNotify(): Promise<number> {
       wanted.push({
         userId: user.id,
         type: "INSURANCE_EXPIRING",
-        title: `Insurance ending: ${name}`,
-        message: days === 0 ? `"${name}" coverage ends today.` : `"${name}" coverage ends in ${plural(days, "day")}.`,
+        title: `保险即将到期：${name}`,
+        message: days === 0 ? `“${name}”的保障今天结束。` : `“${name}”的保障将在 ${plural(days, "天")}后结束。`,
         relatedEntityId: p.id,
         relatedEntityType: "InsurancePolicy",
         cycleKey: cycleKeyOf(p.endDate),

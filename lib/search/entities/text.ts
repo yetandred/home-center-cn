@@ -55,7 +55,7 @@ export function ageWords(from: Date, now: Date): string {
   return months <= 1 ? "new" : `about ${months} months old`
 }
 
-export const num = (n: number) => Math.round(n).toLocaleString("en-US")
+export const num = (n: number) => Math.round(n).toLocaleString()
 
 const clean = (s: string | null | undefined) => (s ?? "").replace(/\s+/g, " ").trim()
 

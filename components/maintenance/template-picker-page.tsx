@@ -18,10 +18,10 @@ export async function TemplatePickerPage({ assetType, assetId }: { assetType: As
         <Link href={assetHref(assetType, assetId)} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-3.5 w-3.5" /> {target.name}
         </Link>
-        <h1 className="font-heading text-2xl font-semibold">Add default reminders</h1>
+        <h1 className="font-heading text-2xl font-semibold">添加默认提醒</h1>
         <p className="text-sm text-muted-foreground">
-          Common intervals to start from, not manufacturer schedules. Uncheck what doesn&apos;t apply and adjust the rest.
-          Each one is first due one interval from today.
+          以下是常用间隔，供起步参考，并非厂商保养周期。取消勾选不适用的项，其余可自行调整。
+          每项的首次到期时间为今天起一个间隔后。
         </p>
       </div>
       <TemplatePicker

@@ -22,13 +22,13 @@ export const runtime = "nodejs"
 // never message content or tool results, which include health records.
 export async function POST(request: Request) {
   const session = await auth()
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!session) return NextResponse.json({ error: "未登录" }, { status: 401 })
 
   let body: unknown
   try {
     body = await request.json()
   } catch {
-    return NextResponse.json({ error: "Invalid JSON." }, { status: 400 })
+    return NextResponse.json({ error: "无效的 JSON。" }, { status: 400 })
   }
   const parsed = chatRequestSchema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: firstIssue(parsed.error) }, { status: 400 })
@@ -36,8 +36,8 @@ export async function POST(request: Request) {
   const config = await loadLlmConfig()
   if (!isLlmReady(config) || !config.baseUrl || !config.model) {
     const error = config.keyUnreadable
-      ? "The saved API key can't be decrypted — an admin needs to re-enter it in Settings."
-      : "The assistant isn't configured. An admin can set it up in Settings."
+      ? "已保存的 API 密钥无法解密 — 需要管理员在设置中重新输入。"
+      : "AI 助手尚未配置，请管理员在设置中完成配置。"
     return NextResponse.json({ error }, { status: 503 })
   }
   const { health, rooms } = await loadFeatures()

@@ -67,14 +67,14 @@ export function scheduleDue(s: DueInput, mileage: MileageIndex, now: Date = new 
 
 /** Badge wording shared by the maintenance page and the asset-detail list. */
 export function dueBadge(due: Due, hasSchedule: boolean, fmt: Pick<Formatter, "meterShort">) {
-  if (due.overdue) return { label: "Overdue", variant: "destructive" as const }
+  if (due.overdue) return { label: "已逾期", variant: "destructive" as const }
   if (due.dueSoon) {
     if (due.reason === "mileage" && due.milesLeft != null) {
       return { label: `${due.milesLeft.toLocaleString()} ${fmt.meterShort(due.meterUnit ?? "MILES")}`, variant: "secondary" as const }
     }
-    return { label: due.daysLeft != null ? `${due.daysLeft}d` : "Due soon", variant: "secondary" as const }
+    return { label: due.daysLeft != null ? `${due.daysLeft} 天` : "即将到期", variant: "secondary" as const }
   }
-  return hasSchedule ? { label: "OK", variant: "outline" as const } : null
+  return hasSchedule ? { label: "正常", variant: "outline" as const } : null
 }
 
 /**
@@ -107,9 +107,9 @@ export function isSnoozed(s: { snoozedUntil: Date | null }, now: Date = new Date
 }
 
 export const SNOOZE_OPTIONS = [
-  { value: "1d", label: "1 day" },
-  { value: "1w", label: "1 week" },
-  { value: "1m", label: "1 month" },
+  { value: "1d", label: "1 天" },
+  { value: "1w", label: "1 周" },
+  { value: "1m", label: "1 个月" },
 ] as const
 
 export type SnoozeFor = (typeof SNOOZE_OPTIONS)[number]["value"]

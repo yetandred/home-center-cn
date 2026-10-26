@@ -59,7 +59,7 @@ export async function runCase(c: ModelTestCase, deps: RunDeps): Promise<Outcome>
     name: t.name,
     description: t.description,
     parameters: t.parameters,
-    label: () => `Test data: ${describeTool(t.name)}`,
+    label: () => `测试数据：${describeTool(t.name)}`,
     async execute(raw) {
       const args = (raw ?? {}) as Record<string, unknown>
       calls.push({ name: t.name, args })

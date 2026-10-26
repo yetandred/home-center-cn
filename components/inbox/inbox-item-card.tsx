@@ -39,21 +39,21 @@ function formatBytes(bytes: number) {
 function StatusChip({ readiness }: { readiness: InboxReadiness }) {
   switch (readiness) {
     case "reading":
-      return <Badge variant="secondary"><Loader2 className="animate-spin" />Reading…</Badge>
+      return <Badge variant="secondary"><Loader2 className="animate-spin" />读取中……</Badge>
     case "failed":
-      return <Badge variant="destructive"><AlertTriangle />Couldn&apos;t read</Badge>
+      return <Badge variant="destructive"><AlertTriangle />无法读取</Badge>
     case "ready":
       return (
         <Badge className="bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
           <span aria-hidden className="size-1.5 rounded-full bg-current" />
-          Ready to file
+          可归档
         </Badge>
       )
     case "check":
       return (
         <Badge className="bg-amber-500/10 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300">
           <AlertTriangle />
-          Needs a look
+          需要确认
         </Badge>
       )
   }
@@ -68,7 +68,7 @@ function ReadRow({ label, read, value, children }: { label: string; read: FieldR
         {read.state === "missing" ? (
           <span className={cn("inline-flex items-center gap-1 italic", AMBER_TEXT)}>
             <AlertTriangle aria-hidden className="size-3.5 shrink-0" />
-            Not found
+            未识别到
           </span>
         ) : (
           <span className="flex min-w-0 flex-wrap items-baseline gap-x-2">
@@ -76,7 +76,7 @@ function ReadRow({ label, read, value, children }: { label: string; read: FieldR
             {read.state === "unsure" && (
               <span title={read.reason} className={cn("inline-flex cursor-help items-center gap-0.5 text-xs", AMBER_TEXT)}>
                 <AlertTriangle aria-hidden className="size-3 shrink-0" />
-                unsure
+                存疑
                 <span className="sr-only">: {read.reason}</span>
               </span>
             )}
@@ -89,9 +89,9 @@ function ReadRow({ label, read, value, children }: { label: string; read: FieldR
 }
 
 const DESTINATIONS: { value: InboxDestination; label: string; hint: string }[] = [
-  { value: "file", label: "New service record", hint: "Creates a record from these details" },
-  { value: "attach", label: "Add to an existing record", hint: "Already logged it by hand?" },
-  { value: "keep", label: "Keep as a document", hint: "Manuals, warranty cards, no cost" },
+  { value: "file", label: "新建维护记录", hint: "根据这些信息创建一条记录" },
+  { value: "attach", label: "添加到已有记录", hint: "已经手动记录过了？" },
+  { value: "keep", label: "保存为文档", hint: "说明书、保修卡，无费用" },
 ]
 
 export function InboxItemCard({
@@ -115,7 +115,7 @@ export function InboxItemCard({
   const [pending, start] = useTransition()
 
   const first = item.attachments[0]
-  const fileName = first ? (item.attachments.length > 1 ? `${first.originalName} +${item.attachments.length - 1}` : first.originalName) : "Uploading…"
+  const fileName = first ? (item.attachments.length > 1 ? `${first.originalName} +${item.attachments.length - 1}` : first.originalName) : "上传中……"
   const thumb = item.attachments.find((a) => isPreviewableImage(a.mimeType))
   const uploading = item.attachments.length === 0
   const readiness = inboxReadiness(item, householdNames)
@@ -161,20 +161,20 @@ export function InboxItemCard({
         toast.error(r.error)
         return
       }
-      toast.success(r.status === "PENDING" ? "Still reading the file; it'll update shortly." : "Read again.")
+      toast.success(r.status === "PENDING" ? "文件仍在读取中，稍后会更新。" : "已重新读取。")
       router.refresh()
     })
   }
 
   function discard() {
-    if (!confirm(`Discard "${fileName}"? The file is deleted.`)) return
+    if (!confirm(`确定丢弃“${fileName}”吗？文件将被删除。`)) return
     start(async () => {
       const r = await discardInboxItem(item.id)
       if ("error" in r) {
         toast.error(r.error)
         return
       }
-      toast.success("Discarded.")
+      toast.success("已丢弃。")
       router.refresh()
     })
   }
@@ -189,8 +189,8 @@ export function InboxItemCard({
           href={first?.href}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label={first ? `Open ${first.originalName}` : undefined}
-          title={first ? `Open ${first.originalName}` : undefined}
+          aria-label={first ? `打开 ${first.originalName}` : undefined}
+          title={first ? `打开 ${first.originalName}` : undefined}
           className="flex h-20 w-16 shrink-0 items-center justify-center overflow-hidden rounded-md border bg-muted/40 transition-colors hover:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none sm:h-24 sm:w-20"
         >
           {thumb ? (
@@ -209,21 +209,21 @@ export function InboxItemCard({
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger
-                aria-label={`More actions for ${fileName}`}
+                aria-label={`${fileName} 的更多操作`}
                 disabled={pending}
                 className="-mt-1 -mr-1 inline-flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:opacity-50"
               >
                 {pending ? <Loader2 className="size-4 animate-spin" /> : <MoreHorizontal className="size-4" />}
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-52">
-                <DropdownMenuItem disabled={uploading} onClick={reread} title="Read the file again, e.g. after changing Receipt reading in Settings">
+                <DropdownMenuItem disabled={uploading} onClick={reread} title="重新读取文件，例如在设置中更改收据识别方式后">
                   <RotateCw />
-                  Re-read
+                  重新读取
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem variant="destructive" onClick={discard}>
                   <Trash2 />
-                  Discard
+                  丢弃
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -240,25 +240,26 @@ export function InboxItemCard({
                 {formatBytes(a.sizeBytes)}
               </span>
             ))}
-            {uploading && "Waiting for the upload…"}
-            {" · added by "}
+            {uploading && "正在等待上传……"}
+            {" · 由 "}
             {item.createdBy},{" "}
             <time dateTime={added.toISOString()} suppressHydrationWarning>
               {`${fmt.dayMonth(added)} ${fmt.time(added)}`}
             </time>
+            {" 添加"}
           </p>
         </div>
       </div>
 
       <div className="grid border-t md:grid-cols-[minmax(0,1fr)_minmax(0,20rem)]">
         {/* What we read */}
-        <section aria-label="What we read" className="min-w-0 p-4">
+        <section aria-label="识别内容" className="min-w-0 p-4">
           <div className="mb-3 flex flex-wrap items-center gap-x-2 gap-y-1">
-            <h4 className="text-[0.7rem] font-semibold tracking-wider text-muted-foreground uppercase">What we read</h4>
+            <h4 className="text-[0.7rem] font-semibold tracking-wider text-muted-foreground uppercase">识别内容</h4>
             {item.status === "READY" && (
               <Badge variant="outline" className="text-muted-foreground">
                 {item.parseMethod === "llm" && <Sparkles />}
-                {readBy ? readBy.charAt(0).toUpperCase() + readBy.slice(1) : "Reading off"}
+                {readBy ? readBy.charAt(0).toUpperCase() + readBy.slice(1) : "直接读取"}
               </Badge>
             )}
             {item.status === "READY" && fallback && <span className="text-xs text-muted-foreground">{fallback}</span>}
@@ -267,24 +268,24 @@ export function InboxItemCard({
           {readiness === "reading" && (
             <p className="flex items-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="size-4 animate-spin" />
-              {uploading ? "Waiting for the upload to finish…" : "Reading the file. This usually takes a few seconds."}
+              {uploading ? "正在等待上传完成……" : "正在读取文件，通常只需几秒钟。"}
             </p>
           )}
 
           {readiness === "failed" && (
             <p className="text-sm text-destructive">
-              {item.error ?? "Couldn't read this file."} You can still file it by hand.
+              {item.error ?? "无法读取此文件。"} 仍可手动归档。
             </p>
           )}
 
           {item.status === "READY" && (
             <>
               <dl className="grid grid-cols-[4.5rem_minmax(0,1fr)] items-baseline gap-x-3 gap-y-2">
-                <ReadRow label="Date" read={fields.date} value={item.parsedDate ? fmt.date(item.parsedDate, { utc: true }) : null} />
-                <ReadRow label="Total" read={fields.total} value={item.parsedTotal != null ? fmt.money(item.parsedTotal) : null} />
-                <ReadRow label="Shop" read={fields.vendor} value={item.parsedVendor} />
+                <ReadRow label="日期" read={fields.date} value={item.parsedDate ? fmt.date(item.parsedDate, { utc: true }) : null} />
+                <ReadRow label="金额" read={fields.total} value={item.parsedTotal != null ? fmt.money(item.parsedTotal) : null} />
+                <ReadRow label="商家" read={fields.vendor} value={item.parsedVendor} />
                 <ReadRow
-                  label="Asset"
+                  label="资产"
                   read={fields.asset}
                   value={
                     item.suggestedAsset && SuggestedIcon ? (
@@ -302,10 +303,10 @@ export function InboxItemCard({
               </dl>
               <p className="mt-3 text-xs text-muted-foreground">
                 {!readBy
-                  ? "Receipt reading is off. Fill these in when you file it."
+                  ? "收据识别已关闭，归档时请手动填写。"
                   : nothingRead
-                    ? "Nothing recognised. Fill these in when you file it."
-                    : "Check these before filing."}
+                    ? "未识别出内容，归档时请手动填写。"
+                    : "归档前请核对以上内容。"}
               </p>
             </>
           )}
@@ -314,7 +315,7 @@ export function InboxItemCard({
         {/* Where it goes */}
         <fieldset className="min-w-0 border-t bg-muted/50 p-4 md:border-t-0 md:border-l">
           <legend className="float-left mb-3 w-full text-[0.7rem] font-semibold tracking-wider text-muted-foreground uppercase">
-            Where it goes
+            归档去向
           </legend>
           <div className="clear-left space-y-1">
             {DESTINATIONS.map((d) => (
@@ -344,7 +345,7 @@ export function InboxItemCard({
                         {" "}
                         {/* A no-break space keeps the arrow with the name; a long name can still wrap. */}
                         <span aria-hidden>→&nbsp;</span>
-                        <span className="sr-only">for </span>
+                        <span className="sr-only">用于 </span>
                         <span className="font-medium break-words text-foreground">{item.suggestedAsset.name}</span>
                       </>
                     )}
@@ -356,7 +357,7 @@ export function InboxItemCard({
           <div className="mt-3 flex justify-end">
             <Button type="button" className="w-full sm:w-auto" disabled={uploading || pending} onClick={proceed}>
               {pending && destination === "attach" ? <Loader2 className="animate-spin" /> : null}
-              Continue
+              继续
               <ArrowRight data-icon="inline-end" />
             </Button>
           </div>

@@ -10,7 +10,7 @@ import { RATING_WORDS } from "@/lib/day-ratings"
 import { cn } from "@/lib/utils"
 
 const DAY = 86_400_000
-const WEEKDAYS = ["Mon", "", "Wed", "", "Fri", "", ""]
+const WEEKDAYS = ["一", "", "三", "", "五", "", ""]
 
 // Empty days are a faint wash of the ink, not the surface, so "nothing logged"
 // still reads as a day in the grid; logged days step up one hue by their
@@ -25,7 +25,7 @@ const LEVEL_FILL = [
 ]
 
 const KIND_WORD: Record<MedicationEvent["kind"], string> = {
-  start: "Started", up: "Increased", down: "Decreased", restart: "Restarted", stop: "Stopped",
+  start: "开始用药", up: "剂量增加", down: "剂量减少", restart: "重新开始", stop: "停药",
 }
 
 interface Props {
@@ -69,22 +69,22 @@ export function ObservationCalendar({ observations, events, pickedDay, onPickDay
     <figure className="rounded-lg border bg-card">
       <figcaption className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-b px-4 py-3">
         <div>
-          <div className="text-sm font-medium">Year at a glance</div>
+          <div className="text-sm font-medium">全年总览</div>
           <div className="text-xs text-muted-foreground">
-            {cal.total} logged · each day shaded by its worst entry, darker is more severe. Click a day to list it below.
+            共记录 {cal.total} 次 · 每天按当日最严重的一条着色，颜色越深越严重。点击某天可在下方列出。
           </div>
         </div>
         <div className="flex items-center gap-1">
           <button
             type="button"
-            aria-label="Newer"
+            aria-label="更近"
             disabled={index === 0}
             onClick={() => setRangeValue(ranges[index - 1].value)}
             className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
-          <div className="inline-flex rounded-md border p-0.5" role="group" aria-label="Calendar range">
+          <div className="inline-flex rounded-md border p-0.5" role="group" aria-label="日历范围">
             {ranges.map((r) => (
               <button
                 key={r.value}
@@ -102,7 +102,7 @@ export function ObservationCalendar({ observations, events, pickedDay, onPickDay
           </div>
           <button
             type="button"
-            aria-label="Older"
+            aria-label="更早"
             disabled={index === ranges.length - 1}
             onClick={() => setRangeValue(ranges[index + 1].value)}
             className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-30"
@@ -130,9 +130,9 @@ export function ObservationCalendar({ observations, events, pickedDay, onPickDay
                       key={w}
                       type="button"
                       className="flex items-center justify-center rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
-                      aria-label={list.map((e) => `${day(e.at)}: ${e.name} ${e.label}`).join("; ")}
+                      aria-label={list.map((e) => `${day(e.at)}：${e.name} ${e.label}`).join("；")}
                       {...anchorProps({
-                        title: list.length === 1 ? "Medication change" : `${list.length} medication changes`,
+                        title: list.length === 1 ? "用药变化" : `${list.length} 次用药变化`,
                         rows: list.flatMap((e) => [
                           { label: `${KIND_WORD[e.kind]} ${e.name}`, value: fmt.dayMonth(new Date(e.at), { utc: true }) },
                           { label: e.label, value: "", muted: true },
@@ -178,10 +178,10 @@ export function ObservationCalendar({ observations, events, pickedDay, onPickDay
                           {...anchorProps({
                             title: day(d.day),
                             rows: d.count === 0
-                              ? [{ label: "Nothing logged", value: "", muted: true }]
-                              : [{ label: `${RATING_WORDS[calendarLevel(d.rating)]} day`, value: `${d.rating} / 5` } as TooltipRow].concat(
+                              ? [{ label: "无记录", value: "", muted: true }]
+                              : [{ label: `${RATING_WORDS[calendarLevel(d.rating)]}日`, value: `${d.rating} / 5` } as TooltipRow].concat(
                                   d.titles.slice(0, 6).map((t): TooltipRow => ({ label: t, value: "", muted: true })),
-                                  d.titles.length > 6 ? [{ label: `and ${d.titles.length - 6} more`, value: "", muted: true }] : []
+                                  d.titles.length > 6 ? [{ label: `还有 ${d.titles.length - 6} 项`, value: "", muted: true }] : []
                                 ),
                           })}
                         />
@@ -198,14 +198,14 @@ export function ObservationCalendar({ observations, events, pickedDay, onPickDay
           <div className="mt-3 flex flex-wrap items-center justify-end gap-x-4 gap-y-1 text-[11px] text-muted-foreground" aria-hidden="true">
             <span className="flex items-center gap-1.5">
               <span className="block h-2 w-2 rotate-45 rounded-[1px] bg-foreground/70" />
-              Medication change
+              用药变化
             </span>
             <span className="flex items-center gap-1">
-              Quiet
+              平静
               {LEVEL_FILL.map((f, i) => (
                 <span key={i} className="h-2.5 w-2.5 rounded-[2px]" style={{ background: f }} />
               ))}
-              Severe
+              严重
             </span>
           </div>
         </div>
@@ -214,8 +214,8 @@ export function ObservationCalendar({ observations, events, pickedDay, onPickDay
       </div>
 
       <table className="sr-only">
-        <caption>Days with observations, {range.label}</caption>
-        <thead><tr><th>Day</th><th>Rating (worst entry, 1 to 5)</th><th>Count</th><th>What</th></tr></thead>
+        <caption>有观察记录的日子，{range.label}</caption>
+        <thead><tr><th>日期</th><th>评分（按最严重一条，1 到 5）</th><th>数量</th><th>事项</th></tr></thead>
         <tbody>
           {cal.weeks.flatMap((wk) => wk.days).filter((d) => d && d.count > 0).map((d) => (
             <tr key={d!.day}><td>{day(d!.day)}</td><td>{d!.rating}</td><td>{d!.count}</td><td>{d!.titles.join(", ")}</td></tr>

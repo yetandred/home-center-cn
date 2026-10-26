@@ -22,8 +22,8 @@ export function AddSplitButton({
   label,
   onAdd,
   asset,
-  fromFileLabel = "From a receipt or invoice…",
-  menuLabel = "More ways to add a record",
+  fromFileLabel = "从收据或发票添加……",
+  menuLabel = "更多添加记录的方式",
 }: {
   label: string
   onAdd: () => void
@@ -41,7 +41,7 @@ export function AddSplitButton({
     if (!files.length) return
     const results = await Promise.all(files.map((f) => addFileToInbox(f, { successToast: false, asset })))
     if (results.some(Boolean)) {
-      toast.success("Added to Intake — reading it now", { action: { label: "View", onClick: () => router.push("/intake") } })
+      toast.success("已添加到收件箱，正在读取", { action: { label: "查看", onClick: () => router.push("/intake") } })
       router.refresh()
     }
   }
@@ -64,12 +64,12 @@ export function AddSplitButton({
             <ReceiptText className="mt-0.5" />
             <span className="flex flex-col">
               <span>{fromFileLabel}</span>
-              <span className="text-xs text-muted-foreground">or drag it onto any page</span>
+              <span className="text-xs text-muted-foreground">或拖拽到任意页面</span>
             </span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => cameraRef.current?.click()} className="md:hidden">
             <Camera />
-            Take photo
+            拍照
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

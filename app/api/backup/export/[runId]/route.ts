@@ -17,18 +17,18 @@ type Params = { params: Promise<{ runId: string }> }
 /** The export file this admin may take, or the error response. */
 async function locate(params: Params["params"]): Promise<{ dir: string; p: string; size: number; name: string } | NextResponse> {
   const session = await adminSession()
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!session) return NextResponse.json({ error: "未登录" }, { status: 401 })
   const { runId } = await params
-  if (!RUN_ID.test(runId)) return NextResponse.json({ error: "Not found" }, { status: 404 })
+  if (!RUN_ID.test(runId)) return NextResponse.json({ error: "未找到" }, { status: 404 })
   const run = await prisma.backupRun.findUnique({ where: { id: runId } })
   // Only the admin who made the export can take it.
   if (!run || run.kind !== "EXPORT" || run.createdById !== session.user.id || !run.file || (run.status !== "OK" && run.status !== "WARN")) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 })
+    return NextResponse.json({ error: "未找到" }, { status: 404 })
   }
   const dir = exportDir(run.id)
   const p = safeJoin(dir, run.file)
   const size = p ? await stat(p).then((s) => (s.isFile() ? s.size : null), () => null) : null
-  if (!p || size === null) return NextResponse.json({ error: "This export was already downloaded." }, { status: 410 })
+  if (!p || size === null) return NextResponse.json({ error: "该导出文件已被下载过。" }, { status: 410 })
   return { dir, p, size, name: path.basename(run.file) }
 }
 

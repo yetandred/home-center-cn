@@ -11,13 +11,13 @@ import type { Provider } from "@/app/generated/prisma/client"
 import { useFormat } from "@/components/regional-provider"
 
 const FIELDS: FieldConfig[] = [
-  { name: "name", label: "Name", kind: "text", required: true, placeholder: "Dr. Maria Chen", wide: true },
-  { name: "specialty", label: "Specialty", kind: "text", placeholder: "Family medicine" },
-  { name: "practice", label: "Practice", kind: "text", placeholder: "Riverside Family Health" },
-  { name: "phone", label: "Phone", kind: "tel", placeholder: "555-555-5555" },
-  { name: "email", label: "Email", kind: "email" },
-  { name: "address", label: "Address", kind: "text", wide: true },
-  { name: "notes", label: "Notes", kind: "textarea", wide: true },
+  { name: "name", label: "姓名", kind: "text", required: true, placeholder: "李医生", wide: true },
+  { name: "specialty", label: "专长", kind: "text", placeholder: "家庭医学" },
+  { name: "practice", label: "执业机构", kind: "text", placeholder: "河滨家庭医疗中心" },
+  { name: "phone", label: "电话", kind: "tel", placeholder: "555-555-5555" },
+  { name: "email", label: "邮箱", kind: "email" },
+  { name: "address", label: "地址", kind: "text", wide: true },
+  { name: "notes", label: "备注", kind: "textarea", wide: true },
 ]
 
 function initialFor(p: Provider | null): FormValues {
@@ -39,7 +39,7 @@ export function ProvidersTable({ providers, stats }: Props) {
 
   const columns: EntityColumn<Provider>[] = [
     {
-      key: "name", label: "Provider",
+      key: "name", label: "供应商",
       cell: (p) => (
         <div>
           <div className="font-medium">{p.name}</div>
@@ -47,30 +47,30 @@ export function ProvidersTable({ providers, stats }: Props) {
         </div>
       ),
     },
-    { key: "practice", label: "Practice", className: "text-muted-foreground", cell: (p) => p.practice ?? "—" },
+    { key: "practice", label: "执业机构", className: "text-muted-foreground", cell: (p) => p.practice ?? "—" },
     {
-      key: "phone", label: "Phone", className: "whitespace-nowrap",
+      key: "phone", label: "电话", className: "whitespace-nowrap",
       cell: (p) => (p.phone ? <a href={`tel:${p.phone}`} onClick={(e) => e.stopPropagation()} className="hover:underline">{p.phone}</a> : "—"),
     },
-    { key: "visits", label: "Visits", className: "text-right text-muted-foreground", cell: (p) => stats[p.id]?.visits ?? 0 },
-    { key: "spend", label: "Spend", className: "text-right whitespace-nowrap", cell: (p) => fmt.money(stats[p.id]?.spend ?? 0) },
+    { key: "visits", label: "就诊次数", className: "text-right text-muted-foreground", cell: (p) => stats[p.id]?.visits ?? 0 },
+    { key: "spend", label: "支出", className: "text-right whitespace-nowrap", cell: (p) => fmt.money(stats[p.id]?.spend ?? 0) },
   ]
 
   async function handleDelete(p: Provider) {
-    if (!confirm(`Delete "${p.name}"? Visits, conditions and prescriptions keep their history but lose the link.`)) return
+    if (!confirm(`删除“${p.name}”？就诊、病症和处方将保留历史记录，但会取消关联。`)) return
     const result = await deleteProvider(p.id)
-    if (result.error) { toast.error("Delete failed."); return }
-    toast.success("Provider deleted.")
+    if (result.error) { toast.error("删除失败。"); return }
+    toast.success("供应商已删除。")
   }
 
   return (
     <>
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="font-heading text-2xl font-semibold">Providers</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Doctors, dentists, therapists and clinics the household uses.</p>
+          <h1 className="font-heading text-2xl font-semibold">供应商</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">家庭常用的医生、牙医、治疗师和诊所。</p>
         </div>
-        <Button onClick={() => { setEditing(null); setOpen(true) }}>Add Provider</Button>
+        <Button onClick={() => { setEditing(null); setOpen(true) }}>添加供应商</Button>
       </div>
 
       <EntityTable
@@ -79,11 +79,11 @@ export function ProvidersTable({ providers, stats }: Props) {
         describe={(p) => p.name}
         onEdit={(p) => { setEditing(p); setOpen(true) }}
         onDelete={handleDelete}
-        empty="No providers yet. Add the doctors and clinics your household sees."
+        empty="暂无供应商。添加家庭就诊的医生和诊所。"
         renderExpanded={(p) => (
           <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-muted-foreground">
-            {p.email && <span>Email: <a href={`mailto:${p.email}`} className="hover:underline">{p.email}</a></span>}
-            {p.address && <span>Address: {p.address}</span>}
+            {p.email && <span>邮箱：<a href={`mailto:${p.email}`} className="hover:underline">{p.email}</a></span>}
+            {p.address && <span>地址：{p.address}</span>}
             {p.notes && <span className="whitespace-pre-wrap">{p.notes}</span>}
           </div>
         )}
@@ -92,9 +92,9 @@ export function ProvidersTable({ providers, stats }: Props) {
       <EntityFormDialog
         open={open}
         onClose={() => setOpen(false)}
-        title={editing ? "Edit Provider" : "Add Provider"}
-        submitLabel={editing ? "Save Changes" : "Add Provider"}
-        successMessage={editing ? "Provider updated." : "Provider added."}
+        title={editing ? "编辑供应商" : "添加供应商"}
+        submitLabel={editing ? "保存更改" : "添加供应商"}
+        successMessage={editing ? "供应商已更新。" : "供应商已添加。"}
         fields={FIELDS}
         initial={initialFor(editing)}
         onSubmit={(values) => (editing ? updateProvider(editing.id, values) : createProvider(values))}

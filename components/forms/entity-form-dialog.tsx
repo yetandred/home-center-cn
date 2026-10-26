@@ -97,7 +97,7 @@ export function EntityFormDialog({ open, onClose, title, submitLabel, successMes
 
   // A file dropped anywhere while this is open joins the files staged above.
   useDropTarget({
-    label: "Add to this record's files",
+    label: "添加到此记录的文件",
     onFiles: (files) => setStagedFiles((prev) => [...prev, ...files]),
     enabled: open && !!attachmentRecordType,
   })
@@ -107,11 +107,11 @@ export function EntityFormDialog({ open, onClose, title, submitLabel, successMes
   }
 
   async function handleDeleteExisting(attachment: Attachment) {
-    if (!confirm(`Remove "${attachment.originalName}"?`)) return
+    if (!confirm(`移除“${attachment.originalName}”？`)) return
     const result = await deleteAttachment(attachment.id)
     if (result?.error) { toast.error(result.error); return }
     setRemovedIds((prev) => new Set(prev).add(attachment.id))
-    toast.success("Attachment removed.")
+    toast.success("附件已移除。")
   }
 
   function set(name: string, value: string) {
@@ -128,7 +128,7 @@ export function EntityFormDialog({ open, onClose, title, submitLabel, successMes
     e.preventDefault()
     const missing = fields.filter((f) => f.required && !values[f.name]?.trim())
     if (missing.length > 0) {
-      setErrors(Object.fromEntries(missing.map((f) => [f.name, `${f.label} is required`])))
+      setErrors(Object.fromEntries(missing.map((f) => [f.name, `${f.label} 为必填项`])))
       return
     }
 
@@ -139,8 +139,8 @@ export function EntityFormDialog({ open, onClose, title, submitLabel, successMes
         if (typeof result.error === "string") {
           toast.error(result.error)
         } else {
-          setErrors(Object.fromEntries(Object.entries(result.error).map(([k, v]) => [k, v?.[0] ?? "Invalid value"])))
-          toast.error("Please fix the errors and try again.")
+          setErrors(Object.fromEntries(Object.entries(result.error).map(([k, v]) => [k, v?.[0] ?? "取值无效"])))
+          toast.error("请修正错误后重试。")
         }
         return
       }
@@ -158,7 +158,7 @@ export function EntityFormDialog({ open, onClose, title, submitLabel, successMes
             const res = await fetch("/api/uploads", { method: "POST", body: formData })
             if (!res.ok) {
               const json = await res.json().catch(() => ({}))
-              throw new Error(json.error ?? `Failed to upload "${file.name}"`)
+              throw new Error(json.error ?? `上传“${file.name}”失败`)
             }
             return file
           })
@@ -167,7 +167,7 @@ export function EntityFormDialog({ open, onClose, title, submitLabel, successMes
         setStagedFiles((prev) => prev.filter((f) => !succeeded.has(f)))
         const firstFailure = uploads.find((u): u is PromiseRejectedResult => u.status === "rejected")
         if (firstFailure) {
-          toast.error(firstFailure.reason instanceof Error ? firstFailure.reason.message : "Some files failed to upload.")
+          toast.error(firstFailure.reason instanceof Error ? firstFailure.reason.message : "部分文件上传失败。")
           return
         }
         router.refresh()
@@ -176,7 +176,7 @@ export function EntityFormDialog({ open, onClose, title, submitLabel, successMes
       toast.success(successMessage)
       onClose()
     } catch {
-      toast.error("Something went wrong saving. Please try again.")
+      toast.error("保存时出现问题，请重试。")
     } finally {
       setSubmitting(false)
     }
@@ -207,13 +207,13 @@ export function EntityFormDialog({ open, onClose, title, submitLabel, successMes
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
                   <Paperclip className="h-3.5 w-3.5" />
-                  Attachments {(existingAttachments.length + stagedFiles.length) > 0 && <span className="inline-flex items-center justify-center rounded-full bg-secondary px-1.5 py-0.5 text-xs font-medium">{existingAttachments.length + stagedFiles.length}</span>}
+                  附件 {(existingAttachments.length + stagedFiles.length) > 0 && <span className="inline-flex items-center justify-center rounded-full bg-secondary px-1.5 py-0.5 text-xs font-medium">{existingAttachments.length + stagedFiles.length}</span>}
                 </div>
                 <label>
                   <input ref={fileInputRef} type="file" multiple className="hidden" onChange={handleFileSelect} />
                   <Button type="button" variant="outline" size="sm" onClick={openFilePicker}>
                     <Upload className="h-3.5 w-3.5 mr-1.5" />
-                    Attach file
+                    附加文件
                   </Button>
                 </label>
               </div>
@@ -233,7 +233,7 @@ export function EntityFormDialog({ open, onClose, title, submitLabel, successMes
                         <button
                           type="button"
                           onClick={() => handleDeleteExisting(a)}
-                          aria-label={`Remove "${a.originalName}"`}
+                          aria-label={`移除“${a.originalName}”`}
                           className="shrink-0 text-muted-foreground hover:text-destructive transition-colors"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
@@ -256,7 +256,7 @@ export function EntityFormDialog({ open, onClose, title, submitLabel, successMes
                         <button
                           type="button"
                           onClick={() => removeStagedFile(index)}
-                          aria-label={`Remove "${file.name}"`}
+                          aria-label={`移除“${file.name}”`}
                           className="shrink-0 text-muted-foreground hover:text-destructive transition-colors"
                         >
                           <X className="h-3.5 w-3.5" />
@@ -272,8 +272,8 @@ export function EntityFormDialog({ open, onClose, title, submitLabel, successMes
           {children}
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
-            <Button type="submit" disabled={submitting}>{submitting ? "Saving…" : submitLabel}</Button>
+            <Button type="button" variant="outline" onClick={onClose}>取消</Button>
+            <Button type="submit" disabled={submitting}>{submitting ? "保存中…" : submitLabel}</Button>
           </DialogFooter>
         </form>
       </DialogContent>
@@ -293,10 +293,10 @@ function FieldInput({ field, value, onChange }: { field: FieldConfig; value: str
     return (
       <Select value={value || NONE} onValueChange={(v) => onChange(!v || v === NONE ? "" : v)}>
         <SelectTrigger id={id} className="w-full">
-          <SelectValue>{(v: string) => options.find((o) => o.value === v)?.label ?? "None"}</SelectValue>
+          <SelectValue>{(v: string) => options.find((o) => o.value === v)?.label ?? "无"}</SelectValue>
         </SelectTrigger>
         <SelectContent>
-          {!field.required && <SelectItem value={NONE}>None</SelectItem>}
+          {!field.required && <SelectItem value={NONE}>无</SelectItem>}
           {options.map((o) => (
             <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
           ))}
@@ -326,7 +326,7 @@ function FieldInput({ field, value, onChange }: { field: FieldConfig; value: str
             {o.label}
           </label>
         ))}
-        {options.length === 0 && <span className="text-sm text-muted-foreground">Nothing to choose yet.</span>}
+        {options.length === 0 && <span className="text-sm text-muted-foreground">暂无可选项。</span>}
       </div>
     )
   }

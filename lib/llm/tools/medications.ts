@@ -34,7 +34,7 @@ export const medicationHistoryTool = defineTool({
     medication: z.string().optional().describe("Only drugs whose name contains this, e.g. 'fluoxetine'. Omit for all."),
     current: z.boolean().optional().describe("true: only medications currently being taken."),
   }),
-  label: (a) => (a.medication ? `Reading the ${a.medication} history…` : "Reading medications…"),
+  label: (a) => (a.medication ? `正在读取${a.medication}的用药历史…` : "正在读取用药信息…"),
   async run(a, ctx: ToolContext) {
     const personId = a.person ? resolveAssetId((await loadAssetIndex()).names, a.person, ["PERSON"]) : undefined
     const rows = await loadRows(personId)

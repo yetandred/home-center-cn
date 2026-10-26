@@ -57,7 +57,7 @@ async function documentAssetType(id: string): Promise<AssetType | null> {
 
 export async function POST(request: NextRequest) {
   const session = await auth()
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!session) return NextResponse.json({ error: "未登录" }, { status: 401 })
 
   const maxBytes = maxUploadBytes()
   const tooBig = oversizedBody(request.headers, maxBytes)
@@ -68,21 +68,21 @@ export async function POST(request: NextRequest) {
   const recordType = formData.get("recordType") as string | null
 
   if (!file || !recordId || !isRecordType(recordType)) {
-    return NextResponse.json({ error: "Missing or invalid fields" }, { status: 400 })
+    return NextResponse.json({ error: "缺少必填字段或字段无效" }, { status: 400 })
   }
   if (file.size > maxBytes) {
-    return NextResponse.json({ error: `File exceeds maximum size of ${Math.round(maxBytes / 1024 / 1024)} MB.` }, { status: 400 })
+    return NextResponse.json({ error: `文件超过 ${Math.round(maxBytes / 1024 / 1024)} MB 的大小限制。` }, { status: 400 })
   }
   const ext = extensionForFilename(file.name)
   if (!ext) {
-    return NextResponse.json({ error: "File type not allowed." }, { status: 400 })
+    return NextResponse.json({ error: "不支持的文件类型。" }, { status: 400 })
   }
   if (recordType === "ROOM" && !(await loadFeatures()).rooms) {
-    return NextResponse.json({ error: "Record not found" }, { status: 404 })
+    return NextResponse.json({ error: "未找到对应记录" }, { status: 404 })
   }
   const documentOn = recordType === "DOCUMENT" ? await documentAssetType(recordId) : null
   if (recordType === "DOCUMENT" ? !documentOn : !(await recordExists(recordType, recordId))) {
-    return NextResponse.json({ error: "Record not found" }, { status: 404 })
+    return NextResponse.json({ error: "未找到对应记录" }, { status: 404 })
   }
 
   const dirPath = resolveUploadPath(recordType.toLowerCase(), recordId)

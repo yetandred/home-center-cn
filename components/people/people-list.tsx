@@ -20,8 +20,6 @@ import type { Person } from "@/app/generated/prisma/client"
 
 export type PersonRow = Person & { _count: { conditions: number; medications: number; allergies: number } }
 
-const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`
-
 interface Props {
   people: PersonRow[]
   providers: { id: string; name: string }[]
@@ -48,14 +46,14 @@ export function PeopleList({ people, providers, initialView }: Props) {
   )
 
   const columns: AssetColumn<PersonRow>[] = [
-    { key: "name", label: "Name", cell: (p) => <span className="font-medium">{p.name}</span> },
-    { key: "relationship", label: "Relationship", cell: (p) => <Badge variant="secondary" className="text-xs">{labelFor(RELATIONSHIPS, p.relationship)}</Badge> },
-    { key: "age", label: "Age", className: "text-muted-foreground", cell: (p) => age(p) ?? "—" },
-    { key: "conditions", label: "Active conditions", className: "text-muted-foreground", cell: (p) => p._count.conditions },
-    { key: "medications", label: "Medications", className: "text-muted-foreground", cell: (p) => p._count.medications },
+    { key: "name", label: "姓名", cell: (p) => <span className="font-medium">{p.name}</span> },
+    { key: "relationship", label: "关系", cell: (p) => <Badge variant="secondary" className="text-xs">{labelFor(RELATIONSHIPS, p.relationship)}</Badge> },
+    { key: "age", label: "年龄", className: "text-muted-foreground", cell: (p) => age(p) ?? "—" },
+    { key: "conditions", label: "现有病症", className: "text-muted-foreground", cell: (p) => p._count.conditions },
+    { key: "medications", label: "用药", className: "text-muted-foreground", cell: (p) => p._count.medications },
     {
-      key: "allergy", label: "Allergies", sortable: false,
-      cell: (p) => (p._count.allergies > 0 ? <Badge variant="destructive" className="text-xs">Severe</Badge> : "—"),
+      key: "allergy", label: "过敏", sortable: false,
+      cell: (p) => (p._count.allergies > 0 ? <Badge variant="destructive" className="text-xs">严重</Badge> : "—"),
     },
   ]
 
@@ -64,20 +62,20 @@ export function PeopleList({ people, providers, initialView }: Props) {
     return {
       name: p.name,
       badge: labelFor(RELATIONSHIPS, p.relationship),
-      subtitle: a != null ? `Age ${a}` : null,
+      subtitle: a != null ? `${a} 岁` : null,
       meta: [
-        ...(p._count.conditions > 0 ? [{ icon: Stethoscope, text: plural(p._count.conditions, "active condition") }] : []),
-        ...(p._count.medications > 0 ? [{ icon: Pill, text: plural(p._count.medications, "medication") }] : []),
-        ...(p._count.allergies > 0 ? [{ icon: AlertTriangle, text: "Severe allergy on file" }] : []),
+        ...(p._count.conditions > 0 ? [{ icon: Stethoscope, text: `${p._count.conditions} 项病症` }] : []),
+        ...(p._count.medications > 0 ? [{ icon: Pill, text: `${p._count.medications} 种用药` }] : []),
+        ...(p._count.allergies > 0 ? [{ icon: AlertTriangle, text: "有严重过敏记录" }] : []),
       ],
     }
   }
 
   async function handleDelete(p: PersonRow) {
-    if (!confirm(`Delete "${p.name}"? This also deletes their visits, reminders, conditions, medications and files.`)) return
+    if (!confirm(`确定删除“${p.name}”吗？其就诊、提醒、病症、用药和文件也会一并删除。`)) return
     const result = await deletePerson(p.id)
-    if (result.error) { toast.error(typeof result.error === "string" ? result.error : "Delete failed."); return }
-    toast.success(`"${p.name}" deleted.`)
+    if (result.error) { toast.error(typeof result.error === "string" ? result.error : "删除失败。"); return }
+    toast.success(`已删除“${p.name}”。`)
   }
 
   function openNew() { setEditing(null); setDialogOpen(true) }
@@ -87,7 +85,7 @@ export function PeopleList({ people, providers, initialView }: Props) {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger
-          aria-label={`More actions for "${p.name}"`}
+          aria-label={`“${p.name}”的更多操作`}
           className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md hover:bg-muted transition-colors"
           onClick={(evt) => evt.stopPropagation()}
         >
@@ -95,10 +93,10 @@ export function PeopleList({ people, providers, initialView }: Props) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" onClick={(evt) => evt.stopPropagation()}>
           <DropdownMenuItem onClick={() => openEdit(p)}>
-            <Pencil className="h-4 w-4 mr-2" /> Edit
+            <Pencil className="h-4 w-4 mr-2" /> 编辑
           </DropdownMenuItem>
           <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(p)}>
-            <Trash2 className="h-4 w-4 mr-2" /> Delete
+            <Trash2 className="h-4 w-4 mr-2" /> 删除
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -109,19 +107,19 @@ export function PeopleList({ people, providers, initialView }: Props) {
     <>
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="font-heading text-2xl font-semibold">People</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">{people.length} {people.length === 1 ? "person" : "people"}</p>
+          <h1 className="font-heading text-2xl font-semibold">成员</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">{people.length} 名成员</p>
         </div>
         <div className="flex items-center gap-2">
           {people.length > 0 && <AssetViewToggle value={view} onChange={setView} />}
-          <Button onClick={openNew}>Add Person</Button>
+          <Button onClick={openNew}>添加成员</Button>
         </div>
       </div>
 
       {people.length === 0 ? (
         <div className="rounded-lg border border-dashed p-12 text-center text-muted-foreground">
-          <p className="font-medium">No people yet</p>
-          <p className="text-sm mt-1">Add household members to track visits, medical receipts, conditions and medications.</p>
+          <p className="font-medium">还没有成员</p>
+          <p className="text-sm mt-1">添加家庭成员，记录就诊、医疗收据、病症和用药。</p>
         </div>
       ) : (
         <AssetCollection
@@ -143,9 +141,9 @@ export function PeopleList({ people, providers, initialView }: Props) {
       <EntityFormDialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
-        title={editing ? "Edit Person" : "Add Person"}
-        submitLabel={editing ? "Save Changes" : "Add Person"}
-        successMessage={editing ? "Person updated." : "Person added."}
+        title={editing ? "编辑成员" : "添加成员"}
+        submitLabel={editing ? "保存更改" : "添加成员"}
+        successMessage={editing ? "成员已更新。" : "成员已添加。"}
         fields={personFields(providers)}
         initial={personInitial(editing)}
         onSubmit={(values) => (editing ? updatePerson(editing.id, values) : createPerson(values))}

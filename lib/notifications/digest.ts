@@ -50,17 +50,17 @@ export function digestDue(
 
 function renderDigest(name: string, notifications: Notification[], url: string) {
   const heading = notifications.length === 1
-    ? "1 item needs your attention"
-    : `${notifications.length} items need your attention`
+    ? "有 1 项内容需要您的关注"
+    : `有 ${notifications.length} 项内容需要您的关注`
 
   const text = [
-    `Hi ${name},`,
+    `${name}，您好：`,
     "",
-    heading + ":",
+    heading + "：",
     "",
     ...notifications.map((n) => `- ${n.title}\n  ${n.message}`),
     "",
-    url ? `See everything: ${url}/notifications` : "Open HomeCenter to see everything.",
+    url ? `查看全部：${url}/notifications` : "请打开 HomeCenter 查看全部。",
   ].join("\n")
 
   const rows = notifications
@@ -73,12 +73,12 @@ function renderDigest(name: string, notifications: Notification[], url: string) 
     .join("")
 
   const html = `<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif;max-width:560px;color:#111">
-    <p>Hi ${escapeHtml(name)},</p>
-    <p>${escapeHtml(heading)}:</p>
+    <p>${escapeHtml(name)}，您好：</p>
+    <p>${escapeHtml(heading)}：</p>
     <table style="width:100%;border-collapse:collapse">${rows}</table>
-    ${url ? `<p style="margin-top:20px"><a href="${url}/notifications">See everything in HomeCenter</a></p>` : ""}
+    ${url ? `<p style="margin-top:20px"><a href="${url}/notifications">在 HomeCenter 中查看全部</a></p>` : ""}
     <p style="color:#888;font-size:12px;margin-top:24px">
-      Change how often you get these in HomeCenter under Settings.
+      您可以在 HomeCenter 的“设置”中更改接收频率。
     </p>
   </div>`
 
@@ -133,7 +133,7 @@ export async function sendPendingDigests(now: Date = new Date()): Promise<number
     if (!items?.length) continue
 
     const { text, html } = renderDigest(user.name.split(" ")[0], items, config.publicUrl ?? "")
-    const subject = items.length === 1 ? items[0].title : `HomeCenter: ${items.length} items need attention`
+    const subject = items.length === 1 ? items[0].title : `HomeCenter：${items.length} 项内容需要关注`
 
     try {
       await sendMail({ to: user.email, subject, text, html }, config)

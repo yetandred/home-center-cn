@@ -28,13 +28,13 @@ import type { RoomSchedule, RoomServiceRecord, RoomWithDetails } from "./room-li
 const paintSchema = z
   .object({ surface: z.string(), brand: z.string(), colorName: z.string(), colorCode: z.string(), finish: z.string() })
   .refine((p) => p.surface.trim() || !(p.brand.trim() || p.colorName.trim() || p.colorCode.trim() || p.finish.trim()), {
-    message: "Which surface?",
+    message: "请选择涂刷表面",
     path: ["surface"],
   })
 
 const schema = z.object({
   propertyId: z.string(),
-  name: z.string().trim().min(1, "Name is required"),
+  name: z.string().trim().min(1, "请填写名称"),
   level: z.string(),
   area: z.string(),
   dimensions: z.string(),
@@ -146,13 +146,13 @@ function RoomDialogBody({ open, onClose, propertyId, room, serviceRecords, sched
     const failure = await uploadAll(files, "ROOM", room.id)
     setUploading(false)
     if (failure) toast.error(failure)
-    else toast.success(files.length === 1 ? `"${files[0].name}" uploaded.` : `${files.length} files uploaded.`)
+    else toast.success(files.length === 1 ? `已上传“${files[0].name}”。` : `已上传 ${files.length} 个文件。`)
     router.refresh()
   }
 
   // A file dropped anywhere while this is open: straight onto an existing room, or queued for a new one.
   useDropTarget({
-    label: "Add to this room's files",
+    label: "添加到本房间的文件",
     onFiles: (files) => (room ? void uploadNow(files) : setStagedFiles((prev) => [...prev, ...files])),
     enabled: open,
   })
@@ -173,7 +173,7 @@ function RoomDialogBody({ open, onClose, propertyId, room, serviceRecords, sched
         const message = result.error[field]?.[0]
         if (message) form.setError(field, { message })
       }
-      toast.error("Please fix the errors and try again.")
+      toast.error("请修正错误后重试。")
       return
     }
 
@@ -190,17 +190,17 @@ function RoomDialogBody({ open, onClose, propertyId, room, serviceRecords, sched
       }
     }
 
-    toast.success(room ? "Room updated." : "Room added.")
+    toast.success(room ? "房间已更新。" : "房间已添加。")
     router.refresh()
     onClose()
   }
 
   async function handleDelete() {
     if (!room) return
-    if (!confirm(`Delete room "${room.name}"? Linked equipment keeps the room name as its location.`)) return
+    if (!confirm(`删除房间“${room.name}”？关联的设备会保留该房间名称作为位置。`)) return
     const result = await deleteRoom(room.id)
     if (result?.error) { toast.error(result.error); return }
-    toast.success("Room deleted.")
+    toast.success("房间已删除。")
     router.refresh()
     onClose()
   }
@@ -211,15 +211,15 @@ function RoomDialogBody({ open, onClose, propertyId, room, serviceRecords, sched
         <div className="grid grid-cols-2 gap-4">
           <FormField control={form.control} name="name" render={({ field }) => (
             <FormItem>
-              <FormLabel>Name *</FormLabel>
-              <FormControl><Input placeholder="Kitchen" {...field} /></FormControl>
+              <FormLabel>名称 *</FormLabel>
+              <FormControl><Input placeholder="厨房" {...field} /></FormControl>
               <FormMessage />
             </FormItem>
           )} />
           <FormField control={form.control} name="level" render={({ field }) => (
             <FormItem>
-              <FormLabel>Level</FormLabel>
-              <FormControl><Input placeholder="Main floor" {...field} /></FormControl>
+              <FormLabel>楼层</FormLabel>
+              <FormControl><Input placeholder="一层" {...field} /></FormControl>
               <FormMessage />
             </FormItem>
           )} />
@@ -232,15 +232,15 @@ function RoomDialogBody({ open, onClose, propertyId, room, serviceRecords, sched
           )} />
           <FormField control={form.control} name="dimensions" render={({ field }) => (
             <FormItem>
-              <FormLabel>Dimensions</FormLabel>
+              <FormLabel>尺寸</FormLabel>
               <FormControl><Input placeholder={`14 × 16 ${fmt.areaShort === "m²" ? "m" : "ft"}`} {...field} /></FormControl>
               <FormMessage />
             </FormItem>
           )} />
           <FormField control={form.control} name="flooringType" render={({ field }) => (
             <FormItem>
-              <FormLabel>Flooring</FormLabel>
-              <FormControl><Input list="room-flooring-suggestions" autoComplete="off" placeholder="Hardwood" {...field} /></FormControl>
+              <FormLabel>地面</FormLabel>
+              <FormControl><Input list="room-flooring-suggestions" autoComplete="off" placeholder="实木地板" {...field} /></FormControl>
               <datalist id="room-flooring-suggestions">
                 {FLOORING_SUGGESTIONS.map((s) => <option key={s} value={s} />)}
               </datalist>
@@ -249,14 +249,14 @@ function RoomDialogBody({ open, onClose, propertyId, room, serviceRecords, sched
           )} />
           <FormField control={form.control} name="flooringProduct" render={({ field }) => (
             <FormItem>
-              <FormLabel>Flooring product</FormLabel>
-              <FormControl><Input placeholder="Brand, product, color" {...field} /></FormControl>
+              <FormLabel>地面材料</FormLabel>
+              <FormControl><Input placeholder="品牌、产品、颜色" {...field} /></FormControl>
               <FormMessage />
             </FormItem>
           )} />
           <FormField control={form.control} name="flooringInstalled" render={({ field }) => (
             <FormItem>
-              <FormLabel>Flooring installed</FormLabel>
+              <FormLabel>地面铺设日期</FormLabel>
               <FormControl><Input type="date" {...field} /></FormControl>
               <FormMessage />
             </FormItem>
@@ -265,36 +265,36 @@ function RoomDialogBody({ open, onClose, propertyId, room, serviceRecords, sched
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Paint</span>
+            <span className="text-sm font-medium">涂料</span>
             <Button type="button" variant="outline" size="sm" onClick={addPaint}>
-              <Plus className="mr-1 h-3.5 w-3.5" /> Add paint
+              <Plus className="mr-1 h-3.5 w-3.5" /> 添加涂料
             </Button>
           </div>
           <datalist id="room-paint-surfaces">
             {PAINT_SURFACES.map((s) => <option key={s} value={s} />)}
           </datalist>
-          {paints.fields.length === 0 && <p className="text-sm text-muted-foreground">No paint colors yet.</p>}
+          {paints.fields.length === 0 && <p className="text-sm text-muted-foreground">暂无涂料颜色。</p>}
           {paints.fields.map((row, index) => (
             <div key={row.id} className="grid grid-cols-2 items-start gap-2 rounded-md border p-2 sm:grid-cols-[8rem_1fr_1fr_6rem_6rem_auto]">
               <FormField control={form.control} name={`paints.${index}.surface`} render={({ field }) => (
                 <FormItem>
-                  <FormControl><Input list="room-paint-surfaces" autoComplete="off" placeholder="Surface" aria-label="Surface" {...field} /></FormControl>
+                  <FormControl><Input list="room-paint-surfaces" autoComplete="off" placeholder="表面" aria-label="表面" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
               <FormField control={form.control} name={`paints.${index}.brand`} render={({ field }) => (
-                <FormItem><FormControl><Input placeholder="Brand" aria-label="Brand" {...field} /></FormControl></FormItem>
+                <FormItem><FormControl><Input placeholder="品牌" aria-label="品牌" {...field} /></FormControl></FormItem>
               )} />
               <FormField control={form.control} name={`paints.${index}.colorName`} render={({ field }) => (
-                <FormItem><FormControl><Input placeholder="Color name" aria-label="Color name" {...field} /></FormControl></FormItem>
+                <FormItem><FormControl><Input placeholder="颜色名称" aria-label="颜色名称" {...field} /></FormControl></FormItem>
               )} />
               <FormField control={form.control} name={`paints.${index}.colorCode`} render={({ field }) => (
-                <FormItem><FormControl><Input placeholder="Code" aria-label="Color code" {...field} /></FormControl></FormItem>
+                <FormItem><FormControl><Input placeholder="色号" aria-label="色号" {...field} /></FormControl></FormItem>
               )} />
               <FormField control={form.control} name={`paints.${index}.finish`} render={({ field }) => (
-                <FormItem><FormControl><Input placeholder="Finish" aria-label="Finish" {...field} /></FormControl></FormItem>
+                <FormItem><FormControl><Input placeholder="光泽" aria-label="光泽" {...field} /></FormControl></FormItem>
               )} />
-              <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" aria-label="Remove paint" onClick={() => paints.remove(index)}>
+              <Button type="button" variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" aria-label="移除涂料" onClick={() => paints.remove(index)}>
                 <Trash2 className="h-3.5 w-3.5" />
               </Button>
             </div>
@@ -303,7 +303,7 @@ function RoomDialogBody({ open, onClose, propertyId, room, serviceRecords, sched
 
         <FormField control={form.control} name="notes" render={({ field }) => (
           <FormItem>
-            <FormLabel>Notes</FormLabel>
+            <FormLabel>备注</FormLabel>
             <FormControl><Textarea rows={3} {...field} /></FormControl>
             <FormMessage />
           </FormItem>
@@ -322,13 +322,13 @@ function RoomDialogBody({ open, onClose, propertyId, room, serviceRecords, sched
         <DialogFooter className="sm:justify-between">
           {room ? (
             <Button type="button" variant="ghost" className="text-destructive hover:text-destructive" onClick={handleDelete}>
-              <Trash2 className="mr-1 h-3.5 w-3.5" /> Delete room
+              <Trash2 className="mr-1 h-3.5 w-3.5" /> 删除房间
             </Button>
           ) : <span />}
           <div className="flex gap-2">
-            <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+            <Button type="button" variant="outline" onClick={onClose}>取消</Button>
             <Button type="submit" disabled={form.formState.isSubmitting}>
-              {form.formState.isSubmitting ? "Saving…" : room ? "Save changes" : "Add room"}
+              {form.formState.isSubmitting ? "保存中…" : room ? "保存更改" : "添加房间"}
             </Button>
           </div>
         </DialogFooter>
@@ -339,16 +339,16 @@ function RoomDialogBody({ open, onClose, propertyId, room, serviceRecords, sched
   return (
     <>
       <DialogHeader>
-        <DialogTitle>{room ? room.name : "Add room"}</DialogTitle>
+        <DialogTitle>{room ? room.name : "添加房间"}</DialogTitle>
       </DialogHeader>
       {room ? (
         <Tabs value={tab} onValueChange={(v) => setTab(String(v))} className="min-h-0 flex-col">
           <TabsList variant="line" className="w-full justify-start border-b">
-            <TabsTrigger value="details">Details</TabsTrigger>
-            <TabsTrigger value="service">Service records</TabsTrigger>
-            {showEquipment && <TabsTrigger value="equipment">Equipment ({room.equipment.length})</TabsTrigger>}
-            <TabsTrigger value="reminders">Maintenance reminders</TabsTrigger>
-            <TabsTrigger value="files">Files ({room.attachments.length})</TabsTrigger>
+            <TabsTrigger value="details">详情</TabsTrigger>
+            <TabsTrigger value="service">维护记录</TabsTrigger>
+            {showEquipment && <TabsTrigger value="equipment">设备（{room.equipment.length}）</TabsTrigger>}
+            <TabsTrigger value="reminders">维护提醒</TabsTrigger>
+            <TabsTrigger value="files">文件（{room.attachments.length}）</TabsTrigger>
           </TabsList>
           {/* keepMounted so unsaved Details edits survive a look at another tab. */}
           <TabsContent value="details" keepMounted className="mt-4 min-h-0 overflow-y-auto">{details}</TabsContent>

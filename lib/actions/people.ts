@@ -41,7 +41,7 @@ export async function deletePerson(id: string): Promise<ActionResult> {
     where: { id },
     select: { id: true, conditions: { select: { id: true } }, observations: { select: { id: true } } },
   })
-  if (!person) return { error: "Not found" }
+  if (!person) return { error: "未找到" }
 
   const where = { assetType: "PERSON" as const, assetId: person.id }
   const [visits, schedules] = await Promise.all([

@@ -10,11 +10,11 @@ export function IntakeTip() {
   return (
     <div className="flex items-start gap-2 rounded-md bg-muted/60 px-3 py-2 text-xs text-muted-foreground">
       <Lightbulb className="mt-px size-3.5 shrink-0" aria-hidden />
-      <p className="flex-1">Tip: drag a file onto any page to add it to Intake.</p>
+      <p className="flex-1">提示：将文件拖到任意页面即可添加到收件箱。</p>
       <button
         type="button"
         onClick={dismiss}
-        aria-label="Dismiss tip"
+        aria-label="关闭提示"
         className="-m-1 rounded p-1 transition-colors hover:bg-muted hover:text-foreground"
       >
         <X className="size-3.5" />

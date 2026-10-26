@@ -15,8 +15,8 @@ function storage() {
   }
 }
 
-const SESSION_EXPIRED = "Your session has expired — sign in again."
-const CUT_OFF = "The answer was cut off — try again."
+const SESSION_EXPIRED = "会话已过期，请重新登录。"
+const CUT_OFF = "回答被中断，请重试。"
 
 /**
  * A line the page itself adds to the transcript (e.g. "Added receipt.pdf to
@@ -89,7 +89,7 @@ export function useChatThread(userId: string) {
         if (res.redirected) throw new Error(SESSION_EXPIRED)
         if (!res.ok || !res.body) {
           const body = (await res.json().catch(() => null)) as { error?: string } | null
-          throw new Error(body?.error ?? `Request failed (${res.status}).`)
+          throw new Error(body?.error ?? `请求失败（${res.status}）。`)
         }
         if (!res.headers.get("content-type")?.includes("application/x-ndjson")) throw new Error(SESSION_EXPIRED)
         const reader = createNdjsonReader<AgentEvent>((event) => {
@@ -135,7 +135,7 @@ export function useChatThread(userId: string) {
           // Stop keeps whatever arrived.
           if (turn.text.trim() || turn.cards.length) persist(mergeCards(messagesRef.current, answer(), turn.cards))
         } else {
-          setError(e instanceof Error ? e.message : "Something went wrong.")
+          setError(e instanceof Error ? e.message : "出错了，请重试。")
         }
       } finally {
         if (abortRef.current === controller) abortRef.current = null

@@ -125,7 +125,7 @@ export function SpendArea({
                 {...anchorProps({
                   title: point.fullLabel,
                   rows: [
-                    { label: "Spend", value: fmt.money(point.total), color: "var(--cost-bar)" },
+                    { label: "支出", value: fmt.money(point.total), color: "var(--cost-bar)" },
                     ...(hasPrior
                       ? [{ label: priorLabel, value: fmt.money(prior[i]), color: "var(--chart-ghost)", muted: true }]
                       : []),
@@ -144,7 +144,7 @@ export function SpendArea({
         <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
           <li className="flex items-center gap-1.5">
             <span aria-hidden="true" className="h-0.5 w-4 rounded-full" style={{ backgroundColor: "var(--cost-bar)" }} />
-            Last 12 months
+            近 12 个月
           </li>
           <li className="flex items-center gap-1.5">
             <span aria-hidden="true" className="h-0.5 w-4 rounded-full" style={{ backgroundColor: "var(--chart-ghost)" }} />
@@ -154,10 +154,10 @@ export function SpendArea({
       ) : null}
 
       <ChartTable
-        caption="Monthly spending against the same month a year earlier"
+        caption="每月支出与去年同月对比"
         columns={[
-          { key: "month", label: "Month" },
-          { key: "total", label: "Spend", align: "right" },
+          { key: "month", label: "月份" },
+          { key: "total", label: "支出", align: "right" },
           ...(hasPrior ? [{ key: "prior", label: priorLabel, align: "right" as const }] : []),
         ]}
         rows={points.map((point, i) => ({

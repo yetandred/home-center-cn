@@ -13,7 +13,7 @@ export async function deleteAttachment(id: string) {
   if (!session) redirect("/login")
 
   const attachment = await prisma.attachment.findUnique({ where: { id } })
-  if (!attachment) return { error: "Not found" }
+  if (!attachment) return { error: "未找到" }
 
   await prisma.attachment.delete({ where: { id } })
 

@@ -17,16 +17,16 @@ export async function GET(
   { params }: { params: Promise<{ type: string; id: string }> }
 ) {
   const session = await auth()
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!session) return NextResponse.json({ error: "未登录" }, { status: 401 })
 
   const { type, id } = await params
   const assetType = parseAssetSegment(type)
-  if (!assetType) return NextResponse.json({ error: "Invalid asset type" }, { status: 400 })
-  if (assetType === "PERSON" && !(await loadFeatures()).health) return NextResponse.json({ error: "Not found" }, { status: 404 })
+  if (!assetType) return NextResponse.json({ error: "无效的资产类型" }, { status: 400 })
+  if (assetType === "PERSON" && !(await loadFeatures()).health) return NextResponse.json({ error: "未找到" }, { status: 404 })
 
   const run = `asset-${randomUUID()}`
   const release = acquireAssetDownload(run)
-  if (!release) return NextResponse.json({ error: "Busy building another download. Try again in a moment." }, { status: 429 })
+  if (!release) return NextResponse.json({ error: "正在生成另一个下载文件，请稍后重试。" }, { status: 429 })
   const outDir = path.join(workDir(), "exports", run)
   let streaming = false
   try {
@@ -51,7 +51,7 @@ export async function GET(
   } catch (e) {
     await rm(outDir, { recursive: true, force: true }).catch(() => undefined)
     console.error("[download] export failed:", e)
-    return NextResponse.json({ error: "Couldn't build the download." }, { status: 500 })
+    return NextResponse.json({ error: "无法生成下载文件。" }, { status: 500 })
   } finally {
     if (!streaming) release()
   }

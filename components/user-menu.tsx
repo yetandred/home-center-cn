@@ -25,7 +25,7 @@ export function UserMenu({ name, email }: { name: string; email: string }) {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger aria-label={`Account: ${name}`} className="flex min-h-10 min-w-10 items-center justify-center gap-2 rounded-lg px-1.5 py-1.5 text-sm lg:min-h-0 lg:px-2 transition-colors duration-150 hover:bg-muted outline-none">
+      <DropdownMenuTrigger aria-label={`账户：${name}`} className="flex min-h-10 min-w-10 items-center justify-center gap-2 rounded-lg px-1.5 py-1.5 text-sm lg:min-h-0 lg:px-2 transition-colors duration-150 hover:bg-muted outline-none">
         <Avatar className="h-7 w-7">
           <AvatarFallback className="bg-primary/15 text-xs font-medium text-primary">{initials}</AvatarFallback>
         </Avatar>
@@ -37,7 +37,7 @@ export function UserMenu({ name, email }: { name: string; email: string }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
         <DropdownMenuGroup>
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuLabel>我的账户</DropdownMenuLabel>
           <div className="px-2 pb-1.5 lg:hidden">
             <div className="truncate text-sm font-medium">{name}</div>
             <div className="truncate text-xs text-muted-foreground">{email}</div>
@@ -46,15 +46,15 @@ export function UserMenu({ name, email }: { name: string; email: string }) {
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => router.push("/settings")}>
           <Settings className="h-4 w-4 mr-2" />
-          Settings
+          设置
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => router.push("/change-password")}>
           <KeyRound className="h-4 w-4 mr-2" />
-          Change Password
+          修改密码
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => router.push("/settings/install")}>
           <Smartphone className="h-4 w-4 mr-2" />
-          Install as app
+          安装为应用
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
@@ -62,7 +62,7 @@ export function UserMenu({ name, email }: { name: string; email: string }) {
           onClick={() => signOut({ callbackUrl: "/login" })}
         >
           <LogOut className="h-4 w-4 mr-2" />
-          Sign out
+          退出登录
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

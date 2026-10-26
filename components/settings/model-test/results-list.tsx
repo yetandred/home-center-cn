@@ -43,7 +43,7 @@ export function ResultsList({
   }
 
   if (!catalog.length) {
-    return <p className="text-sm text-muted-foreground">No tests selected — check at least one group below.</p>
+    return <p className="text-sm text-muted-foreground">未选择任何测试 — 请至少勾选下方一个分组。</p>
   }
 
   const rowsByStage = new Map<Stage, Row[]>()
@@ -63,10 +63,10 @@ export function ResultsList({
     <div className="space-y-4">
       <div className="flex flex-wrap gap-1.5">
         <FilterChip active={filter === "all"} onClick={() => setFilter("all")}>
-          All
+          全部
         </FilterChip>
         <FilterChip active={filter === "failed"} onClick={() => setFilter("failed")}>
-          Failed only
+          仅失败
         </FilterChip>
         {stages.map((s) => (
           <FilterChip key={s.id} active={filter === s.id} onClick={() => setFilter(s.id)}>
@@ -88,7 +88,7 @@ export function ResultsList({
                 <p className="text-xs text-muted-foreground">{stage.description}</p>
               </div>
               <span className="shrink-0 text-xs text-muted-foreground">
-                {passed}/{all.length} passed
+                {passed}/{all.length} 项通过
               </span>
             </div>
             <div className="divide-y divide-border rounded-lg border border-border/60">
@@ -147,7 +147,7 @@ function ResultRow({ row, repeat, expanded, onToggle }: { row: Row; repeat: numb
           <div className="flex flex-wrap items-center gap-1.5">
             <span className="text-sm font-medium">
               {row.case.title}
-              {repeat > 1 && <span className="font-normal text-muted-foreground"> — Run {row.rep + 1}</span>}
+              {repeat > 1 && <span className="font-normal text-muted-foreground"> — 第 {row.rep + 1} 次</span>}
             </span>
             <Badge variant="outline" className="text-[0.65rem]">
               {row.case.category}
@@ -174,12 +174,12 @@ function ResultRow({ row, repeat, expanded, onToggle }: { row: Row; repeat: numb
       {expanded && canExpand && (
         <div className="space-y-2.5 border-t border-border/60 bg-muted/30 px-3 py-2.5 text-xs">
           <div>
-            <p className="font-medium text-muted-foreground">Question</p>
+            <p className="font-medium text-muted-foreground">问题</p>
             <p className="whitespace-pre-wrap">{row.case.question}</p>
           </div>
           {!!row.toolCalls?.length && (
             <div>
-              <p className="font-medium text-muted-foreground">Tool calls</p>
+              <p className="font-medium text-muted-foreground">工具调用</p>
               <div className="space-y-0.5 font-mono">
                 {row.toolCalls.map((t, i) => (
                   <p key={i} className="whitespace-pre-wrap break-all">
@@ -190,11 +190,11 @@ function ResultRow({ row, repeat, expanded, onToggle }: { row: Row; repeat: numb
             </div>
           )}
           <div>
-            <p className="font-medium text-muted-foreground">Reply</p>
-            <p className="whitespace-pre-wrap">{row.answer || "(empty)"}</p>
+            <p className="font-medium text-muted-foreground">回复</p>
+            <p className="whitespace-pre-wrap">{row.answer || "（空）"}</p>
           </div>
           <p className="text-muted-foreground">
-            {row.rounds ?? 0} round{row.rounds === 1 ? "" : "s"}
+            {row.rounds ?? 0} 轮
           </p>
         </div>
       )}

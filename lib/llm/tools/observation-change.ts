@@ -135,7 +135,7 @@ export const proposeEditTool = defineTool({
     "Find the entry and its id with observation_log first; if several match, ask the user which. One call per entry. " +
     "Send only the fields to change. You cannot apply it; the user does, from the card.",
   schema: editSchema,
-  label: () => "Preparing the change…",
+  label: () => "正在准备修改…",
   async run(a, ctx) {
     requireHealth(ctx, "propose_observation_edit")
     const out = await buildEdit(a, depsFor(ctx))
@@ -151,7 +151,7 @@ export const proposeDeleteTool = defineTool({
     "Proposes deleting one existing Observation entry the user asked to remove (a duplicate, a mistake). " +
     "Find it with observation_log first; one call per entry. You cannot delete it; the user confirms on the card.",
   schema: deleteSchema,
-  label: () => "Preparing the deletion…",
+  label: () => "正在准备删除…",
   async run(a, ctx) {
     requireHealth(ctx, "propose_observation_delete")
     const out = await buildDelete(a, depsFor(ctx))

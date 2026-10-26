@@ -8,13 +8,13 @@ export type AssistantPlacement = "floating" | "header"
 export type IntakePlacement = "header" | "sidebar"
 
 const ASSISTANT_OPTIONS: Option<AssistantPlacement>[] = [
-  { value: "floating", label: "Floating button", hint: "A round button in the bottom-right corner." },
-  { value: "header", label: "Top bar", hint: "An icon in the top bar, beside the notifications bell." },
+  { value: "floating", label: "悬浮按钮", hint: "位于右下角的圆形按钮。" },
+  { value: "header", label: "顶栏", hint: "顶栏中的图标，位于通知铃铛旁。" },
 ]
 
 const INTAKE_OPTIONS: Option<IntakePlacement>[] = [
-  { value: "header", label: "Top bar", hint: "An icon with its count beside the notifications bell." },
-  { value: "sidebar", label: "Side menu", hint: "A menu item under Dashboard, with its count." },
+  { value: "header", label: "顶栏", hint: "通知铃铛旁的图标，带数量角标。" },
+  { value: "sidebar", label: "侧边菜单", hint: "仪表盘下方的菜单项，带数量角标。" },
 ]
 
 export const PLACEMENTS = {

@@ -22,16 +22,16 @@ export function HealthSummary({ health, now, options, fmt }: { health: ReportHea
     <>
       {options.allergies && (
       <section className="report-section report-break-avoid mt-7">
-        <SectionTitle>Allergies</SectionTitle>
+        <SectionTitle>过敏</SectionTitle>
         {person.allergies.length === 0 ? (
-          <Empty>No allergies recorded.</Empty>
+          <Empty>暂无过敏记录。</Empty>
         ) : (
           <Rows
-            head={["Substance", "Severity", "Reaction"]}
+            head={["过敏原", "严重程度", "反应"]}
             rows={person.allergies.map((a) => [
               a.substance,
               // Spelled out in capitals, not coloured: it has to survive a monochrome printer.
-              a.severity === "SEVERE" ? <strong key="s">SEVERE</strong> : labelFor(ALLERGY_SEVERITIES, a.severity),
+              a.severity === "SEVERE" ? <strong key="s">严重</strong> : labelFor(ALLERGY_SEVERITIES, a.severity),
               a.reaction ?? "—",
             ])}
           />
@@ -41,27 +41,27 @@ export function HealthSummary({ health, now, options, fmt }: { health: ReportHea
 
       {options.conditions && (
       <section className="report-section report-break-avoid mt-7">
-        <SectionTitle>Active conditions</SectionTitle>
+        <SectionTitle>当前病症</SectionTitle>
         {conditions.length === 0 ? (
-          <Empty>No active conditions recorded.</Empty>
+          <Empty>暂无当前病症记录。</Empty>
         ) : (
           <Rows
-            head={["Condition", "Status", "Since", "Provider"]}
+            head={["病症", "状态", "起始时间", "供应商"]}
             rows={conditions.map((c) => [c.name, labelFor(CONDITION_STATUSES, c.status), day(c.diagnosedDate), c.provider?.name ?? "—"])}
           />
         )}
-        {resolved > 0 && <Empty>{resolved} resolved condition{resolved === 1 ? "" : "s"} not shown.</Empty>}
+        {resolved > 0 && <Empty>另有 {resolved} 项已痊愈的病症未显示。</Empty>}
       </section>
       )}
 
       {options.medications && (
       <section className="report-section report-break-avoid mt-7">
-        <SectionTitle>Current medications</SectionTitle>
+        <SectionTitle>当前用药</SectionTitle>
         {medications.length === 0 ? (
-          <Empty>No current medications.</Empty>
+          <Empty>暂无当前用药。</Empty>
         ) : (
           <Rows
-            head={["Medication", "Dose", "Prescriber", "Since"]}
+            head={["用药", "剂量", "开方医生", "起始时间"]}
             rows={medications.map((m) => [
               m.name,
               [m.dosage, m.frequency].filter(Boolean).join(" · ") || "—",
@@ -75,12 +75,12 @@ export function HealthSummary({ health, now, options, fmt }: { health: ReportHea
 
       {options.immunizations && (
       <section className="report-section report-break-avoid mt-7">
-        <SectionTitle>Immunizations</SectionTitle>
+        <SectionTitle>疫苗接种</SectionTitle>
         {person.immunizations.length === 0 ? (
-          <Empty>No immunizations recorded.</Empty>
+          <Empty>暂无疫苗接种记录。</Empty>
         ) : (
           <Rows
-            head={["Vaccine", "Given", "Next due"]}
+            head={["疫苗", "接种日期", "下次到期"]}
             rows={person.immunizations.map((i) => [i.dose ? `${i.vaccine} (${i.dose})` : i.vaccine, day(i.dateGiven), day(i.nextDueDate)])}
           />
         )}
@@ -90,12 +90,12 @@ export function HealthSummary({ health, now, options, fmt }: { health: ReportHea
 
       {options.insurance && (
       <section className="report-section report-break-avoid mt-7">
-        <SectionTitle>Insurance</SectionTitle>
+        <SectionTitle>保险</SectionTitle>
         {person.insurancePolicies.length === 0 ? (
-          <Empty>No insurance on file.</Empty>
+          <Empty>暂无保险记录。</Empty>
         ) : (
           <Rows
-            head={["Carrier", "Type", "Member ID", "Group", "Phone", "Deductible"]}
+            head={["承保公司", "类型", "会员编号", "团体编号", "电话", "免赔额"]}
             rows={person.insurancePolicies.map((p) => [
               p.planName ? `${p.carrier} · ${p.planName}` : p.carrier,
               labelFor(INSURANCE_KINDS, p.kind),
@@ -111,12 +111,12 @@ export function HealthSummary({ health, now, options, fmt }: { health: ReportHea
 
       {options.careTeam && (
       <section className="report-section report-break-avoid mt-7">
-        <SectionTitle>Care team</SectionTitle>
+        <SectionTitle>医护团队</SectionTitle>
         {careTeam.length === 0 ? (
-          <Empty>No providers linked.</Empty>
+          <Empty>暂无关联的供应商。</Empty>
         ) : (
           <Rows
-            head={["Provider", "Specialty", "Practice", "Phone"]}
+            head={["供应商", "专科", "执业机构", "电话"]}
             rows={careTeam.map((p) => [p.name, p.specialty ?? "—", p.practice ?? "—", p.phone ?? "—"])}
           />
         )}
@@ -156,19 +156,19 @@ function Observations({ rows, days, notes, now, fmt }: { rows: ReportHealth["per
   const shown = filterObservations(rows, { range: String(days) as RangeValue }, now)
   return (
     <section className="report-section mt-7">
-      <SectionTitle>Observation entries — {rangeLabel(days)}</SectionTitle>
+      <SectionTitle>观察记录 — {rangeLabel(days)}</SectionTitle>
       {shown.length === 0 ? (
-        <Empty>Nothing logged in this period.</Empty>
+        <Empty>该时段暂无记录。</Empty>
       ) : (
         <>
           <Rows
-            head={notes ? ["When", "What", "Severity", "Duration", "Notes"] : ["When", "What", "Severity", "Duration"]}
+            head={notes ? ["时间", "内容", "严重程度", "持续时长", "备注"] : ["时间", "内容", "严重程度", "持续时长"]}
             rows={shown.map((o) => [
               `${day(o.date)}${o.time ? ` ${fmt.clock(o.time)}` : ""}`,
               o.condition ? `${o.type} (${o.condition.name})` : o.type,
               o.severity ? `${o.severity} / 5` : "—",
               formatDuration(o.durationMinutes),
-              ...(notes ? [[o.notes, o.tags ? `Tags: ${o.tags}` : null].filter(Boolean).join(" — ") || "—"] : []),
+              ...(notes ? [[o.notes, o.tags ? `标签：${o.tags}` : null].filter(Boolean).join(" — ") || "—"] : []),
             ])}
           />
         </>

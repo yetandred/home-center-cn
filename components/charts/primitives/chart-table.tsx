@@ -11,7 +11,7 @@ export function ChartTable({
   columns,
   rows,
   caption,
-  summary = "Show as table",
+  summary = "以表格查看",
 }: {
   columns: TableColumn[]
   rows: Record<string, React.ReactNode>[]

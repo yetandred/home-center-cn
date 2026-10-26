@@ -5,9 +5,9 @@ import { cn } from "@/lib/utils"
 import type { AssetView } from "@/lib/asset-view"
 
 const OPTIONS: { value: AssetView; label: string; icon: React.ElementType }[] = [
-  { value: "cards", label: "Large cards", icon: Grid2x2 },
-  { value: "compact", label: "Small cards", icon: Grid3x3 },
-  { value: "list", label: "List", icon: List },
+  { value: "cards", label: "大卡片", icon: Grid2x2 },
+  { value: "compact", label: "小卡片", icon: Grid3x3 },
+  { value: "list", label: "列表", icon: List },
 ]
 
 export function AssetViewToggle({
@@ -18,7 +18,7 @@ export function AssetViewToggle({
   onChange: (view: AssetView) => void
 }) {
   return (
-    <div role="group" aria-label="View layout" className="inline-flex items-center rounded-lg border bg-card p-0.5">
+    <div role="group" aria-label="视图布局" className="inline-flex items-center rounded-lg border bg-card p-0.5">
       {OPTIONS.map((option) => {
         const Icon = option.icon
         const active = value === option.value

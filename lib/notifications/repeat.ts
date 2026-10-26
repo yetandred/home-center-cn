@@ -11,9 +11,9 @@ export type NotificationRepeat = "ONCE" | "REACHED_AND_DUE" | "UNTIL_DISMISSED"
 export type Stage = "REACHED" | "DUE"
 
 export const REPEAT_OPTIONS: { value: NotificationRepeat; label: string; hint: string }[] = [
-  { value: "REACHED_AND_DUE", label: "When it's coming up, and on the due date", hint: "Two reminders per item: a heads-up, then one on the day." },
-  { value: "ONCE", label: "Only once", hint: "A single reminder per item." },
-  { value: "UNTIL_DISMISSED", label: "Every check until dismissed", hint: "Comes back after you read it, until you dismiss it." },
+  { value: "REACHED_AND_DUE", label: "临近到期和到期当天各提醒一次", hint: "每个事项两条提醒：先提前预告，到期当天再提醒一次。" },
+  { value: "ONCE", label: "仅一次", hint: "每个事项只提醒一次。" },
+  { value: "UNTIL_DISMISSED", label: "每次检查都提醒，直到关闭", hint: "阅读后会再次出现，直到您将其关闭。" },
 ]
 
 /** An existing notification for the same person, type and item. */

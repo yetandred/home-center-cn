@@ -43,7 +43,7 @@ export function InboxDropZone({ variant = "full", asset, className }: Props) {
       })
     )
     const count = landed.filter(Boolean).length
-    if (compact && count) toast.success(intakeAddedMessage(count), { action: { label: "View", onClick: () => router.push("/intake") } })
+    if (compact && count) toast.success(intakeAddedMessage(count), { action: { label: "查看", onClick: () => router.push("/intake") } })
     router.refresh()
   }
 
@@ -65,7 +65,7 @@ export function InboxDropZone({ variant = "full", asset, className }: Props) {
     </>
   )
   const uploading = busy > 0 && (
-    <p className="text-xs text-muted-foreground" aria-live="polite">Uploading {busy} file{busy === 1 ? "" : "s"}…</p>
+    <p className="text-xs text-muted-foreground" aria-live="polite">正在上传 {busy} 个文件……</p>
   )
 
   if (compact) {
@@ -82,13 +82,13 @@ export function InboxDropZone({ variant = "full", asset, className }: Props) {
         <div className="flex flex-wrap items-center gap-2">
           <Button type="button" size="sm" variant="outline" onClick={() => pickRef.current?.click()}>
             <Upload />
-            Choose files
+            选择文件
           </Button>
           <Button type="button" size="sm" variant="outline" className="md:hidden" onClick={() => cameraRef.current?.click()}>
             <Camera />
-            Take photo
+            拍照
           </Button>
-          <span className="hidden text-muted-foreground md:inline">or drop them here</span>
+          <span className="hidden text-muted-foreground md:inline">或拖拽到此处</span>
         </div>
         {uploading}
         {inputs}
@@ -108,19 +108,19 @@ export function InboxDropZone({ variant = "full", asset, className }: Props) {
       <Upload className="h-7 w-7 text-muted-foreground" strokeWidth={1.5} />
       <div>
         <p className="font-medium">
-          <span className="hidden md:inline">Drop receipts and invoices here</span>
-          <span className="md:hidden">Add receipts and invoices</span>
+          <span className="hidden md:inline">将收据和发票拖放到此处</span>
+          <span className="md:hidden">添加收据和发票</span>
         </p>
-        <p className="text-sm text-muted-foreground">PDFs, photos and documents. Each file becomes its own item.</p>
+        <p className="text-sm text-muted-foreground">支持 PDF、照片和文档。每个文件会生成一个独立条目。</p>
       </div>
       <div className="flex flex-wrap justify-center gap-2">
         <Button type="button" onClick={() => pickRef.current?.click()}>
           <Upload />
-          Choose files
+          选择文件
         </Button>
         <Button type="button" variant="outline" className="md:hidden" onClick={() => cameraRef.current?.click()}>
           <Camera />
-          Take photo
+          拍照
         </Button>
       </div>
       {uploading}

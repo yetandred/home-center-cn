@@ -37,8 +37,8 @@ export function KeepDocumentDialog({
         toast.error(r.error)
         return
       }
-      const name = assets.find((a) => a.type === asset.assetType && a.id === asset.assetId)?.name ?? "the asset"
-      toast.success(`Kept on ${name}.`, { action: { label: "View", onClick: () => router.push(r.href) } })
+      const name = assets.find((a) => a.type === asset.assetType && a.id === asset.assetId)?.name ?? "该资产"
+      toast.success(`已保存到 ${name}。`, { action: { label: "查看", onClick: () => router.push(r.href) } })
       onClose()
       router.refresh()
     })
@@ -48,19 +48,19 @@ export function KeepDocumentDialog({
     <Dialog open onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Keep as document</DialogTitle>
+          <DialogTitle>保存为文档</DialogTitle>
           <DialogDescription>
-            Moves <span className="font-medium text-foreground">{fileName}</span> to the asset&apos;s Documents, with no service record.
+            将 <span className="font-medium text-foreground">{fileName}</span> 移动到该资产的文档中，不创建维护记录。
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-2">
-          <Label htmlFor={`keep-${itemId}`}>For</Label>
+          <Label htmlFor={`keep-${itemId}`}>所属</Label>
           <AssetSelect id={`keep-${itemId}`} assets={assets} value={key} onChange={setKey} />
         </div>
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+          <Button type="button" variant="outline" onClick={onClose}>取消</Button>
           <Button type="button" disabled={!asset || pending} onClick={submit}>
-            {pending ? "Moving…" : "Keep"}
+            {pending ? "移动中……" : "保存"}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -26,8 +26,8 @@ async function resetPassword(formData: FormData) {
 const ERRORS: Record<string, string> = {
   short: PASSWORD_ERROR_TEXT.short,
   mismatch: PASSWORD_ERROR_TEXT.mismatch,
-  invalid: `That link has expired or was already used. Links work once and last ${RESET_TOKEN_MINUTES} minutes.`,
-  throttled: "Too many attempts. Wait 15 minutes, then try again.",
+  invalid: `该链接已过期或已被使用。链接仅可使用一次，${RESET_TOKEN_MINUTES} 分钟内有效。`,
+  throttled: "尝试次数过多，请等待 15 分钟后再试。",
 }
 
 export default async function ResetPasswordPage({ searchParams }: { searchParams: Promise<{ token?: string; error?: string }> }) {
@@ -38,12 +38,12 @@ export default async function ResetPasswordPage({ searchParams }: { searchParams
     <div className="min-h-svh flex items-center justify-center bg-muted/40 p-4">
       <div className="w-full max-w-sm space-y-6">
         <div className="text-center">
-          <h1 className="font-heading text-2xl font-semibold tracking-tight">Choose a new password</h1>
+          <h1 className="font-heading text-2xl font-semibold tracking-tight">设置新密码</h1>
         </div>
 
         <Card>
           <CardHeader className="pb-4">
-            <CardTitle className="text-base">New password</CardTitle>
+            <CardTitle className="text-base">新密码</CardTitle>
             {errorText && <CardDescription className="text-destructive">{errorText}</CardDescription>}
           </CardHeader>
           <CardContent className="space-y-4">
@@ -53,21 +53,21 @@ export default async function ResetPasswordPage({ searchParams }: { searchParams
                 <input type="hidden" name="token" value={token} />
               ) : (
                 <div className="space-y-1.5">
-                  <Label htmlFor="token">Reset code</Label>
+                  <Label htmlFor="token">重置码</Label>
                   <Input id="token" name="token" autoComplete="off" required />
                 </div>
               )}
               <div className="space-y-1.5">
-                <Label htmlFor="newPassword">New password</Label>
+                <Label htmlFor="newPassword">新密码</Label>
                 <Input id="newPassword" name="newPassword" type="password" autoComplete="new-password" required minLength={MIN_PASSWORD_LENGTH} />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="confirm">Confirm password</Label>
+                <Label htmlFor="confirm">确认密码</Label>
                 <Input id="confirm" name="confirm" type="password" autoComplete="new-password" required minLength={MIN_PASSWORD_LENGTH} />
               </div>
-              <Button type="submit" className="w-full">Set password</Button>
+              <Button type="submit" className="w-full">设置密码</Button>
             </form>
-            <Link href="/login" className="block text-center text-sm text-muted-foreground hover:underline">Back to sign in</Link>
+            <Link href="/login" className="block text-center text-sm text-muted-foreground hover:underline">返回登录</Link>
           </CardContent>
         </Card>
       </div>

@@ -38,7 +38,7 @@ export async function sendMail(
   config?: MailConfig
 ) {
   // Addresses are validated when saved; this catches any stored before that.
-  if (!isEmailAddress(message.to)) throw new Error("Refusing to send to an invalid recipient address")
+  if (!isEmailAddress(message.to)) throw new Error("收件人地址无效，拒绝发送")
   const resolved = config ?? (await loadMailConfig())
   const info = await transportFor(resolved).sendMail({ from: resolved.from, ...message })
   if (resolved.dryRun) {
@@ -50,9 +50,9 @@ export async function sendMail(
 /** Checks the server accepts the settings, without sending anything. */
 export async function verifyMail(config?: MailConfig) {
   const resolved = config ?? (await loadMailConfig())
-  if (!isMailConfigured(resolved)) return { ok: false as const, error: "No mail server configured." }
+  if (!isMailConfigured(resolved)) return { ok: false as const, error: "未配置邮件服务器。" }
   if (resolved.passwordUnreadable) {
-    return { ok: false as const, error: "The saved password can't be decrypted — re-enter it." }
+    return { ok: false as const, error: "已保存的密码无法解密——请重新输入。" }
   }
   try {
     await transportFor(resolved).verify()

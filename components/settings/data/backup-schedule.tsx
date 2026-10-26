@@ -24,7 +24,7 @@ export function BackupSchedule({ data, onSaved }: { data: BackupOverview; onSave
     start(async () => {
       const r = await saveBackupSchedule({ schedule, time, weekday, folder, keep })
       if ("error" in r) return void toast.error(r.error)
-      toast.success("Backup schedule saved.")
+      toast.success("备份计划已保存。")
       if (r.warning) toast.warning(r.warning)
       await onSaved()
     })
@@ -34,47 +34,47 @@ export function BackupSchedule({ data, onSaved }: { data: BackupOverview; onSave
   return (
     <Card className="py-5">
       <CardHeader className="px-5">
-        <CardTitle>Schedule</CardTitle>
-        <CardDescription>Backups run in the background at this time, server time. Older ones are removed after the newest {s.keep}.</CardDescription>
+        <CardTitle>计划</CardTitle>
+        <CardDescription>备份在服务器时间的该时刻于后台运行。超过最新 {s.keep} 份的旧备份会被删除。</CardDescription>
       </CardHeader>
       <CardContent className="px-5">
         <form onSubmit={save} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
-            <Label htmlFor="bk-schedule">How often</Label>
+            <Label htmlFor="bk-schedule">频率</Label>
             <select id="bk-schedule" className={select} value={schedule} onChange={(e) => setSchedule(e.target.value as typeof schedule)}>
-              <option value="OFF">Off</option>
-              <option value="DAILY">Every day</option>
-              <option value="WEEKLY">Every week</option>
+              <option value="OFF">关闭</option>
+              <option value="DAILY">每天</option>
+              <option value="WEEKLY">每周</option>
             </select>
           </div>
           <div className="flex gap-3">
             {schedule === "WEEKLY" && (
               <div className="space-y-1.5">
-                <Label htmlFor="bk-day">Day</Label>
+                <Label htmlFor="bk-day">星期</Label>
                 <select id="bk-day" className={select} value={weekday} onChange={(e) => setWeekday(e.target.value)}>
                   {WEEKDAYS.map((d, i) => <option key={d} value={i}>{d}</option>)}
                 </select>
               </div>
             )}
             <div className="space-y-1.5">
-              <Label htmlFor="bk-time">Time</Label>
+              <Label htmlFor="bk-time">时间</Label>
               <Input id="bk-time" type="time" value={time} onChange={(e) => setTime(e.target.value)} disabled={schedule === "OFF"} />
             </div>
           </div>
           <div className="space-y-1.5 sm:col-span-2">
-            <Label htmlFor="bk-folder">Folder</Label>
-            <Input id="bk-folder" placeholder={`${s.folderIsDefault ? s.folder : "/data/backups"} (default)`} value={folder} onChange={(e) => setFolder(e.target.value)} />
+            <Label htmlFor="bk-folder">文件夹</Label>
+            <Input id="bk-folder" placeholder={`${s.folderIsDefault ? s.folder : "/data/backups"}（默认）`} value={folder} onChange={(e) => setFolder(e.target.value)} />
             <p className="text-xs text-muted-foreground">
-              A path inside the container. For a real backup, mount a different disk or NAS share (for example <code>/backups</code>) in docker-compose.
-              {data.folderStatus.sameDevice && data.folderStatus.exists ? " The current folder is on the same disk as your data." : ""}
+              容器内的路径。要做真正的备份，请在 docker-compose 中挂载其他磁盘或 NAS 共享目录（例如 <code>/backups</code>）。
+              {data.folderStatus.sameDevice && data.folderStatus.exists ? " 当前文件夹与数据位于同一块磁盘上。" : ""}
             </p>
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="bk-keep">Keep the newest</Label>
+            <Label htmlFor="bk-keep">保留最新</Label>
             <Input id="bk-keep" type="number" min={1} max={365} value={keep} onChange={(e) => setKeep(e.target.value)} />
           </div>
           <div className="flex items-end sm:col-span-2">
-            <Button type="submit" disabled={pending}>{pending ? "Saving…" : "Save schedule"}</Button>
+            <Button type="submit" disabled={pending}>{pending ? "保存中…" : "保存计划"}</Button>
           </div>
         </form>
       </CardContent>

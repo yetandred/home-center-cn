@@ -107,7 +107,7 @@ export function TrendChart({
   }, [showTrend, trend, buckets.length, domainMax])
 
   if (buckets.length === 0) {
-    return <p className="py-8 text-center text-sm text-muted-foreground">No spending in this range.</p>
+    return <p className="py-8 text-center text-sm text-muted-foreground">此区间暂无支出。</p>
   }
 
   return (
@@ -135,14 +135,14 @@ export function TrendChart({
               const trendValue = showTrend ? trend[i] : null
               if (trendValue != null) {
                 rows.push({
-                  label: trendWindow + "-period average",
+                  label: trendWindow + " 期平均",
                   value: fmt.money(trendValue),
                   color: "var(--chart-trend)",
                 })
               }
               const content: TooltipContent = {
                 title: bucket.fullLabel,
-                rows: rows.length > 0 ? rows : [{ label: "No spending", value: fmt.money(0) }],
+                rows: rows.length > 0 ? rows : [{ label: "无支出", value: fmt.money(0) }],
                 total: fmt.money(bucket.visibleTotal),
               }
 
@@ -243,17 +243,17 @@ export function TrendChart({
               className="h-0.5 w-4 shrink-0 rounded-full"
               style={{ backgroundColor: "var(--chart-trend)" }}
             />
-            {trendWindow}-period average
+            {trendWindow} 期平均
           </span>
         ) : null}
       </div>
 
       <ChartTable
-        caption="Spending per period, broken down by category"
+        caption="各周期支出，按分类细分"
         columns={[
-          { key: "period", label: "Period" },
+          { key: "period", label: "周期" },
           ...present.map((key) => ({ key, label: categoryLabel(key), align: "right" as const })),
-          { key: "total", label: "Total", align: "right" as const },
+          { key: "total", label: "合计", align: "right" as const },
         ]}
         rows={buckets.map((bucket) => ({
           period: bucket.fullLabel,

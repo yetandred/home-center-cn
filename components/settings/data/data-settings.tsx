@@ -20,7 +20,7 @@ export function DataSettings({ initial }: { initial: BackupOverview }) {
       setData(await getBackupOverview())
     } catch {
       // One toast however many polls fail in a row.
-      toast.error("Couldn't refresh the backup status. Reload the page if this keeps happening.", { id: "backup-refresh" })
+      toast.error("无法刷新备份状态。如果反复出现，请重新加载页面。", { id: "backup-refresh" })
     }
   }, [])
 

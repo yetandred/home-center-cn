@@ -40,20 +40,20 @@ export function CompleteDialog({ schedule, currentMileage, meterUnit, onClose }:
 
   // Files go on the service record this logs, so they're only taken while it's ticked.
   useDropTarget({
-    label: "Add to this record's files",
+    label: "添加到此记录的文件",
     onFiles: (dropped) => setFiles((prev) => [...prev, ...dropped]),
     enabled: logService,
   })
 
   async function onSubmit(values: { completedDate: string; completedMileage: string; logService: boolean; vendor: string; cost: string; notes: string }) {
     const result = await completeMaintenanceSchedule(schedule.id, values as Parameters<typeof completeMaintenanceSchedule>[1])
-    if (result?.error || !result) { toast.error("Something went wrong."); return }
+    if (result?.error || !result) { toast.error("出错了，请稍后重试。"); return }
 
     // The receipt goes on the service record the completion just logged.
     const recordId = result.serviceRecordId
     const failed = recordId && files.length > 0 ? await uploadAll(files, "SERVICE", recordId) : null
-    if (failed) toast.error(`Marked complete, but a file didn't upload: ${failed}`)
-    else toast.success(recordId ? `"${schedule.title}" marked complete and logged.` : `"${schedule.title}" marked complete.`)
+    if (failed) toast.error(`已标记完成，但有文件上传失败：${failed}`)
+    else toast.success(recordId ? `“${schedule.title}”已标记完成并记录。` : `“${schedule.title}”已标记完成。`)
     router.refresh()
     onClose()
   }
@@ -62,17 +62,17 @@ export function CompleteDialog({ schedule, currentMileage, meterUnit, onClose }:
     <Dialog open onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Mark Complete: {schedule.title}</DialogTitle>
+          <DialogTitle>标记完成：{schedule.title}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <label htmlFor="complete-date" className="text-sm font-medium">Completion Date</label>
+              <label htmlFor="complete-date" className="text-sm font-medium">完成日期</label>
               <Input id="complete-date" type="date" {...register("completedDate")} />
             </div>
             {schedule.assetType === "VEHICLE" && (
               <div className="space-y-1.5">
-                <label htmlFor="complete-mileage" className="text-sm font-medium">{fmt.meterNoun(meterUnit)} at Completion</label>
+                <label htmlFor="complete-mileage" className="text-sm font-medium">完成时{fmt.meterNoun(meterUnit)}</label>
                 <Input id="complete-mileage" type="number" placeholder={meterUnit === "HOURS" ? "1250" : "45230"} {...register("completedMileage")} />
               </div>
             )}
@@ -80,25 +80,25 @@ export function CompleteDialog({ schedule, currentMileage, meterUnit, onClose }:
 
           <label className="flex items-center gap-2 text-sm font-medium">
             <input type="checkbox" className="h-4 w-4 accent-primary" {...register("logService")} />
-            {isPerson ? "Add to visits" : "Add to service history"}
+            {isPerson ? "添加到就诊记录" : "添加到维护记录"}
           </label>
 
           {logService && (
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label htmlFor="complete-vendor" className="text-sm font-medium">{isPerson ? "Facility" : "Vendor / Shop"}</label>
-                <Input id="complete-vendor" placeholder={isPerson ? "City Medical Center" : "Jiffy Lube"} {...register("vendor")} />
+                <label htmlFor="complete-vendor" className="text-sm font-medium">{isPerson ? "机构" : "商家 / 维修店"}</label>
+                <Input id="complete-vendor" placeholder={isPerson ? "市医疗中心" : "汽车快修店"} {...register("vendor")} />
               </div>
               <div className="space-y-1.5">
-                <label htmlFor="complete-cost" className="text-sm font-medium">{`Cost (${fmt.currencySymbol})`}</label>
+                <label htmlFor="complete-cost" className="text-sm font-medium">{`费用（${fmt.currencySymbol}）`}</label>
                 <Input id="complete-cost" type="number" step="0.01" min="0" placeholder="89.99" {...register("cost")} />
               </div>
               <div className="col-span-2 space-y-1.5">
-                <label htmlFor="complete-notes" className="text-sm font-medium">Notes</label>
+                <label htmlFor="complete-notes" className="text-sm font-medium">备注</label>
                 <Textarea id="complete-notes" rows={2} {...register("notes")} />
               </div>
               <div className="col-span-2 space-y-1.5">
-                <label htmlFor="complete-files" className="text-sm font-medium">Receipt or photos</label>
+                <label htmlFor="complete-files" className="text-sm font-medium">收据或照片</label>
                 <Input
                   id="complete-files"
                   type="file"
@@ -118,7 +118,7 @@ export function CompleteDialog({ schedule, currentMileage, meterUnit, onClose }:
                         <button
                           type="button"
                           onClick={() => setFiles((prev) => prev.filter((_, i) => i !== index))}
-                          aria-label={`Remove "${file.name}"`}
+                          aria-label={`移除“${file.name}”`}
                           className="shrink-0 text-muted-foreground transition-colors hover:text-destructive"
                         >
                           <X className="h-3.5 w-3.5" />
@@ -132,9 +132,9 @@ export function CompleteDialog({ schedule, currentMileage, meterUnit, onClose }:
           )}
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+            <Button type="button" variant="outline" onClick={onClose}>取消</Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Saving…" : "Mark Complete"}
+              {isSubmitting ? "保存中…" : "标记完成"}
             </Button>
           </DialogFooter>
         </form>

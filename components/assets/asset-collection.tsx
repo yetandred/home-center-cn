@@ -88,7 +88,7 @@ export function AssetCollection<T extends { id: string }>({
                     />
                   )
                 )}
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="text-right">操作</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

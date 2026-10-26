@@ -68,12 +68,12 @@ async function clearWorkAtBoot(): Promise<void> {
   const folder = await loadBackupSettings().then(backupFolder, () => null)
   if (folder === null) return void console.warn("[backup] not clearing the work folder: couldn't read where backups go")
   await clearWorkDir(workDir(), [
-    { path: p.restoreDir, label: "restore folder", both: true },
-    { path: folder, label: "backup folder", both: true },
-    { path: p.uploadDir, label: "upload folder", both: true },
+    { path: p.restoreDir, label: "恢复文件夹", both: true },
+    { path: folder, label: "备份文件夹", both: true },
+    { path: p.uploadDir, label: "上传文件夹", both: true },
     // The database's folder always holds the work folder, so only the files themselves are checked.
-    { path: p.dbPath, label: "database", both: false },
-    { path: p.searchIndexPath, label: "search index", both: false },
+    { path: p.dbPath, label: "数据库", both: false },
+    { path: p.searchIndexPath, label: "搜索索引", both: false },
   ])
 }
 
@@ -110,15 +110,15 @@ async function finishResult(dir: string, now: Date): Promise<void> {
         data: { kind: "RESTORE", trigger: "MANUAL", status: result.status === "ok" ? "OK" : "FAILED", startedAt, finishedAt: now, error: result.error },
       })
     }
-    const when = result.backupCreatedAt ? (await getFormat()).dateTime(new Date(result.backupCreatedAt)) : "an earlier state"
+    const when = result.backupCreatedAt ? (await getFormat()).dateTime(new Date(result.backupCreatedAt)) : "较早的状态"
     const failedText = result.rolledBack
-      ? `${result.error} Nothing was changed.`
-      : `${result.error} Your data is in ${result.recoveryDirs.join(", ") || "the restore folder"}.`
+      ? `${result.error} 未做任何更改。`
+      : `${result.error} 您的数据保存在 ${result.recoveryDirs.join("、") || "恢复文件夹"} 中。`
     // raiseBackupAlert skips admins who already have this cycleKey, so a second pass never notifies twice.
     await raiseBackupAlert(
       `restore:${result.appliedAt}`,
-      result.status === "ok" ? (result.source === "undo" ? "Restore undone" : `Restored from the backup of ${when}`) : "Restore didn't finish",
-      result.status === "ok" ? "Everyone was signed out. Sign in with the accounts from that backup." : failedText,
+      result.status === "ok" ? (result.source === "undo" ? "已撤销恢复" : `已恢复 ${when} 的备份`) : "恢复未完成",
+      result.status === "ok" ? "所有用户均已退出登录，请使用备份中的账户重新登录。" : failedText,
     )
     await markFinalized(dir)
   }

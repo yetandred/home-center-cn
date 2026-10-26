@@ -49,10 +49,10 @@ function warrantyStatus(expirationDate: Date | null) {
   // is -0, which is not < 0, so a warranty that lapsed hours ago would show
   // "0d left" instead of "Expired".
   const ms = new Date(expirationDate).getTime() - Date.now()
-  if (ms < 0) return { label: "Expired", variant: "destructive" as const }
+  if (ms < 0) return { label: "已过期", variant: "destructive" as const }
   const daysLeft = Math.ceil(ms / 86400000)
-  if (daysLeft <= 60) return { label: `${daysLeft}d left`, variant: "secondary" as const }
-  return { label: "Active", variant: "outline" as const }
+  if (daysLeft <= 60) return { label: `剩余 ${daysLeft} 天`, variant: "secondary" as const }
+  return { label: "生效中", variant: "outline" as const }
 }
 
 export function WarrantyList({ warranties: initialWarranties, assetId, assetType, equipment, propertyName, openId }: Props) {
@@ -98,19 +98,19 @@ export function WarrantyList({ warranties: initialWarranties, assetId, assetType
   }, [])
 
   async function handleDelete(w: Warranty) {
-    if (!confirm(`Delete warranty for "${w.productName}"?`)) return
+    if (!confirm(`删除“${w.productName}”的保修？`)) return
     await deleteWarranty(w.id, w.assetType, w.assetId)
-    toast.success("Warranty deleted.")
+    toast.success("保修已删除。")
   }
 
   return (
     <>
       <div className="flex items-center justify-between mb-4">
-        <p className="text-sm text-muted-foreground">{warranties.length} warrant{warranties.length !== 1 ? "ies" : "y"}</p>
+        <p className="text-sm text-muted-foreground">{warranties.length} 项保修</p>
         <AddSplitButton
-          label="Add warranty"
-          menuLabel="More ways to add a warranty"
-          fromFileLabel="From a receipt or warranty card…"
+          label="添加保修"
+          menuLabel="更多添加保修的方式"
+          fromFileLabel="从收据或保修卡…"
           onAdd={() => { setEditing(null); setDialogOpen(true) }}
           asset={{ assetType, assetId }}
         />
@@ -118,21 +118,21 @@ export function WarrantyList({ warranties: initialWarranties, assetId, assetType
 
       {warranties.length === 0 ? (
         <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-          No warranties yet.
+          暂无保修。
         </div>
       ) : (
         <div className="rounded-lg border overflow-hidden bg-card">
           <Table>
             <TableHeader>
               <TableRow>
-                <SortableTableHead column="product" label="Product" sortState={table.sortState} onToggle={table.toggleSort} />
-                <TableHead>Notes</TableHead>
-                {showSource && <TableHead>Source</TableHead>}
-                <SortableTableHead column="purchased" label="Purchased" sortState={table.sortState} onToggle={table.toggleSort} />
-                <SortableTableHead column="expires" label="Expires" sortState={table.sortState} onToggle={table.toggleSort} />
-                <SortableTableHead column="status" label="Status" sortState={table.sortState} onToggle={table.toggleSort} />
-                <TableHead>Files</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <SortableTableHead column="product" label="产品" sortState={table.sortState} onToggle={table.toggleSort} />
+                <TableHead>备注</TableHead>
+                {showSource && <TableHead>来源</TableHead>}
+                <SortableTableHead column="purchased" label="购买日期" sortState={table.sortState} onToggle={table.toggleSort} />
+                <SortableTableHead column="expires" label="到期日期" sortState={table.sortState} onToggle={table.toggleSort} />
+                <SortableTableHead column="status" label="状态" sortState={table.sortState} onToggle={table.toggleSort} />
+                <TableHead>文件</TableHead>
+                <TableHead className="text-right">操作</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -165,10 +165,10 @@ export function WarrantyList({ warranties: initialWarranties, assetId, assetType
                         <TableCell className="whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                           {w.assetType === "EQUIPMENT" ? (
                             <Link href={`/assets/equipment/${w.assetId}`} className="text-sm hover:underline">
-                              {equipmentNames?.[w.assetId] ?? "Equipment"}
+                              {equipmentNames?.[w.assetId] ?? "设备"}
                             </Link>
                           ) : (
-                            <span className="text-sm text-muted-foreground">Property</span>
+                            <span className="text-sm text-muted-foreground">房产</span>
                           )}
                         </TableCell>
                       )}
@@ -189,15 +189,15 @@ export function WarrantyList({ warranties: initialWarranties, assetId, assetType
                       </TableCell>
                       <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-end gap-1">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={`Edit warranty for "${w.productName}"`}
+                          <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={`编辑“${w.productName}”的保修`}
                             onClick={() => { setEditing(w); setDialogOpen(true) }}>
                             <Pencil className="h-3.5 w-3.5" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" aria-label={`Delete warranty for "${w.productName}"`}
+                          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" aria-label={`删除“${w.productName}”的保修`}
                             onClick={() => handleDelete(w)}>
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={expanded ? "Hide details" : "Show details"} aria-expanded={expanded}
+                          <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={expanded ? "隐藏详情" : "显示详情"} aria-expanded={expanded}
                             onClick={() => setExpandedId(expanded ? null : w.id)}>
                             <ChevronDown className={`h-3.5 w-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} />
                           </Button>
@@ -210,8 +210,8 @@ export function WarrantyList({ warranties: initialWarranties, assetId, assetType
                           <div className="space-y-3">
                             {(w.vendorPhone || w.vendorEmail) && (
                               <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
-                                {w.vendorPhone && <span>Phone: {w.vendorPhone}</span>}
-                                {w.vendorEmail && <span>Email: {w.vendorEmail}</span>}
+                                {w.vendorPhone && <span>电话：{w.vendorPhone}</span>}
+                                {w.vendorEmail && <span>邮箱：{w.vendorEmail}</span>}
                               </div>
                             )}
                             <AttachmentList recordId={w.id} recordType="WARRANTY" attachments={w.attachments} />
@@ -232,7 +232,7 @@ export function WarrantyList({ warranties: initialWarranties, assetId, assetType
             per={table.per}
             onPage={table.setPage}
             onPer={table.setPer}
-            label="warranties"
+            label="保修"
           />
         </div>
       )}

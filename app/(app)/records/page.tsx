@@ -88,10 +88,10 @@ export default async function RecordsPage({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-heading text-2xl font-semibold">Records</h1>
+          <h1 className="font-heading text-2xl font-semibold">维护记录</h1>
           <p className="text-sm text-muted-foreground mt-0.5">
-            {total} record{total !== 1 ? "s" : ""}
-            {totalCost > 0 && ` · ${fmt.money(totalCost)} total`}
+            {total} 条记录
+            {totalCost > 0 && ` · 共 ${fmt.money(totalCost)}`}
           </p>
         </div>
         <RecordsAddButton assets={assetOptions} />
@@ -99,8 +99,8 @@ export default async function RecordsPage({
 
       <Suspense>
         <SearchBar
-          placeholder="Search title, vendor, notes…"
-          filters={[{ key: "assetId", placeholder: "All assets", options: assets.options }]}
+          placeholder="搜索标题、商家、备注…"
+          filters={[{ key: "assetId", placeholder: "全部资产", options: assets.options }]}
         />
       </Suspense>
 
@@ -108,8 +108,8 @@ export default async function RecordsPage({
         <div className="rounded-lg border border-dashed p-12 text-center text-muted-foreground">
           {q || assetId ? (
             <>
-              <p className="font-medium">No records match those filters</p>
-              <p className="text-sm mt-1">Try clearing the search or filter.</p>
+              <p className="font-medium">没有符合筛选条件的记录</p>
+              <p className="text-sm mt-1">请尝试清除搜索或筛选条件。</p>
             </>
           ) : (
             <p className="font-medium">{emptyStateCopy("records")}</p>
@@ -122,17 +122,17 @@ export default async function RecordsPage({
               <thead className="bg-muted/50 text-muted-foreground">
                 <tr>
                   <Suspense>
-                    <UrlSortHead column="date" label="Date" initialDir="desc" defaultSort={DEFAULT_SORT} defaultDir={DEFAULT_DIR} />
+                    <UrlSortHead column="date" label="日期" initialDir="desc" defaultSort={DEFAULT_SORT} defaultDir={DEFAULT_DIR} />
                   </Suspense>
-                  <th scope="col" className="text-left font-medium px-4 py-2.5">Asset</th>
+                  <th scope="col" className="text-left font-medium px-4 py-2.5">资产</th>
                   <Suspense>
-                    <UrlSortHead column="title" label="Service" defaultSort={DEFAULT_SORT} defaultDir={DEFAULT_DIR} />
-                  </Suspense>
-                  <Suspense>
-                    <UrlSortHead column="vendor" label="Vendor" className="hidden sm:table-cell" defaultSort={DEFAULT_SORT} defaultDir={DEFAULT_DIR} />
+                    <UrlSortHead column="title" label="维护项目" defaultSort={DEFAULT_SORT} defaultDir={DEFAULT_DIR} />
                   </Suspense>
                   <Suspense>
-                    <UrlSortHead column="cost" label="Cost" align="right" initialDir="desc" defaultSort={DEFAULT_SORT} defaultDir={DEFAULT_DIR} />
+                    <UrlSortHead column="vendor" label="商家" className="hidden sm:table-cell" defaultSort={DEFAULT_SORT} defaultDir={DEFAULT_DIR} />
+                  </Suspense>
+                  <Suspense>
+                    <UrlSortHead column="cost" label="费用" align="right" initialDir="desc" defaultSort={DEFAULT_SORT} defaultDir={DEFAULT_DIR} />
                   </Suspense>
                 </tr>
               </thead>
@@ -149,7 +149,7 @@ export default async function RecordsPage({
                       <td className="px-4 py-3">
                         <Link href={assetHref(r.assetType, r.assetId)} className="flex items-center gap-1.5 hover:underline">
                           <AssetIcon className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                          {assetName ?? <span className="text-muted-foreground italic">Unknown</span>}
+                          {assetName ?? <span className="text-muted-foreground italic">未知</span>}
                         </Link>
                       </td>
                       <td className="px-4 py-3">
@@ -173,7 +173,7 @@ export default async function RecordsPage({
           </div>
 
           <Suspense>
-            <UrlPaginationBar page={page} pageCount={pageCount} total={total} per={per} label="records" />
+            <UrlPaginationBar page={page} pageCount={pageCount} total={total} per={per} label="条记录" />
           </Suspense>
         </div>
       )}

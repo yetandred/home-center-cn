@@ -62,7 +62,7 @@ export async function reextractDocuments(): Promise<DocumentActionResult> {
 
 export async function clearExtractedText(): Promise<DocumentActionResult> {
   await requireAdmin()
-  if ((await loadDocumentSettings()).indexingEnabled) return { error: "Turn indexing off before clearing extracted text." }
+  if ((await loadDocumentSettings()).indexingEnabled) return { error: "请先关闭索引，再清除已提取的文本。" }
   await clearAllText()
   return { success: true, stats: await documentIndexStats() }
 }
@@ -75,7 +75,7 @@ export async function getModelStatus(): Promise<ModelStatus> {
 export async function downloadEmbeddingModel(id: string): Promise<{ error: string } | { success: true }> {
   await requireAdmin()
   const m = modelById(id)
-  if (!m || m.builtIn) return { error: "Unknown model." }
+  if (!m || m.builtIn) return { error: "未知模型。" }
   if (await isInstalled(m)) return { success: true }
   const started = downloads().start(m)
   return "error" in started ? started : { success: true }
@@ -84,8 +84,8 @@ export async function downloadEmbeddingModel(id: string): Promise<{ error: strin
 export async function switchEmbeddingModel(id: string): Promise<DocumentActionResult> {
   await requireAdmin()
   const m = modelById(id)
-  if (!m) return { error: "Unknown model." }
-  if (!(await isInstalled(m))) return { error: "Download the model first." }
+  if (!m) return { error: "未知模型。" }
+  if (!(await isInstalled(m))) return { error: "请先下载该模型。" }
   await prisma.documentSettings.upsert({
     where: { id: DOCUMENT_SETTINGS_ID },
     create: { id: DOCUMENT_SETTINGS_ID, embeddingModel: m.id },
@@ -101,10 +101,10 @@ export async function switchEmbeddingModel(id: string): Promise<DocumentActionRe
 export async function deleteEmbeddingModel(id: string): Promise<{ error: string } | { success: true }> {
   await requireAdmin()
   const m = modelById(id)
-  if (!m) return { error: "Unknown model." }
-  if (m.builtIn) return { error: "The built-in model can't be deleted." }
-  if ((await loadDocumentSettings()).embeddingModel === m.id) return { error: "Switch to another model before deleting this one." }
-  if (downloads().status().current?.modelId === m.id) return { error: "Wait for the download to finish." }
+  if (!m) return { error: "未知模型。" }
+  if (m.builtIn) return { error: "内置模型无法删除。" }
+  if ((await loadDocumentSettings()).embeddingModel === m.id) return { error: "请先切换到其他模型，再删除此模型。" }
+  if (downloads().status().current?.modelId === m.id) return { error: "请等待下载完成。" }
   await deleteModelFiles(m)
   return { success: true }
 }

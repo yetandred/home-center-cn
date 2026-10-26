@@ -6,17 +6,17 @@ import type { AreaUnit, DateFormat, DistanceUnit, MeterUnit } from "@/app/genera
 
 export type Regional = { currency: string; distanceUnit: DistanceUnit; areaUnit: AreaUnit; dateFormat: DateFormat; hour12: boolean }
 
-export const DEFAULT_REGIONAL: Regional = { currency: "USD", distanceUnit: "MILES", areaUnit: "SQFT", dateFormat: "MDY_SHORT", hour12: true }
+export const DEFAULT_REGIONAL: Regional = { currency: "CNY", distanceUnit: "KM", areaUnit: "SQM", dateFormat: "ISO", hour12: false }
 
 /** Shown first in the currency picker. */
-export const COMMON_CURRENCIES = ["USD", "EUR", "GBP", "CAD", "AUD", "CHF", "JPY"]
+export const COMMON_CURRENCIES = ["CNY", "USD", "EUR", "GBP", "JPY", "HKD", "CAD", "AUD"]
 
 export function isValidCurrency(code: string): boolean {
   return /^[A-Z]{3}$/.test(code) && Intl.supportedValuesOf("currency").includes(code)
 }
 
-const SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-const LONG = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+const SHORT = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"]
+const LONG = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"]
 const pad = (n: number) => String(n).padStart(2, "0")
 
 type When = Date | string | number
@@ -50,11 +50,11 @@ export function createFormatter(r: Regional) {
     const { y, m, day } = ymd(toDate(d), !!opts.utc)
     const mon = (opts.long ? LONG : SHORT)[m]
     switch (r.dateFormat) {
-      case "DMY_SHORT": return `${day} ${mon} ${y}`
+      case "DMY_SHORT": return `${y}年${mon}${day}日`
       case "MDY_NUM": return `${pad(m + 1)}/${pad(day)}/${y}`
       case "DMY_NUM": return `${pad(day)}/${pad(m + 1)}/${y}`
       case "ISO": return `${y}-${pad(m + 1)}-${pad(day)}`
-      default: return `${mon} ${day}, ${y}`
+      default: return `${y}年${mon}${day}日`
     }
   }
 
@@ -73,16 +73,16 @@ export function createFormatter(r: Regional) {
   const dayMonth = (d: When, opts: { utc?: boolean } = {}) => {
     const { m, day } = ymd(toDate(d), !!opts.utc)
     switch (r.dateFormat) {
-      case "DMY_SHORT": return `${day} ${SHORT[m]}`
+      case "DMY_SHORT": return `${SHORT[m]}${day}日`
       case "MDY_NUM": return `${pad(m + 1)}/${pad(day)}`
       case "DMY_NUM": return `${pad(day)}/${pad(m + 1)}`
       case "ISO": return `${pad(m + 1)}-${pad(day)}`
-      default: return `${SHORT[m]} ${day}`
+      default: return `${SHORT[m]}${day}日`
     }
   }
 
   const hm = (h: number, min: number) =>
-    r.hour12 ? `${h % 12 || 12}:${pad(min)} ${h < 12 ? "AM" : "PM"}` : `${pad(h)}:${pad(min)}`
+    r.hour12 ? `${h < 12 ? "上午" : "下午"}${h % 12 || 12}:${pad(min)}` : `${pad(h)}:${pad(min)}`
 
   const time = (d: When) => {
     const t = toDate(d)
@@ -97,16 +97,16 @@ export function createFormatter(r: Regional) {
     /** Axis ticks and captions: "$12.5k", "€980". */
     moneyCompact: (n: number) =>
       Math.abs(n) >= 1000 ? `${currencySymbol}${(n / 1000).toFixed(n % 1000 === 0 ? 0 : 1)}k` : `${currencySymbol}${Math.round(n)}`,
-    distanceShort: km ? "km" : "mi",
-    distanceWord: km ? "kilometre" : "mile",
-    distanceWords: km ? "kilometres" : "miles",
-    distanceNoun: km ? "Distance" : "Mileage",
-    meterShort: (u: MeterUnit) => (u === "HOURS" ? "hrs" : km ? "km" : "mi"),
-    meterWord: (u: MeterUnit) => (u === "HOURS" ? "hour" : km ? "kilometre" : "mile"),
-    meterNoun: (u: MeterUnit) => (u === "HOURS" ? "Hours" : km ? "Distance" : "Mileage"),
+    distanceShort: km ? "公里" : "英里",
+    distanceWord: km ? "公里" : "英里",
+    distanceWords: km ? "公里" : "英里",
+    distanceNoun: km ? "距离" : "里程",
+    meterShort: (u: MeterUnit) => (u === "HOURS" ? "小时" : km ? "公里" : "英里"),
+    meterWord: (u: MeterUnit) => (u === "HOURS" ? "小时" : km ? "公里" : "英里"),
+    meterNoun: (u: MeterUnit) => (u === "HOURS" ? "小时数" : km ? "距离" : "里程"),
     areaShort: sqm ? "m²" : "ft²",
-    areaWords: sqm ? "square metres" : "square feet",
-    areaLabel: sqm ? "Floor area (m²)" : "Square footage",
+    areaWords: sqm ? "平方米" : "平方英尺",
+    areaLabel: sqm ? "建筑面积（m²）" : "建筑面积（平方英尺）",
     area: (n: number) => `${n.toLocaleString()} ${sqm ? "m²" : "ft²"}`,
     date,
     dateNumeric,

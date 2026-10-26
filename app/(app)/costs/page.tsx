@@ -31,16 +31,16 @@ const TILE_MONTHS = 12
 const TREND_WINDOW = 3
 
 const ASSET_TYPE_FILTERS: { value: AssetType; label: string }[] = [
-  { value: "PROPERTY", label: "Properties" },
-  { value: "VEHICLE", label: "Vehicles" },
-  { value: "EQUIPMENT", label: "Equipment" },
-  { value: "PERSON", label: "People" },
+  { value: "PROPERTY", label: "房产" },
+  { value: "VEHICLE", label: "车辆" },
+  { value: "EQUIPMENT", label: "设备" },
+  { value: "PERSON", label: "成员" },
 ]
 
 const GRANULARITY_FILTERS: { value: Granularity; label: string }[] = [
-  { value: "month", label: "Monthly" },
-  { value: "quarter", label: "Quarterly" },
-  { value: "year", label: "Yearly" },
+  { value: "month", label: "按月" },
+  { value: "quarter", label: "按季度" },
+  { value: "year", label: "按年" },
 ]
 
 const serviceTab = (assetType: AssetType) => (assetType === "PERSON" ? "visits" : "service")
@@ -61,9 +61,9 @@ export default async function CostsPage({
       <div className="space-y-6">
         <Heading />
         <div className="rounded-lg border border-dashed p-12 text-center text-muted-foreground">
-          <p className="font-medium">No costs recorded yet</p>
+          <p className="font-medium">暂无支出记录</p>
           <p className="mt-1 text-sm">
-            Add a cost to a service record and this page will start reporting on it.
+            在维护记录中添加费用后，本页面即会生成相关统计。
           </p>
         </div>
       </div>
@@ -127,8 +127,8 @@ export default async function CostsPage({
         <Heading />
         {filters}
         <div className="rounded-lg border border-dashed p-12 text-center text-muted-foreground">
-          <p className="font-medium">No costs match those filters</p>
-          <p className="mt-1 text-sm">Try a different year, asset type, or category.</p>
+          <p className="font-medium">没有符合筛选条件的支出</p>
+          <p className="mt-1 text-sm">请尝试其他年份、资产类型或分类。</p>
         </div>
       </div>
     )
@@ -156,7 +156,7 @@ export default async function CostsPage({
   const nested = assetType == null ? nestedByAsset(rows, assets.equipmentProperty) : null
   const assetLabel = (key: string) => {
     const { assetType: t, assetId } = parseAssetKey(key)
-    return assets.assetName(t, assetId) ?? "Unknown"
+    return assets.assetName(t, assetId) ?? "未知"
   }
   const assetEntries = ranked(nested ? nested.top : byAsset(rows), {
     limit: TOP_ASSETS,
@@ -187,7 +187,7 @@ export default async function CostsPage({
     }
     if (!kids) return [parent]
     const childRows = ranked(kids, {
-      label: (key) => (key === entry.key ? "Property itself" : assetLabel(key)),
+      label: (key) => (key === entry.key ? "房产本身" : assetLabel(key)),
     }).map((c) => ({ ...c, depth: 1, history: historyOf([c.key]), href: hrefOf(c.key) }))
     return [parent, ...childRows]
   })
@@ -219,27 +219,27 @@ export default async function CostsPage({
           so narrowing them to a selected year would make "All time" untrue. */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Kpi
-          label={`${thisYear} to date`}
+          label={`${thisYear} 年至今`}
           value={fmt.money(ytd)}
           delta={ytdPrior > 0 ? (ytd - ytdPrior) / ytdPrior : null}
-          deltaNote={`vs ${fmt.money(ytdPrior)} by this point in ${thisYear - 1}`}
+          deltaNote={`对比去年此时（${thisYear - 1} 年）的 ${fmt.money(ytdPrior)}`}
           history={tileHistory}
-          historyLabel={`Monthly spending over the last ${TILE_MONTHS} months`}
+          historyLabel={`最近 ${TILE_MONTHS} 个月的月度支出`}
         />
         <Kpi
-          label={`All of ${thisYear - 1}`}
+          label={`${thisYear - 1} 全年`}
           value={fmt.money(lastYear)}
           delta={yearBefore > 0 ? (lastYear - yearBefore) / yearBefore : null}
-          deltaNote={`vs ${fmt.money(yearBefore)} in ${thisYear - 2}`}
+          deltaNote={`对比 ${thisYear - 2} 年的 ${fmt.money(yearBefore)}`}
         />
         {/* All-time and the monthly average carry no trend of their own: one is
             cumulative, so its sparkline could only ever rise, and the other is the
             same series the first tile already draws. */}
-        <Kpi label="All time" value={fmt.money(sum(typeRows))} />
-        <Kpi label="Average per month" value={fmt.money(averagePerMonth(typeRows, now))} />
+        <Kpi label="历史累计" value={fmt.money(sum(typeRows))} />
+        <Kpi label="月均支出" value={fmt.money(averagePerMonth(typeRows, now))} />
       </div>
 
-      <Panel title={year != null ? `Spend through ${year}` : "Spend over time"}>
+      <Panel title={year != null ? `${year} 年支出走势` : "历年支出"}>
         <TrendChart
           buckets={buckets}
           trend={trend}
@@ -255,30 +255,30 @@ export default async function CostsPage({
         />
       </Panel>
 
-      <Panel title="Spend by category">
+      <Panel title="按分类支出">
         <CompositionBar
           entries={categorySlices}
           activeKey={category}
-          caption="Share of spending by category"
+          caption="各分类支出占比"
         />
       </Panel>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <Panel title="Spend by asset">
-          <RankedBars entries={assetRows} valueLabel="Spend" caption="Spending by asset" />
+        <Panel title="按资产支出">
+          <RankedBars entries={assetRows} valueLabel="支出" caption="各资产支出对比" />
         </Panel>
 
-        <Panel title="Top vendors">
+        <Panel title="商家排行">
           <RankedBars
             entries={vendorEntries}
-            emptyMessage="No vendors recorded yet."
-            valueLabel="Spend"
-            caption="Spending by vendor"
+            emptyMessage="暂无商家记录。"
+            valueLabel="支出"
+            caption="各商家支出对比"
             size="compact"
           />
         </Panel>
 
-        <Panel title="Biggest single expenses" className="lg:col-span-2">
+        <Panel title="最大单笔支出" className="lg:col-span-2">
           <ul className="space-y-0.5">
             {biggest.map((row, i) => (
               <BiggestRow key={`${row.title}-${i}`} row={row} assets={assets} max={biggestMax} fmt={fmt} />
@@ -293,9 +293,9 @@ export default async function CostsPage({
 function Heading() {
   return (
     <div>
-      <h1 className="font-heading text-2xl font-semibold">Costs</h1>
+      <h1 className="font-heading text-2xl font-semibold">支出</h1>
       <p className="mt-0.5 text-sm text-muted-foreground">
-        What your homes, vehicles, and equipment have cost to keep.
+        您的房产、车辆和设备的养护成本一览。
       </p>
     </div>
   )
@@ -407,7 +407,7 @@ function BiggestRow({
         />
         <AssetIcon className="relative h-3.5 w-3.5 shrink-0 text-muted-foreground" />
         <span className="relative flex-1 truncate">{row.title}</span>
-        <span className="relative shrink-0 text-xs text-muted-foreground">{name ?? "Unknown"}</span>
+        <span className="relative shrink-0 text-xs text-muted-foreground">{name ?? "未知"}</span>
         <span className="relative shrink-0 tabular-nums">{fmt.money(row.cost)}</span>
       </Link>
     </li>
@@ -436,8 +436,8 @@ function FilterRow({
     // inside the chart card it happens to drive. Every panel below re-reads the
     // same slice.
     <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-      <FilterGroup label="Assets">
-        <FilterLink label="All" href={`/costs${withParams(params, { type: undefined })}`} active={!assetType} />
+      <FilterGroup label="资产">
+        <FilterLink label="全部" href={`/costs${withParams(params, { type: undefined })}`} active={!assetType} />
         {types.map((t) => (
           <FilterLink
             key={t.value}
@@ -448,8 +448,8 @@ function FilterRow({
         ))}
       </FilterGroup>
 
-      <FilterGroup label="Year">
-        <FilterLink label="All" href={`/costs${withParams(params, { year: "all" })}`} active={year == null} />
+      <FilterGroup label="年份">
+        <FilterLink label="全部" href={`/costs${withParams(params, { year: "all" })}`} active={year == null} />
         {years.map((y) => (
           <FilterLink
             key={y}
@@ -460,7 +460,7 @@ function FilterRow({
         ))}
       </FilterGroup>
 
-      <FilterGroup label="By">
+      <FilterGroup label="粒度">
         {GRANULARITY_FILTERS.map((g) => (
           <FilterLink
             key={g.value}
@@ -475,7 +475,7 @@ function FilterRow({
           the composition bar. It still needs to be visible and clearable here,
           or a reader who clicked a slice has no way back other than the browser. */}
       {category ? (
-        <FilterGroup label="Category">
+        <FilterGroup label="分类">
           <Link
             href={`/costs${withParams(params, { category: undefined })}`}
             className="flex items-center gap-1 rounded-md bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary transition-colors hover:bg-primary/20"
@@ -487,7 +487,7 @@ function FilterRow({
             />
             {categoryLabel(category)}
             <X className="h-3 w-3" aria-hidden="true" />
-            <span className="sr-only">Clear category filter</span>
+            <span className="sr-only">清除分类筛选</span>
           </Link>
         </FilterGroup>
       ) : null}

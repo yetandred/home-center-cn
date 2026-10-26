@@ -9,10 +9,10 @@ import { updateEmailDigest } from "@/lib/actions/users"
 import type { EmailDigest } from "@/app/generated/prisma/client"
 
 const OPTIONS: { value: EmailDigest; label: string; hint: string }[] = [
-  { value: "OFF", label: "Off", hint: "No email. The bell still works." },
-  { value: "ASAP", label: "As soon as possible", hint: "On the next check, not instantly." },
-  { value: "DAILY", label: "Daily", hint: "One message a day, if anything is pending." },
-  { value: "WEEKLY", label: "Weekly", hint: "One message a week, if anything is pending." },
+  { value: "OFF", label: "关闭", hint: "不发送邮件，站内通知铃仍可用。" },
+  { value: "ASAP", label: "尽快发送", hint: "在下一次检查时发送，并非即时。" },
+  { value: "DAILY", label: "每天", hint: "有待办事项时，每天发送一封汇总邮件。" },
+  { value: "WEEKLY", label: "每周", hint: "有待办事项时，每周发送一封汇总邮件。" },
 ]
 
 export function EmailPreferences({
@@ -39,7 +39,7 @@ export function EmailPreferences({
         setValue(previous) // put the control back if the server refused
         toast.error(result.error)
       } else {
-        toast.success("Email preference saved.")
+        toast.success("邮件偏好已保存。")
       }
     })
   }
@@ -50,11 +50,11 @@ export function EmailPreferences({
     <Card className="py-5">
       <CardHeader className="px-5">
         <CardTitle className="flex items-center gap-2">
-          Email notifications
-          {!mailConfigured && <Badge variant="outline">Not configured</Badge>}
+          邮件通知
+          {!mailConfigured && <Badge variant="outline">未配置</Badge>}
         </CardTitle>
         <CardDescription>
-          Due maintenance and expiring warranties, sent to {email}.
+          到期维护和即将过期的保修，发送至 {email}。
         </CardDescription>
       </CardHeader>
       <CardContent className="px-5">
@@ -77,14 +77,12 @@ export function EmailPreferences({
         </div>
         {!receivesNotifications && (
           <p className="mt-3 text-sm text-muted-foreground">
-            An administrator has turned notifications off for your account, so nothing will be
-            sent to you whatever you choose here.
+            管理员已为你的账户关闭了通知，因此无论在此选择什么，都不会向你发送邮件。
           </p>
         )}
         {!mailConfigured && (
           <p className="mt-3 text-sm text-muted-foreground">
-            No mail server is set up yet, so nothing will be sent whatever you choose here. An
-            administrator can configure one under <strong>Mail server</strong> below.
+            尚未配置邮件服务器，因此无论在此选择什么，都不会发送邮件。管理员可在下方<strong>邮件服务器</strong>中进行配置。
           </p>
         )}
       </CardContent>

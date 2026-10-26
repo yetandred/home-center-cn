@@ -13,10 +13,10 @@ import { cn } from "@/lib/utils"
 const DAY = 86_400_000
 
 const RANGES = [
-  { value: "all", label: "All", days: null },
-  { value: "3y", label: "3Y", days: 365 * 3 },
-  { value: "1y", label: "1Y", days: 365 },
-  { value: "6m", label: "6M", days: 182 },
+  { value: "all", label: "全部", days: null },
+  { value: "3y", label: "3 年", days: 365 * 3 },
+  { value: "1y", label: "1 年", days: 365 },
+  { value: "6m", label: "6 个月", days: 182 },
 ] as const
 type RangeValue = (typeof RANGES)[number]["value"]
 
@@ -49,10 +49,10 @@ function useWidth<T extends HTMLElement>() {
 }
 
 const changeWord = (s: TimelineSegment) =>
-  s.change === "up" ? `Increased from ${s.previousDosage}` :
-  s.change === "down" ? `Decreased from ${s.previousDosage}` :
-  s.change === "restart" ? "Restarted" :
-  s.change === "start" ? "Started" : s.previousDosage ? `Changed from ${s.previousDosage}` : "Continued"
+  s.change === "up" ? `剂量从 ${s.previousDosage} 增加` :
+  s.change === "down" ? `剂量从 ${s.previousDosage} 减少` :
+  s.change === "restart" ? "重新开始" :
+  s.change === "start" ? "开始用药" : s.previousDosage ? `由 ${s.previousDosage} 变更` : "继续"
 
 function ChangeIcon({ change, className }: { change: TimelineSegment["change"]; className?: string }) {
   if (change === "up") return <ArrowUp className={className} strokeWidth={2.25} aria-hidden="true" />
@@ -129,7 +129,7 @@ export function MedicationTimeline({ medications, observations, onSelect }: Prop
   if (lanes.length === 0) {
     return (
       <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-        Add start dates to medications to see them on a timeline.
+        为用药添加开始日期后，即可在时间线上查看。
       </div>
     )
   }
@@ -137,7 +137,7 @@ export function MedicationTimeline({ medications, observations, onSelect }: Prop
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="inline-flex rounded-md border p-0.5" role="group" aria-label="Time range">
+        <div className="inline-flex rounded-md border p-0.5" role="group" aria-label="时间范围">
           {RANGES.map((r) => (
             <button
               key={r.value}
@@ -154,18 +154,18 @@ export function MedicationTimeline({ medications, observations, onSelect }: Prop
           ))}
         </div>
         <p className="text-xs text-muted-foreground">
-          <span className="font-medium text-foreground">{visible.length}</span> medications ·{" "}
-          <span className="font-medium text-foreground">{periods}</span> dose periods ·{" "}
-          <span className="font-medium text-foreground">{activeCount}</span> current
-          {undated > 0 && <> · {undated} without a start date not shown</>}
+          <span className="font-medium text-foreground">{visible.length}</span> 种用药 ·{" "}
+          <span className="font-medium text-foreground">{periods}</span> 个用药期 ·{" "}
+          <span className="font-medium text-foreground">{activeCount}</span> 个进行中
+          {undated > 0 && <> · {undated} 条无开始日期，未显示</>}
         </p>
       </div>
 
       <figure className="rounded-lg border bg-card">
         <figcaption className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-b px-4 py-3">
           <div>
-            <div className="text-sm font-medium">Medication timeline</div>
-            <div className="text-xs text-muted-foreground">Each bar is one dose period. Hover or tap anywhere to see everything taken that day; click a bar to edit it.</div>
+            <div className="text-sm font-medium">用药时间线</div>
+            <div className="text-xs text-muted-foreground">每根条代表一个用药期。悬停或点按任意位置可查看当天服用的所有药物；点击条形可编辑。</div>
           </div>
           <Legend />
         </figcaption>
@@ -182,15 +182,15 @@ export function MedicationTimeline({ medications, observations, onSelect }: Prop
                     <div className="truncate text-sm font-medium leading-tight" title={l.name}>{l.name}</div>
                     <div className="truncate text-[11px] leading-tight text-muted-foreground">
                       {l.active && l.current
-                        ? <span className="text-foreground">Now{l.current.med.dosage ? ` · ${l.current.med.dosage}` : ""}</span>
+                        ? <span className="text-foreground">现在{l.current.med.dosage ? ` · ${l.current.med.dosage}` : ""}</span>
                         : laneYears(l)}
                     </div>
                   </div>
                 ))}
                 {observations.length > 0 && (
                   <div className="flex flex-col justify-center border-t" style={{ height: OBS_HEIGHT + 10 }}>
-                    <div className="text-[11px] font-medium leading-tight text-muted-foreground">Observations</div>
-                    <div className="text-[11px] leading-tight text-muted-foreground">avg day · {obsInRange} logged</div>
+                    <div className="text-[11px] font-medium leading-tight text-muted-foreground">观察记录</div>
+                    <div className="text-[11px] leading-tight text-muted-foreground">日均 · 已记录 {obsInRange} 次</div>
                   </div>
                 )}
               </div>
@@ -225,7 +225,7 @@ export function MedicationTimeline({ medications, observations, onSelect }: Prop
                     <div className="absolute top-[18px] bottom-0" style={{ left: `${pos(nowMs)}%` }}>
                       <div className="absolute top-0 bottom-0 w-px bg-foreground/50" />
                       <div className="absolute -top-[2px] -translate-x-1/2 rounded-sm bg-foreground px-1 text-[9px] font-semibold uppercase leading-[13px] tracking-wide text-background">
-                        Today
+                        今天
                       </div>
                     </div>
                   )}
@@ -301,7 +301,7 @@ function laneYears(l: TimelineLane): string {
   const a = new Date(l.first).getUTCFullYear()
   const b = new Date(l.last - DAY).getUTCFullYear()
   const n = l.segments.length
-  return `${a === b ? a : `${a}–${b}`} · ${n} ${n === 1 ? "period" : "periods"}`
+  return `${a === b ? a : `${a}–${b}`} · ${n} 个用药期`
 }
 
 function SegmentMark({
@@ -321,10 +321,10 @@ function SegmentMark({
   if (hidden) return null
   const label = [
     laneName,
-    s.med.dosage ?? "dose not recorded",
-    s.point ? `on ${describe(s.start)}` : `${describe(s.start)} to ${s.ongoing ? "now" : describe(s.end - DAY)}`,
+    s.med.dosage ?? "未记录剂量",
+    s.point ? `${describe(s.start)} 当天` : `${describe(s.start)} 至 ${s.ongoing ? "现在" : describe(s.end - DAY)}`,
     changeWord(s),
-  ].join(", ")
+  ].join("，")
   const common = {
     type: "button" as const,
     "aria-label": label,
@@ -352,7 +352,7 @@ function SegmentMark({
   const fill = mix == null ? UNKNOWN_FILL : doseFill(mix)
   const ink = mix != null && mix >= 70 ? "var(--card)" : mix == null ? "var(--muted-foreground)" : "var(--foreground)"
   const px = ((right - left) / 100) * plotWidth - 2
-  const text = s.med.dosage?.replace(/\s*\(.*\)\s*/, "").trim() || "dose ?"
+  const text = s.med.dosage?.replace(/\s*\(.*\)\s*/, "").trim() || "剂量?"
   const icon = s.change === "up" || s.change === "down" || s.change === "restart"
   const fits = px >= text.length * 6.4 + (icon ? 14 : 0) + 12
 
@@ -406,7 +406,7 @@ function DayCard({
     >
       <div className="text-xs font-medium">{title}</div>
       {rows.length === 0 ? (
-        <div className="mt-1 text-xs text-muted-foreground">No medications on this day.</div>
+        <div className="mt-1 text-xs text-muted-foreground">这一天没有用药。</div>
       ) : (
         <dl className="mt-1.5 space-y-1.5">
           {rows.map(({ lane, seg }) => (
@@ -420,11 +420,11 @@ function DayCard({
                 <dt className="min-w-0 flex-1 truncate text-muted-foreground">{lane}</dt>
                 <dd className="flex shrink-0 items-center gap-0.5 font-medium tabular-nums">
                   <ChangeIcon change={seg.change} className="h-3 w-3" />
-                  {seg.med.dosage ?? "dose ?"}
+                  {seg.med.dosage ?? "剂量?"}
                 </dd>
               </div>
               <div className="pl-5 text-[11px] text-muted-foreground">
-                {changeWord(seg)} · {formatSpan(daysBetween(seg.start, seg.end))}{seg.ongoing ? " so far" : ""}
+                {changeWord(seg)} · {formatSpan(daysBetween(seg.start, seg.end))}{seg.ongoing ? "（至今）" : ""}
               </div>
             </div>
           ))}
@@ -433,23 +433,23 @@ function DayCard({
       {week && (
         <div className="mt-1.5 space-y-1 border-t pt-1.5 text-xs">
           <div className="flex items-center justify-between gap-2">
-            <span className="text-muted-foreground">That week</span>
+            <span className="text-muted-foreground">该周</span>
             <span className="shrink-0 tabular-nums">
-              <span className="font-medium">avg day {week.avg}</span>
-              <span className="text-muted-foreground"> · {week.count} logged{week.severe ? ` · ${week.severe} severe` : ""}</span>
+              <span className="font-medium">日均 {week.avg}</span>
+              <span className="text-muted-foreground"> · 已记录 {week.count} 次{week.severe ? ` · ${week.severe} 个严重日` : ""}</span>
             </span>
           </div>
           {rows.length > 0 && (
             <div>
-              <div className="text-muted-foreground">During each dose (whole weeks)</div>
+              <div className="text-muted-foreground">各用药期间（按整周）</div>
               {rows.map(({ lane, seg }) => {
                 const d = during(seg)
                 return (
                   <div key={seg.med.id} className="flex items-center justify-between gap-2 pl-2">
                     <span className="min-w-0 truncate">{lane} {seg.med.dosage ?? ""}</span>
                     <span className="shrink-0 tabular-nums">
-                      <span className="font-medium">avg {d.avg}</span>
-                      <span className="text-muted-foreground"> · {d.severe} severe in {d.weeks} wk</span>
+                      <span className="font-medium">日均 {d.avg}</span>
+                      <span className="text-muted-foreground"> · {d.weeks} 周内 {d.severe} 个严重日</span>
                     </span>
                   </div>
                 )
@@ -467,30 +467,30 @@ function Legend() {
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] text-muted-foreground" aria-hidden="true">
       <span className="flex items-center gap-1.5">
-        Lower
+        低
         <span className="flex gap-px">
           {steps.map((i) => (
             <span key={i} className="h-2.5 w-3.5 first:rounded-l-[3px] last:rounded-r-[3px]" style={{ background: doseFill(mixFor(i)) }} />
           ))}
         </span>
-        Higher dose
+        高剂量
       </span>
       <span className="flex items-center gap-1.5">
         <span className="h-2.5 w-4 rounded-[3px]" style={{ background: UNKNOWN_FILL }} />
-        Not recorded
+        未记录
       </span>
       <span className="flex items-center gap-1.5">
         <span className="block h-2 w-2 rotate-45 rounded-[1px] bg-[var(--cost-bar)]" />
-        One day
+        单日
       </span>
       <span className="flex items-center gap-1">
         <ArrowUp className="h-3 w-3" strokeWidth={2.25} />
         <ArrowDown className="h-3 w-3" strokeWidth={2.25} />
-        Dose change
+        剂量变化
       </span>
       <span className="flex items-center gap-1">
         <RotateCcw className="h-3 w-3" strokeWidth={2.25} />
-        Restarted
+        重新开始
       </span>
     </div>
   )

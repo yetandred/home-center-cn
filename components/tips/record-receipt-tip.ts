@@ -27,5 +27,5 @@ export function maybeShowReceiptTip(hadFiles: boolean, { isNew = true }: { isNew
   } catch {
     return
   }
-  toast("Tip: drop the receipt next time and HomeCenter fills this in.", { duration: 8000 })
+  toast("提示：下次直接拖入收据，HomeCenter 会自动填写。", { duration: 8000 })
 }

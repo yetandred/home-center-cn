@@ -39,7 +39,7 @@ export function StagedFiles({ files, inputRef, onPick, onAdd, onRemove }: {
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
-          <Paperclip className="h-3.5 w-3.5" /> Photos and files
+          <Paperclip className="h-3.5 w-3.5" /> 照片和文件
           {files.length > 0 && <Badge variant="secondary" className="h-4 px-1.5 text-xs">{files.length}</Badge>}
         </div>
         <input
@@ -50,7 +50,7 @@ export function StagedFiles({ files, inputRef, onPick, onAdd, onRemove }: {
           onChange={(e) => { onAdd(Array.from(e.target.files ?? [])); e.target.value = "" }}
         />
         <Button type="button" variant="outline" size="sm" onClick={onPick}>
-          <Upload className="mr-1.5 h-3.5 w-3.5" /> Attach file
+          <Upload className="mr-1.5 h-3.5 w-3.5" /> 添加附件
         </Button>
       </div>
       {files.length > 0 && (
@@ -62,7 +62,7 @@ export function StagedFiles({ files, inputRef, onPick, onAdd, onRemove }: {
                 <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
                 <span className="flex-1 truncate">{file.name}</span>
                 <span className="shrink-0 text-xs text-muted-foreground">{formatBytes(file.size)}</span>
-                <button type="button" onClick={() => onRemove(index)} aria-label={`Remove "${file.name}"`} className="shrink-0 text-muted-foreground transition-colors hover:text-destructive">
+                <button type="button" onClick={() => onRemove(index)} aria-label={`移除“${file.name}”`} className="shrink-0 text-muted-foreground transition-colors hover:text-destructive">
                   <X className="h-3.5 w-3.5" />
                 </button>
               </li>
@@ -89,17 +89,17 @@ export function RoomFiles({ room, uploading, onUpload, onPick, onChanged }: {
   const others = room.attachments.filter((a) => !isImage(a.mimeType))
 
   function handleDelete(a: Attachment) {
-    if (!confirm(`Remove "${a.originalName}"?`)) return
+    if (!confirm(`移除“${a.originalName}”？`)) return
     startTransition(async () => {
       const result = await deleteAttachment(a.id)
       if (result?.error) { toast.error(result.error); return }
-      toast.success("Attachment removed.")
+      toast.success("附件已移除。")
       onChanged()
     })
   }
 
   const removeButton = (a: Attachment, className?: string) => (
-    <button type="button" onClick={() => handleDelete(a)} disabled={isPending} aria-label={`Remove "${a.originalName}"`}
+    <button type="button" onClick={() => handleDelete(a)} disabled={isPending} aria-label={`移除“${a.originalName}”`}
       className={cn("shrink-0 text-muted-foreground transition-colors hover:text-destructive", className)}>
       <Trash2 className="h-3.5 w-3.5" />
     </button>
@@ -108,15 +108,15 @@ export function RoomFiles({ room, uploading, onUpload, onPick, onChanged }: {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">Photos, paint chips, flooring receipts. Drop files anywhere to add them.</p>
+        <p className="text-sm text-muted-foreground">照片、涂料色卡、地面材料收据。将文件拖到任意位置即可添加。</p>
         <input ref={inputRef} type="file" multiple className="hidden" disabled={uploading}
           onChange={(e) => { onUpload(Array.from(e.target.files ?? [])); e.target.value = "" }} />
         <Button type="button" variant="outline" size="sm" disabled={uploading} onClick={() => onPick(inputRef.current)}>
-          <Upload className="mr-1.5 h-3.5 w-3.5" /> {uploading ? "Uploading…" : "Attach file"}
+          <Upload className="mr-1.5 h-3.5 w-3.5" /> {uploading ? "上传中…" : "添加附件"}
         </Button>
       </div>
 
-      {room.attachments.length === 0 && <p className="text-sm text-muted-foreground">No files yet.</p>}
+      {room.attachments.length === 0 && <p className="text-sm text-muted-foreground">暂无文件。</p>}
 
       {images.length > 0 && (
         <ul className="grid grid-cols-2 gap-2 sm:grid-cols-4">
@@ -153,9 +153,9 @@ export function RoomEquipment({ room, onAdd, onEdit }: { room: RoomWithDetails; 
     <div className="space-y-3">
       <div className="flex items-center justify-between gap-3">
         <p className="text-sm text-muted-foreground">
-          {room.equipment.length === 0 ? "No equipment in this room yet." : `${room.equipment.length} in this room`}
+          {room.equipment.length === 0 ? "此房间暂无设备。" : `此房间共 ${room.equipment.length} 台`}
         </p>
-        <Button type="button" size="sm" onClick={onAdd}><Plus className="mr-1 h-3.5 w-3.5" /> Add equipment</Button>
+        <Button type="button" size="sm" onClick={onAdd}><Plus className="mr-1 h-3.5 w-3.5" /> 添加设备</Button>
       </div>
       {room.equipment.length > 0 && <EquipmentRows equipment={room.equipment} onEdit={onEdit} />}
     </div>
@@ -170,7 +170,7 @@ function useScopedHistory<T extends { assetType: string; assetId: string; roomId
 
 function SourceBadge({ room, r }: { room: RoomWithDetails; r: { assetType: string; assetId: string } }) {
   if (r.assetType !== "EQUIPMENT") return null
-  return <Badge variant="outline" className="shrink-0">{room.equipment.find((e) => e.id === r.assetId)?.name ?? "Equipment"}</Badge>
+  return <Badge variant="outline" className="shrink-0">{room.equipment.find((e) => e.id === r.assetId)?.name ?? "设备"}</Badge>
 }
 
 /** The room's service records, optionally with those for equipment in it. Click one to edit it; the dialog stacks over this one. */
@@ -181,12 +181,12 @@ export function RoomServiceRecords({ room, serviceRecords, onAdd, onEdit }: { ro
     <div className="space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-3">
-          <p className="text-sm text-muted-foreground">{rows.length} record{rows.length !== 1 ? "s" : ""}</p>
-          <ScopeToggle scope={scope} onChange={setScope} ownLabel="Room only" withLabel="Room + its equipment" />
+          <p className="text-sm text-muted-foreground">{rows.length} 条记录</p>
+          <ScopeToggle scope={scope} onChange={setScope} ownLabel="仅房间" withLabel="房间及其设备" />
         </div>
-        <Button type="button" size="sm" onClick={onAdd}><Plus className="mr-1 h-3.5 w-3.5" /> Add service record</Button>
+        <Button type="button" size="sm" onClick={onAdd}><Plus className="mr-1 h-3.5 w-3.5" /> 添加维护记录</Button>
       </div>
-      {rows.length === 0 ? <p className="text-sm text-muted-foreground">No service records for this room yet.</p> : (
+      {rows.length === 0 ? <p className="text-sm text-muted-foreground">此房间暂无维护记录。</p> : (
         <ul className="divide-y rounded-md border bg-card">
           {rows.map((r) => (
             <li key={r.id}>
@@ -215,17 +215,17 @@ export function RoomReminders({ room, schedules }: { room: RoomWithDetails; sche
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-3">
-        <p className="text-sm text-muted-foreground">{rows.length} reminder{rows.length !== 1 ? "s" : ""}</p>
-        <ScopeToggle scope={scope} onChange={setScope} ownLabel="Room only" withLabel="Room + its equipment" />
+        <p className="text-sm text-muted-foreground">{rows.length} 条提醒</p>
+        <ScopeToggle scope={scope} onChange={setScope} ownLabel="仅房间" withLabel="房间及其设备" />
       </div>
-      {rows.length === 0 ? <p className="text-sm text-muted-foreground">No maintenance reminders for this room.</p> : (
+      {rows.length === 0 ? <p className="text-sm text-muted-foreground">此房间暂无维护提醒。</p> : (
         <ul className="divide-y rounded-md border bg-card">
           {rows.map((s) => (
             <li key={s.id}>
               <Link href={href(s)} className="flex items-center gap-3 px-3 py-2 text-sm hover:bg-muted/40">
                 <span className="flex-1 truncate">{s.title}</span>
                 <SourceBadge room={room} r={s} />
-                <span className="shrink-0 text-muted-foreground">{s.nextDueDate ? `Due ${fmt.date(s.nextDueDate)}` : "No due date"}</span>
+                <span className="shrink-0 text-muted-foreground">{s.nextDueDate ? `到期 ${fmt.date(s.nextDueDate)}` : "无到期日期"}</span>
               </Link>
             </li>
           ))}

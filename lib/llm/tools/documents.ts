@@ -59,7 +59,7 @@ export function documentTools(includeHealth: boolean, includeRooms = true): Regi
       recordType: z.string().optional().describe(`Only files attached to one kind of record: ${visibleRecordTypes(includeHealth, includeRooms).join(", ")}.`),
       limit: z.number().int().min(1).max(30).optional().describe(`Most files to return, default ${LIST_LIMIT}, at most 30.`),
     }),
-    label: () => "Listing documents…",
+    label: () => "正在列出文档…",
     async run(a, ctx) {
       const recordTypes = recordTypeFilter(a.recordType, includeHealth, includeRooms)
       const resolved = await assetScope(a, ctx)
@@ -92,7 +92,7 @@ export function documentTools(includeHealth: boolean, includeRooms = true): Regi
       recordType: z.string().optional().describe(`Only files attached to one kind of record: ${visibleRecordTypes(includeHealth, includeRooms).join(", ")}.`),
       limit: z.number().int().min(1).max(8).optional().describe(`Most files to return, default ${DEFAULT_LIMIT}.`),
     }),
-    label: (a) => `Searching documents for “${a.query}”…`,
+    label: (a) => `正在搜索文档“${a.query}”…`,
     async run(a, ctx) {
       const parsed = parseSearch(a.query)
       const model = await semanticSearchModel()
@@ -165,7 +165,7 @@ export function documentTools(includeHealth: boolean, includeRooms = true): Regi
       fromPage: z.number().int().min(1).optional().describe("Page to start at, default 1."),
       offset: z.number().int().min(0).optional().describe("Only to continue a cut page: next.offset from the previous result."),
     }),
-    label: () => "Reading a document…",
+    label: () => "正在读取文档…",
     async run(a) {
       const row = await prisma.attachment.findUnique({
         where: { id: a.attachmentId },

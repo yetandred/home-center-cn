@@ -119,31 +119,31 @@ export default async function DashboardPage() {
     <div className="space-y-6">
       <div>
         <h1 className="font-heading text-xl font-semibold tracking-tight">
-          Welcome back{session?.user?.name ? `, ${session.user.name.split(" ")[0]}` : ""}
+          欢迎回来{session?.user?.name ? `，${session.user.name.split(" ")[0]}` : ""}
         </h1>
       </div>
 
       {empty && session?.user.role === "ADMIN" && <FreshStartCard />}
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-[1.3fr_1.3fr_1.6fr_1fr]">
-        <SummaryCard icon={<Building2 />} label="Properties" value={propertyCount} href="/assets/properties" thumbnails={propertyThumbnails} hero />
-        <SummaryCard icon={<Car />} label="Vehicles" value={vehicleCount} href="/assets/vehicles" thumbnails={vehicleThumbnails} hero />
+        <SummaryCard icon={<Building2 />} label="房产" value={propertyCount} href="/assets/properties" thumbnails={propertyThumbnails} hero />
+        <SummaryCard icon={<Car />} label="车辆" value={vehicleCount} href="/assets/vehicles" thumbnails={vehicleThumbnails} hero />
         {/* People and Equipment stack full-width in the third column, each with
             room for its own thumbnail strip. With Health off, Equipment has the
             column to itself. */}
         <div className="col-span-2 grid grid-cols-1 gap-4 sm:col-span-3 lg:col-span-1">
           {features.health && (
-            <SummaryCard icon={<HeartPulse />} label="People" value={personCount} href="/assets/people" thumbnails={peopleThumbnails} compact hero />
+            <SummaryCard icon={<HeartPulse />} label="成员" value={personCount} href="/assets/people" thumbnails={peopleThumbnails} compact hero />
           )}
-          <SummaryCard icon={<Refrigerator />} label="Equipment" value={equipmentCount} href="/assets/equipment" thumbnails={equipmentThumbnails} compact hero />
+          <SummaryCard icon={<Refrigerator />} label="设备" value={equipmentCount} href="/assets/equipment" thumbnails={equipmentThumbnails} compact hero />
         </div>
         {/* Records, Active Warranties, and Due stack vertically in a
             narrow far-right column on wide screens; on narrower ones they run
             side by side so they don't stretch the page tall. */}
         <div className="col-span-2 grid grid-cols-3 gap-4 sm:col-span-3 lg:col-span-1 lg:flex lg:flex-col">
-          <SummaryCard icon={<Wrench />} label="Records" value={recordCount} href="/records" compact />
-          <SummaryCard icon={<ShieldCheck />} label="Active Warranties" value={warrantyCount} href="/warranties" compact />
-          <SummaryCard icon={<Calendar />} label="Due (30d)" value={maintenanceCount} href="/maintenance" urgent={maintenanceCount > 0} compact />
+          <SummaryCard icon={<Wrench />} label="记录" value={recordCount} href="/records" compact />
+          <SummaryCard icon={<ShieldCheck />} label="保修中" value={warrantyCount} href="/warranties" compact />
+          <SummaryCard icon={<Calendar />} label="即将到期（30 天）" value={maintenanceCount} href="/maintenance" urgent={maintenanceCount > 0} compact />
         </div>
       </div>
 
@@ -155,18 +155,18 @@ export default async function DashboardPage() {
         <Card className="py-5">
           <CardHeader className="px-5 pb-1">
             <CardTitle className="flex items-center justify-between text-[13px] font-medium uppercase tracking-wide text-muted-foreground">
-              Reminders
+              提醒
               <Link
                 href="/maintenance"
                 className="rounded-md px-2 py-1 text-xs font-medium normal-case tracking-normal text-muted-foreground transition-colors duration-150 hover:bg-primary/10 hover:text-primary"
               >
-                View all →
+                查看全部 →
               </Link>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-1 px-5">
             {urgentMaintenance.length === 0 ? (
-              <EmptyPanel icon={Clock} message="Nothing due in the next 30 days." />
+              <EmptyPanel icon={Clock} message="未来 30 天内没有到期事项。" />
             ) : urgentMaintenance.map(({ s, due }) => {
               const reading = s.assetType === "VEHICLE" ? mileage.get(s.assetId) : undefined
               return (
@@ -189,18 +189,18 @@ export default async function DashboardPage() {
         <Card className="py-5">
           <CardHeader className="px-5 pb-1">
             <CardTitle className="flex items-center justify-between text-[13px] font-medium uppercase tracking-wide text-muted-foreground">
-              Expiring Warranties
+              即将到期的保修
               <Link
                 href="/warranties"
                 className="rounded-md px-2 py-1 text-xs font-medium normal-case tracking-normal text-muted-foreground transition-colors duration-150 hover:bg-primary/10 hover:text-primary"
               >
-                View all →
+                查看全部 →
               </Link>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-1 px-5">
             {expiringWarranties.length === 0 ? (
-              <EmptyPanel icon={ShieldCheck} message="No warranties expiring in the next 60 days." />
+              <EmptyPanel icon={ShieldCheck} message="未来 60 天内没有到期的保修。" />
             ) : expiringWarranties.map((w) => {
               const assetName = assets.assetName(w.assetType, w.assetId)
               const href = assetHref(w.assetType, w.assetId)
@@ -214,7 +214,7 @@ export default async function DashboardPage() {
                   <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
                   <span className="flex-1 truncate">{w.productName}</span>
                   <span className="text-xs text-muted-foreground shrink-0">{assetName}</span>
-                  <Badge variant="secondary" className="shrink-0 text-xs">{daysLeft}d</Badge>
+                  <Badge variant="secondary" className="shrink-0 text-xs">{daysLeft} 天</Badge>
                 </Link>
               )
             })}
@@ -225,18 +225,18 @@ export default async function DashboardPage() {
         <Card className="py-5">
           <CardHeader className="px-5 pb-1">
             <CardTitle className="flex items-center justify-between text-[13px] font-medium uppercase tracking-wide text-muted-foreground">
-              Spending
+              支出
               <Link
                 href="/costs"
                 className="rounded-md px-2 py-1 text-xs font-medium normal-case tracking-normal text-muted-foreground transition-colors duration-150 hover:bg-primary/10 hover:text-primary"
               >
-                View all →
+                查看全部 →
               </Link>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 px-5">
             {costRows.length === 0 ? (
-              <EmptyPanel icon={PiggyBank} message="No costs recorded yet." />
+              <EmptyPanel icon={PiggyBank} message="暂无支出记录。" />
             ) : (
               <>
                 <div>
@@ -244,7 +244,7 @@ export default async function DashboardPage() {
                     {/* Proportional figures: tabular-nums gives every digit the
                         width of a zero, which reads loose at this size. */}
                     <span className="text-2xl font-semibold leading-none">{fmt.money(spendThisYear)}</span>
-                    <span className="text-xs text-muted-foreground">in {now.getFullYear()}</span>
+                    <span className="text-xs text-muted-foreground">{now.getFullYear()} 年累计</span>
                     {spendDelta !== null && (
                       <span className="ml-auto shrink-0 rounded-full bg-muted px-1.5 py-0.5 text-[11px] font-medium tabular-nums text-muted-foreground">
                         {spendDelta >= 0 ? "↑" : "↓"} {Math.abs(spendDelta * 100).toFixed(0)}%
@@ -253,8 +253,8 @@ export default async function DashboardPage() {
                   </div>
                   <p className="mt-2 text-xs text-muted-foreground">
                     {spendDelta === null
-                      ? `Nothing recorded by this point in ${now.getFullYear() - 1}.`
-                      : `vs the same point last year (${fmt.money(spendLastYear)}).`}
+                      ? `去年此时（${now.getFullYear() - 1} 年）尚无支出记录。`
+                      : `对比去年同期（${fmt.money(spendLastYear)}）。`}
                   </p>
                 </div>
                 <SpendArea
@@ -276,12 +276,12 @@ function dueLabel(due: Due, fmt: Formatter) {
   if (due.reason === "mileage" && due.milesLeft != null) {
     const unit = fmt.meterShort(due.meterUnit ?? "MILES")
     return due.milesLeft < 0
-      ? `${Math.abs(due.milesLeft).toLocaleString()} ${unit} over`
-      : `${due.milesLeft.toLocaleString()} ${unit}`
+      ? `超出 ${Math.abs(due.milesLeft).toLocaleString()} ${unit}`
+      : `剩余 ${due.milesLeft.toLocaleString()} ${unit}`
   }
   const d = due.daysLeft
   if (d === null) return "—"
-  return d < 0 ? `${Math.abs(d)}d late` : d === 0 ? "Today" : `${d}d`
+  return d < 0 ? `逾期 ${Math.abs(d)} 天` : d === 0 ? "今天" : `${d} 天`
 }
 
 function EmptyPanel({ icon: Icon, message }: { icon: React.ElementType; message: string }) {

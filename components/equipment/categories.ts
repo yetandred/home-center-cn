@@ -1,18 +1,18 @@
 import type { EquipmentCategory } from "@/app/generated/prisma/client"
 
 export const EQUIPMENT_CATEGORIES: { value: EquipmentCategory; label: string }[] = [
-  { value: "APPLIANCE", label: "Appliance" },
-  { value: "HVAC", label: "Heating & Cooling" },
-  { value: "WATER", label: "Water & Plumbing" },
-  { value: "ELECTRONICS", label: "Electronics" },
-  { value: "TOOL", label: "Tools" },
-  { value: "OUTDOOR", label: "Outdoor & Lawn" },
-  { value: "SECURITY", label: "Security" },
-  { value: "OTHER", label: "Other" },
+  { value: "APPLIANCE", label: "家电" },
+  { value: "HVAC", label: "供暖与制冷" },
+  { value: "WATER", label: "供水与管道" },
+  { value: "ELECTRONICS", label: "电子产品" },
+  { value: "TOOL", label: "工具" },
+  { value: "OUTDOOR", label: "户外与草坪" },
+  { value: "SECURITY", label: "安防" },
+  { value: "OTHER", label: "其他" },
 ]
 
 const labels = Object.fromEntries(EQUIPMENT_CATEGORIES.map((c) => [c.value, c.label])) as Record<EquipmentCategory, string>
 
 export function categoryLabel(category: EquipmentCategory) {
-  return labels[category] ?? "Other"
+  return labels[category] ?? "其他"
 }

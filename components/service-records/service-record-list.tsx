@@ -118,21 +118,21 @@ export function ServiceRecordList({ records: initialRecords, assetId, assetType,
   }, [])
 
   async function handleDelete(record: ServiceRecord) {
-    if (!confirm(`Delete "${record.title}"?`)) return
+    if (!confirm(`删除“${record.title}”？`)) return
     await deleteServiceRecord(record.id, record.assetType, record.assetId)
-    toast.success("Record deleted.")
+    toast.success("记录已删除。")
   }
 
   return (
     <>
       <div className="flex items-center justify-between mb-4">
         <div className="flex flex-wrap items-center gap-3">
-          <p className="text-sm text-muted-foreground">{scopedRecords.length} {isPerson ? "visit" : "record"}{scopedRecords.length !== 1 ? "s" : ""}</p>
+          <p className="text-sm text-muted-foreground">{scopedRecords.length} {isPerson ? "次就诊" : "条记录"}</p>
           {scopeToggle && <ScopeToggle scope={scope} onChange={(s) => { setScope(s); table.setPage(1) }} ownLabel={scopeToggle.ownLabel} withLabel={scopeToggle.withLabel} />}
         </div>
         <AddSplitButton
-          label={isPerson ? "Add visit" : "Add record"}
-          menuLabel={isPerson ? "More ways to add a visit" : "More ways to add a record"}
+          label={isPerson ? "添加就诊" : "添加记录"}
+          menuLabel={isPerson ? "更多添加就诊的方式" : "更多添加记录的方式"}
           onAdd={() => { setEditingId(null); setDialogOpen(true) }}
           asset={{ assetType, assetId }}
         />
@@ -147,17 +147,17 @@ export function ServiceRecordList({ records: initialRecords, assetId, assetType,
           <Table>
             <TableHeader>
               <TableRow>
-                <SortableTableHead column="date" label="Date" sortState={table.sortState} onToggle={table.toggleSort} />
-                <SortableTableHead column="title" label="Title" sortState={table.sortState} onToggle={table.toggleSort} />
-                {showNotes && <TableHead>Notes</TableHead>}
-                {showSource && <TableHead>Source</TableHead>}
-                {showRoom && <TableHead>Room</TableHead>}
-                <SortableTableHead column="cost" label="Cost" sortState={table.sortState} onToggle={table.toggleSort} />
+                <SortableTableHead column="date" label="日期" sortState={table.sortState} onToggle={table.toggleSort} />
+                <SortableTableHead column="title" label="标题" sortState={table.sortState} onToggle={table.toggleSort} />
+                {showNotes && <TableHead>备注</TableHead>}
+                {showSource && <TableHead>来源</TableHead>}
+                {showRoom && <TableHead>房间</TableHead>}
+                <SortableTableHead column="cost" label="费用" sortState={table.sortState} onToggle={table.toggleSort} />
                 {assetType === "VEHICLE" && (
                   <SortableTableHead column="mileage" label={fmt.meterNoun(meterUnit)} sortState={table.sortState} onToggle={table.toggleSort} />
                 )}
-                <TableHead>Files</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>文件</TableHead>
+                <TableHead className="text-right">操作</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -204,10 +204,10 @@ export function ServiceRecordList({ records: initialRecords, assetId, assetType,
                               href={`/assets/equipment/${record.assetId}`}
                               className="text-sm hover:underline"
                             >
-                              {equipmentNames?.[record.assetId] ?? "Equipment"}
+                              {equipmentNames?.[record.assetId] ?? "设备"}
                             </Link>
                           ) : (
-                            <span className="text-sm text-muted-foreground">Property</span>
+                            <span className="text-sm text-muted-foreground">房产</span>
                           )}
                         </TableCell>
                       )}
@@ -232,15 +232,15 @@ export function ServiceRecordList({ records: initialRecords, assetId, assetType,
                       </TableCell>
                       <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-end gap-1">
-                          <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={`Edit "${record.title}"`}
+                          <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={`编辑“${record.title}”`}
                             onClick={() => { setEditingId(record.id); setDialogOpen(true) }}>
                             <Pencil className="h-3.5 w-3.5" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" aria-label={`Delete "${record.title}"`}
+                          <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" aria-label={`删除“${record.title}”`}
                             onClick={() => handleDelete(record)}>
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={expanded ? "Hide attachments" : "Show attachments"} aria-expanded={expanded}
+                          <Button variant="ghost" size="icon" className="h-7 w-7" aria-label={expanded ? "隐藏附件" : "显示附件"} aria-expanded={expanded}
                             onClick={() => setExpandedId(expanded ? null : record.id)}>
                             <ChevronDown className={`h-3.5 w-3.5 transition-transform ${expanded ? "rotate-180" : ""}`} />
                           </Button>
@@ -271,7 +271,7 @@ export function ServiceRecordList({ records: initialRecords, assetId, assetType,
             per={table.per}
             onPage={table.setPage}
             onPer={table.setPer}
-            label="records"
+            label="记录"
           />
         </div>
       )}

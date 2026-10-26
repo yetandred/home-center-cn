@@ -18,10 +18,10 @@ import type { Vehicle } from "@/app/generated/prisma/client"
 import { useFormat } from "@/components/regional-provider"
 
 const schema = z.object({
-  name: z.string().min(1, "Name is required"),
-  make: z.string().min(1, "Make is required"),
-  model: z.string().min(1, "Model is required"),
-  year: z.string().min(1, "Year is required"),
+  name: z.string().min(1, "名称必填"),
+  make: z.string().min(1, "品牌必填"),
+  model: z.string().min(1, "型号必填"),
+  year: z.string().min(1, "年份必填"),
   vin: z.string().optional(),
   color: z.string().optional(),
   purchaseDate: z.string().optional(),
@@ -43,7 +43,7 @@ export function VehicleFormDialog({ open, onClose, vehicle }: Props) {
   const router = useRouter()
   const fmt = useFormat()
   const milesLabel = fmt.distanceWords.charAt(0).toUpperCase() + fmt.distanceWords.slice(1)
-  const meterUnitLabels: Record<string, string> = { MILES: milesLabel, HOURS: "Hours" }
+  const meterUnitLabels: Record<string, string> = { MILES: milesLabel, HOURS: "小时" }
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -81,10 +81,10 @@ export function VehicleFormDialog({ open, onClose, vehicle }: Props) {
       : await createVehicle(values as unknown as Parameters<typeof createVehicle>[0])
 
     if (result?.error) {
-      toast.error("Please fix the errors and try again.")
+      toast.error("请修正错误后重试。")
       return
     }
-    toast.success(vehicle ? "Vehicle updated." : "Vehicle added.")
+    toast.success(vehicle ? "车辆已更新。" : "车辆已添加。")
     onClose()
     if (then === "reminders" && result && "id" in result && typeof result.id === "string") router.push(remindersHref("VEHICLE", result.id))
   }
@@ -93,7 +93,7 @@ export function VehicleFormDialog({ open, onClose, vehicle }: Props) {
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{vehicle ? "Edit Vehicle" : "Add Vehicle"}</DialogTitle>
+          <DialogTitle>{vehicle ? "编辑车辆" : "添加车辆"}</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
@@ -101,15 +101,15 @@ export function VehicleFormDialog({ open, onClose, vehicle }: Props) {
             <div className="grid grid-cols-2 gap-4">
               <FormField control={form.control} name="name" render={({ field }) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Nickname *</FormLabel>
-                  <FormControl><Input placeholder="Family SUV" {...field} /></FormControl>
+                  <FormLabel>昵称 *</FormLabel>
+                  <FormControl><Input placeholder="家用 SUV" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
 
               <FormField control={form.control} name="year" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Year *</FormLabel>
+                  <FormLabel>年份 *</FormLabel>
                   <FormControl><Input type="number" placeholder="2022" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -117,7 +117,7 @@ export function VehicleFormDialog({ open, onClose, vehicle }: Props) {
 
               <FormField control={form.control} name="make" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Make *</FormLabel>
+                  <FormLabel>品牌 *</FormLabel>
                   <FormControl><Input placeholder="Toyota" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -125,7 +125,7 @@ export function VehicleFormDialog({ open, onClose, vehicle }: Props) {
 
               <FormField control={form.control} name="model" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Model *</FormLabel>
+                  <FormLabel>型号 *</FormLabel>
                   <FormControl><Input placeholder="RAV4" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -133,15 +133,15 @@ export function VehicleFormDialog({ open, onClose, vehicle }: Props) {
 
               <FormField control={form.control} name="color" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Color</FormLabel>
-                  <FormControl><Input placeholder="Silver" {...field} /></FormControl>
+                  <FormLabel>颜色</FormLabel>
+                  <FormControl><Input placeholder="银色" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
 
               <FormField control={form.control} name="purchaseDate" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Purchase Date</FormLabel>
+                  <FormLabel>购买日期</FormLabel>
                   <FormControl><Input type="date" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -149,7 +149,7 @@ export function VehicleFormDialog({ open, onClose, vehicle }: Props) {
 
               <FormField control={form.control} name="purchasePrice" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{`Purchase Price (${fmt.currencySymbol})`}</FormLabel>
+                  <FormLabel>{`购买价格（${fmt.currencySymbol}）`}</FormLabel>
                   <FormControl><Input type="number" step="0.01" placeholder="28500" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -157,7 +157,7 @@ export function VehicleFormDialog({ open, onClose, vehicle }: Props) {
 
               <FormField control={form.control} name="currentMileage" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Current {fmt.meterNoun(form.watch("meterUnit"))}</FormLabel>
+                  <FormLabel>当前{fmt.meterNoun(form.watch("meterUnit"))}</FormLabel>
                   <FormControl><Input type="number" placeholder={form.watch("meterUnit") === "HOURS" ? "1250" : "45000"} {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -165,12 +165,12 @@ export function VehicleFormDialog({ open, onClose, vehicle }: Props) {
 
               <FormField control={form.control} name="meterUnit" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tracked In</FormLabel>
+                  <FormLabel>计量单位</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl><SelectTrigger className="w-full"><SelectValue>{(v: string) => meterUnitLabels[v] ?? v}</SelectValue></SelectTrigger></FormControl>
                     <SelectContent>
                       <SelectItem value="MILES">{milesLabel}</SelectItem>
-                      <SelectItem value="HOURS">Hours</SelectItem>
+                      <SelectItem value="HOURS">小时</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -187,7 +187,7 @@ export function VehicleFormDialog({ open, onClose, vehicle }: Props) {
 
               <FormField control={form.control} name="notes" render={({ field }) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Notes</FormLabel>
+                  <FormLabel>备注</FormLabel>
                   <FormControl><Textarea rows={3} {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -195,10 +195,10 @@ export function VehicleFormDialog({ open, onClose, vehicle }: Props) {
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+              <Button type="button" variant="outline" onClick={onClose}>取消</Button>
               {!vehicle && <AddRemindersSubmit pending={form.formState.isSubmitting} onClick={form.handleSubmit((v) => onSubmit(v, "reminders"))} />}
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Saving…" : vehicle ? "Save Changes" : "Add Vehicle"}
+                {form.formState.isSubmitting ? "保存中…" : vehicle ? "保存更改" : "添加车辆"}
               </Button>
             </DialogFooter>
           </form>

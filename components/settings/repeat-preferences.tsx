@@ -21,7 +21,7 @@ export function RepeatPreferences({ repeat }: { repeat: NotificationRepeat }) {
         setValue(previous) // put the control back if the server refused
         toast.error(result.error)
       } else {
-        toast.success("Reminder preference saved.")
+        toast.success("提醒偏好已保存。")
       }
     })
   }
@@ -31,10 +31,9 @@ export function RepeatPreferences({ repeat }: { repeat: NotificationRepeat }) {
   return (
     <Card className="py-5">
       <CardHeader className="px-5">
-        <CardTitle>Repeat reminders</CardTitle>
+        <CardTitle>重复提醒</CardTitle>
         <CardDescription>
-          How often you&apos;re reminded about the same due item, in the bell and by email. A new due
-          date always starts afresh.
+          在通知铃和邮件中，对同一到期事项的提醒频率。新的到期日总是重新开始计算。
         </CardDescription>
       </CardHeader>
       <CardContent className="px-5">

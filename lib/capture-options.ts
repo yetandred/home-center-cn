@@ -21,14 +21,14 @@ const fills = (date: FillLevel, total: FillLevel, shop: FillLevel): CaptureOptio
 ]
 
 export const CAPTURE_OPTIONS: CaptureOption[] = [
-  { value: "OFF", label: "Off", strength: 0, fills: fills("no", "no", "no"), hint: "You type every field." },
-  { value: "BASIC", label: "Basic", strength: 2, fills: fills("yes", "yes", "sometimes"), hint: "Built in, offline and instant." },
+  { value: "OFF", label: "关闭", strength: 0, fills: fills("no", "no", "no"), hint: "所有字段由您手动填写。" },
+  { value: "BASIC", label: "基础", strength: 2, fills: fills("yes", "yes", "sometimes"), hint: "内置解析，离线即时可用。" },
   {
     value: "LLM",
-    label: "Local AI",
+    label: "本地 AI",
     strength: 3,
     fills: fills("yes", "yes", "yes"),
-    hint: "Reads the text with the model set up under Assistant. Falls back to Basic.",
+    hint: "使用“AI 助手”中配置的模型读取文本。模型不可用时回退为基础模式。",
     best: true,
   },
 ]

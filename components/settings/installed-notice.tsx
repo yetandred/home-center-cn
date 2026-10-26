@@ -19,7 +19,7 @@ export function InstalledNotice() {
   return (
     <p className="flex items-center gap-2 rounded-lg border bg-accent px-4 py-3 text-sm text-accent-foreground">
       <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
-      You&apos;re already using HomeCenter as an installed app.
+      你已在以已安装应用的方式使用 HomeCenter。
     </p>
   )
 }

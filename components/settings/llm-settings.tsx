@@ -91,7 +91,7 @@ export function LlmSettings({
       toast.error(result.error)
       return
     }
-    toast.success("Assistant settings saved.")
+    toast.success("AI 助手设置已保存。")
     form.setValue("apiKey", "")
     setClearApiKey(false)
   }
@@ -103,10 +103,10 @@ export function LlmSettings({
         toast.error(result.error, { duration: 15000 })
         return
       }
-      if (result.toolCalling) toast.success(`Connected to ${result.model} — tool calling works.`)
+      if (result.toolCalling) toast.success(`已连接到 ${result.model} — 工具调用正常。`)
       else
         toast.warning(
-          `Connected to ${result.model}, but it didn't call the test tool. It may not support tool calling, which the assistant needs.`,
+          `已连接到 ${result.model}，但它未调用测试工具。可能不支持工具调用，而 AI 助手需要此功能。`,
           { duration: 15000 }
         )
     })
@@ -116,83 +116,82 @@ export function LlmSettings({
     <Card className="py-5">
       <CardHeader className="px-5">
         <CardTitle className="flex items-center gap-2">
-          Assistant
-          {ready ? <Badge variant="secondary">On</Badge> : <Badge variant="outline">Off</Badge>}
+          AI 助手
+          {ready ? <Badge variant="secondary">开启</Badge> : <Badge variant="outline">关闭</Badge>}
         </CardTitle>
         <CardDescription>
-          Lets everyone ask questions about HomeCenter&apos;s data in chat. Works with any OpenAI-compatible server —
-          OpenAI, Ollama, LM Studio, OpenRouter. Questions and the records needed to answer them are sent to this
-          server, including health records; use a local model if that matters to you.
+          让所有成员在聊天中询问 HomeCenter 数据相关的问题。兼容任何 OpenAI 兼容服务器 — OpenAI、Ollama、LM Studio、OpenRouter。问题和回答所需的记录会发送到该服务器，包括健康记录；如有顾虑请使用本地模型。
         </CardDescription>
       </CardHeader>
       <CardContent className="px-5">
         {keyUnreadable && (
           <p className="mb-4 rounded-md border border-destructive/40 bg-destructive/5 px-3 py-2 text-sm text-destructive">
-            The saved API key can&apos;t be decrypted — this happens if <code className="text-xs">AUTH_SECRET</code>{" "}
-            changed. Enter it again.
+            已保存的 API 密钥无法解密 — 通常是 <code className="text-xs">AUTH_SECRET</code>{" "}
+            发生了变化。请重新输入。
           </p>
         )}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <div className="rounded-lg border bg-muted/30 p-4">
               <div className="mb-3 flex items-center justify-between gap-2">
-                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Switches</p>
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">开关</p>
                 <SaveStatus status={switchPending ? "saving" : switchStatus} />
               </div>
               <div className="space-y-3">
                 <SwitchRow
-                  label="Turn on the assistant"
+                  label="开启 AI 助手"
                   checked={enabled}
                   disabled={switchPending}
                   onChange={(v) => toggle({ enabled: v })}
                 />
                 <SwitchRow
-                  label="Hide the assistant from the nav menu and the top-right button"
+                  label="在导航菜单和右上角按钮中隐藏 AI 助手"
                   nested
                   checked={hidden}
                   disabled={switchPending || enabled}
-                  disabledReason={enabled ? "only while the assistant is off" : undefined}
+                  disabledReason={enabled ? "仅在 AI 助手关闭时可用" : undefined}
                   onChange={(v) => toggle({ hidden: v })}
                 />
                 <SwitchRow
-                  label="Let the assistant read uploaded documents"
+                  label="允许 AI 助手读取上传的文档"
                   checked={documentsEnabled}
                   disabled={switchPending || !indexingEnabled}
                   onChange={(v) => toggle({ documentsEnabled: v })}
                   hint={
                     indexingEnabled
-                      ? "Document text is sent to the configured LLM server when it's relevant to a question."
-                      : "Turn on document indexing first (Settings → Documents & search)."
+                      ? "与问题相关时，文档文本会发送到所配置的 LLM 服务器。"
+                      : "请先开启文档索引（设置 → 文档与搜索）。"
                   }
                 />
                 <SwitchRow
-                  label="Include health record documents"
+                  label="包含健康记录文档"
                   nested
                   checked={healthDocumentsEnabled && healthEnabled}
                   disabled={switchPending || !healthEnabled || !indexingEnabled || !documentsEnabled}
                   disabledReason={
                     !healthEnabled ? (
                       <>
-                        Health is turned off under{" "}
+                        健康功能已在{" "}
                         <Link href={settingsHref("features")} className="underline underline-offset-2 hover:text-foreground">
-                          Features
+                          功能设置
                         </Link>
+                        {" "}中关闭
                       </>
                     ) : indexingEnabled && !documentsEnabled ? (
-                      "needs the option above"
+                      "需要开启上方选项"
                     ) : undefined
                   }
                   onChange={(v) => toggle({ healthDocumentsEnabled: v })}
-                  hint="Files on anything that belongs to a person: their visits, reminders and warranties, plus conditions, observations, medications, allergies and immunizations. With a cloud provider, their text leaves this server."
+                  hint="包括成员相关的各类文件：就诊、提醒和保修，以及病症、观察记录、用药、过敏和疫苗接种。使用云服务商时，这些文本会离开本服务器。"
                 />
               </div>
-              <p className="mt-3 text-xs text-muted-foreground">These save as soon as you change them.</p>
+              <p className="mt-3 text-xs text-muted-foreground">更改后立即保存。</p>
             </div>
 
             <div className="border-t pt-5">
-              <h3 className="font-heading text-base font-semibold">Advanced settings</h3>
+              <h3 className="font-heading text-base font-semibold">高级设置</h3>
               <p className="mt-0.5 text-xs text-muted-foreground">
-                The server the assistant talks to and how it behaves. Changes here are saved with the Save button.
+                AI 助手连接的服务器及其行为方式。此处的更改需点击保存按钮才会生效。
               </p>
             </div>
 
@@ -202,7 +201,7 @@ export function LlmSettings({
                   <FormLabel>Base URL</FormLabel>
                   <FormControl><Input placeholder="https://api.openai.com/v1" {...field} /></FormControl>
                   <FormDescription className="text-xs">
-                    Fill from:{" "}
+                    快速填入：{" "}
                     {LLM_PRESETS.map((p, i) => (
                       <span key={p.id}>
                         {i > 0 && " · "}
@@ -215,7 +214,7 @@ export function LlmSettings({
                         </button>
                       </span>
                     ))}
-                    . In Docker, use the host&apos;s address instead of localhost.
+                    。在 Docker 中请使用宿主机地址，而非 localhost。
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -223,30 +222,30 @@ export function LlmSettings({
 
               <FormField control={form.control} name="model" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Model</FormLabel>
+                  <FormLabel>模型</FormLabel>
                   <FormControl><Input placeholder="gpt-4o-mini" {...field} /></FormControl>
-                  <FormDescription className="text-xs">Must support tool (function) calling.</FormDescription>
+                  <FormDescription className="text-xs">必须支持工具（函数）调用。</FormDescription>
                   <FormMessage />
                 </FormItem>
               )} />
 
               <FormField control={form.control} name="apiKey" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>API key</FormLabel>
+                  <FormLabel>API 密钥</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
                       autoComplete="new-password"
-                      placeholder={hasStoredKey ? "•••••••• (unchanged)" : "Not needed for local servers"}
+                      placeholder={hasStoredKey ? "••••••••（未更改）" : "本地服务器无需填写"}
                       disabled={clearApiKey}
                       {...field}
                     />
                   </FormControl>
                   <FormDescription className="text-xs">
-                    Stored encrypted, and only sent to the server it was saved for — a saved key is dropped when the base URL moves to another server.
+                    加密存储，且只发送到保存时对应的服务器 — 更换 Base URL 后，已保存的密钥将被丢弃。
                     {hasStoredKey && (
                       <button type="button" className="ml-1 underline hover:text-foreground" onClick={() => setClearApiKey((c) => !c)}>
-                        {clearApiKey ? "Keep saved key" : "Remove saved key"}
+                        {clearApiKey ? "保留已保存的密钥" : "移除已保存的密钥"}
                       </button>
                     )}
                   </FormDescription>
@@ -256,26 +255,26 @@ export function LlmSettings({
 
               <FormField control={form.control} name="temperature" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Temperature</FormLabel>
-                  <FormControl><Input type="number" step="0.1" min={0} max={2} placeholder="Provider default" {...field} /></FormControl>
+                  <FormLabel>温度</FormLabel>
+                  <FormControl><Input type="number" step="0.1" min={0} max={2} placeholder="服务商默认值" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
 
               <FormField control={form.control} name="maxTokens" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Max tokens</FormLabel>
-                  <FormControl><Input type="number" min={1} max={32000} placeholder="Provider default" {...field} /></FormControl>
+                  <FormLabel>最大 Token 数</FormLabel>
+                  <FormControl><Input type="number" min={1} max={32000} placeholder="服务商默认值" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
 
               <FormField control={form.control} name="timeoutSeconds" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Time limit per question (seconds)</FormLabel>
+                  <FormLabel>每个问题的时间限制（秒）</FormLabel>
                   <FormControl><Input type="number" min={30} max={900} placeholder={String(DEFAULT_TIMEOUT_SECONDS)} {...field} /></FormControl>
                   <FormDescription className="text-xs">
-                    Raise it for slow local models. Once a reply starts, it also stops if the server then sends nothing for 60 seconds.
+                    本地模型较慢时可调高。回复开始后，如果服务器连续 60 秒没有发送内容，同样会停止。
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -283,13 +282,12 @@ export function LlmSettings({
 
               <FormField control={form.control} name="maxToolRounds" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Lookup rounds per question</FormLabel>
+                  <FormLabel>每个问题的查询轮数</FormLabel>
                   <FormControl>
                     <Input type="number" min={TOOL_ROUNDS_RANGE.min} max={TOOL_ROUNDS_RANGE.max} placeholder={String(DEFAULT_TOOL_ROUNDS)} {...field} />
                   </FormControl>
                   <FormDescription className="text-xs">
-                    How many times the assistant may go back for more data before it must answer. More helps follow-up and
-                    multi-step questions; simple questions stop early either way.
+                    AI 助手在必须作答前，最多可回头获取数据的次数。调高有助于处理追问和多步骤问题；简单问题无论如何都会提前结束。
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -297,22 +295,21 @@ export function LlmSettings({
 
               <FormField control={form.control} name="systemPrompt" render={({ field }) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Extra instructions</FormLabel>
-                  <FormControl><Textarea rows={3} maxLength={4000} placeholder="e.g. Keep answers short." {...field} /></FormControl>
-                  <FormDescription className="text-xs">Added to the assistant&apos;s built-in instructions.</FormDescription>
+                  <FormLabel>额外指令</FormLabel>
+                  <FormControl><Textarea rows={3} maxLength={4000} placeholder="例如：回答尽量简短。" {...field} /></FormControl>
+                  <FormDescription className="text-xs">附加到 AI 助手的内置指令之后。</FormDescription>
                   <FormMessage />
                 </FormItem>
               )} />
 
               <FormField control={form.control} name="extraBody" render={({ field }) => (
                 <FormItem className="col-span-2">
-                  <FormLabel>Extra request JSON</FormLabel>
+                  <FormLabel>额外请求 JSON</FormLabel>
                   <FormControl>
                     <Textarea rows={3} maxLength={2000} className="font-mono text-xs" placeholder='{"chat_template_kwargs": {"enable_thinking": true}}' {...field} />
                   </FormControl>
                   <FormDescription className="text-xs">
-                    Optional fields sent with every request, for settings your server supports — for example turning on a
-                    model&apos;s thinking (llama.cpp, vLLM) or <code className="text-xs">reasoning_effort</code> (OpenAI). Leave blank if unsure.
+                    每次请求都会附带的可选字段，用于服务器支持的设置 — 例如开启模型的思考模式（llama.cpp、vLLM）或 <code className="text-xs">reasoning_effort</code>（OpenAI）。不确定时请留空。
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -321,17 +318,17 @@ export function LlmSettings({
 
             <div className="flex items-center gap-2">
               <Button type="submit" disabled={form.formState.isSubmitting || switchPending}>
-                {form.formState.isSubmitting ? "Saving…" : "Save"}
+                {form.formState.isSubmitting ? "保存中…" : "保存"}
               </Button>
               <Button type="button" variant="outline" disabled={testing} onClick={runTest}>
-                {testing ? "Testing…" : "Test connection"}
+                {testing ? "测试中…" : "测试连接"}
               </Button>
               <Link href="/settings/assistant-test" className={buttonVariants({ variant: "ghost" })}>
-                Run model tests →
+                运行模型测试 →
               </Link>
             </div>
             <p className="text-xs text-muted-foreground">
-              The test uses what&apos;s typed above, so you can try settings before saving.
+              测试使用上方填写的配置，保存前即可试运行。
             </p>
           </form>
         </Form>
@@ -378,10 +375,10 @@ function SaveStatus({ status }: { status: "idle" | "saving" | "saved" }) {
   return (
     <span role="status" className="inline-flex items-center gap-1 text-xs text-muted-foreground">
       {status === "saving" ? (
-        "Saving…"
+        "保存中…"
       ) : (
         <>
-          <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" /> Saved
+          <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" /> 已保存
         </>
       )}
     </span>

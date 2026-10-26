@@ -48,7 +48,7 @@ function SearchForm({ className, urlQ, semantic }: { className?: string; urlQ: s
       <button
         type="button"
         onClick={() => setOpen(true)}
-        aria-label="Search everything"
+        aria-label="搜索全部内容"
         aria-expanded={open}
         className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors duration-150 hover:bg-muted hover:text-foreground sm:hidden"
       >
@@ -84,8 +84,8 @@ function SearchForm({ className, urlQ, semantic }: { className?: string; urlQ: s
             name="q"
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Search everything…"
-            aria-label="Search everything"
+            placeholder="搜索全部内容…"
+            aria-label="搜索全部内容"
             className="h-full min-w-0 flex-1 bg-transparent px-1.5 text-base outline-none placeholder:text-muted-foreground sm:text-sm [&::-webkit-search-cancel-button]:hidden"
           />
         </form>
@@ -93,7 +93,7 @@ function SearchForm({ className, urlQ, semantic }: { className?: string; urlQ: s
           <button
             type="button"
             onClick={() => setOpen(false)}
-            aria-label="Close search"
+            aria-label="关闭搜索"
             className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground sm:hidden"
           >
             <X className="h-4 w-4" />

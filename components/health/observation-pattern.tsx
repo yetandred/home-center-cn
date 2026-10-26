@@ -9,8 +9,8 @@ const PLOT_HEIGHT = 96
 const shortDay = (iso: string, fmt: Formatter) => fmt.dayMonth(new Date(`${iso}T00:00:00Z`), { utc: true })
 
 function describeWeek(b: WeekBucket, fmt: Formatter): string {
-  const sev = b.avgSeverity != null ? `, average severity ${b.avgSeverity}` : ""
-  return `Week of ${shortDay(b.start, fmt)}: ${b.count} logged${sev}`
+  const sev = b.avgSeverity != null ? `，平均严重度 ${b.avgSeverity}` : ""
+  return `${shortDay(b.start, fmt)} 那一周：记录 ${b.count} 次${sev}`
 }
 
 // A plain count per week — one hue, because bar length is the only thing that
@@ -24,7 +24,7 @@ export function ObservationPattern({ weeks, label }: { weeks: WeekBucket[]; labe
     <figure className="rounded-lg border bg-card p-4">
       <figcaption className="mb-3 flex items-baseline justify-between gap-2 text-sm">
         <span className="font-medium">{label}</span>
-        <span className="text-muted-foreground">Last {weeks.length} weeks · {total} total</span>
+        <span className="text-muted-foreground">最近 {weeks.length} 周 · 共 {total} 条</span>
       </figcaption>
       <div className="flex items-end gap-1" style={{ height: PLOT_HEIGHT }} aria-hidden="true">
         {weeks.map((w) => (
@@ -41,11 +41,11 @@ export function ObservationPattern({ weeks, label }: { weeks: WeekBucket[]; labe
       </div>
       <div className="mt-1 flex justify-between text-[10px] text-muted-foreground" aria-hidden="true">
         <span>{shortDay(weeks[0].start, fmt)}</span>
-        <span>This week</span>
+        <span>本周</span>
       </div>
       <table className="sr-only">
-        <caption>{label}, per week</caption>
-        <thead><tr><th>Week of</th><th>Count</th><th>Average severity</th></tr></thead>
+        <caption>{label}（按周）</caption>
+        <thead><tr><th>周（起始日）</th><th>数量</th><th>平均严重度</th></tr></thead>
         <tbody>
           {weeks.map((w) => (
             <tr key={w.start}><td>{shortDay(w.start, fmt)}</td><td>{w.count}</td><td>{w.avgSeverity ?? "—"}</td></tr>

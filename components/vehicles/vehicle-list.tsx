@@ -27,11 +27,11 @@ const ACCESSORS: Record<string, Accessor<Vehicle>> = {
 }
 
 const columnsFor = (fmt: Formatter): AssetColumn<Vehicle>[] => [
-  { key: "name", label: "Name", cell: (v) => <span className="font-medium">{v.name}</span> },
-  { key: "year", label: "Year", className: "text-muted-foreground whitespace-nowrap", cell: (v) => v.year },
-  { key: "make", label: "Make / Model", className: "text-muted-foreground", cell: (v) => `${v.make} ${v.model}` },
+  { key: "name", label: "名称", cell: (v) => <span className="font-medium">{v.name}</span> },
+  { key: "year", label: "年份", className: "text-muted-foreground whitespace-nowrap", cell: (v) => v.year },
+  { key: "make", label: "品牌 / 型号", className: "text-muted-foreground", cell: (v) => `${v.make} ${v.model}` },
   { key: "currentMileage", label: fmt.distanceNoun, className: "text-muted-foreground whitespace-nowrap tabular-nums", cell: (v) => (v.currentMileage != null ? `${v.currentMileage.toLocaleString()} ${fmt.meterShort(v.meterUnit)}` : "—") },
-  { key: "color", label: "Color", className: "text-muted-foreground", cell: (v) => v.color ?? "—" },
+  { key: "color", label: "颜色", className: "text-muted-foreground", cell: (v) => v.color ?? "—" },
   { key: "vin", label: "VIN", className: "text-muted-foreground font-mono text-xs max-w-[180px] truncate", cell: (v) => v.vin ?? "—" },
 ]
 
@@ -45,7 +45,7 @@ function toCard(v: Vehicle, fmt: Formatter) {
       ...(v.currentMileage != null ? [{ icon: Gauge, text: `${v.currentMileage.toLocaleString()} ${fmt.meterShort(v.meterUnit)}` }] : []),
       ...(v.color ? [{ text: v.color }] : []),
     ],
-    mono: v.vin ? `VIN: ${v.vin}` : null,
+    mono: v.vin ? `VIN：${v.vin}` : null,
   }
 }
 
@@ -62,9 +62,9 @@ export function VehicleList({ vehicles, initialView }: Props) {
   const [dialogOpen, setDialogOpen] = useState(false)
 
   async function handleDelete(id: string, name: string) {
-    if (!confirm(`Delete "${name}"? This will also delete all associated records.`)) return
+    if (!confirm(`删除“${name}”？将同时删除所有关联记录。`)) return
     await deleteVehicle(id)
-    toast.success(`"${name}" deleted.`)
+    toast.success(`“${name}”已删除。`)
   }
 
   function openNew() { setEditing(null); setDialogOpen(true) }
@@ -74,7 +74,7 @@ export function VehicleList({ vehicles, initialView }: Props) {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger
-          aria-label={`More actions for "${v.name}"`}
+          aria-label={`“${v.name}”的更多操作`}
           className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md hover:bg-muted transition-colors"
           onClick={(e) => e.stopPropagation()}
         >
@@ -82,10 +82,10 @@ export function VehicleList({ vehicles, initialView }: Props) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
           <DropdownMenuItem onClick={() => openEdit(v)}>
-            <Pencil className="h-4 w-4 mr-2" /> Edit
+            <Pencil className="h-4 w-4 mr-2" /> 编辑
           </DropdownMenuItem>
           <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => handleDelete(v.id, v.name)}>
-            <Trash2 className="h-4 w-4 mr-2" /> Delete
+            <Trash2 className="h-4 w-4 mr-2" /> 删除
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -96,19 +96,19 @@ export function VehicleList({ vehicles, initialView }: Props) {
     <>
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="font-heading text-2xl font-semibold">Vehicles</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">{vehicles.length} vehicle{vehicles.length !== 1 ? "s" : ""}</p>
+          <h1 className="font-heading text-2xl font-semibold">车辆</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">{vehicles.length} 辆车</p>
         </div>
         <div className="flex items-center gap-2">
           {vehicles.length > 0 && <AssetViewToggle value={view} onChange={setView} />}
-          <Button onClick={openNew}>Add Vehicle</Button>
+          <Button onClick={openNew}>添加车辆</Button>
         </div>
       </div>
 
       {vehicles.length === 0 ? (
         <div className="rounded-lg border border-dashed p-12 text-center text-muted-foreground">
-          <p className="font-medium">No vehicles yet</p>
-          <p className="text-sm mt-1">Add your first vehicle to get started.</p>
+          <p className="font-medium">暂无车辆</p>
+          <p className="text-sm mt-1">添加第一辆车即可开始。</p>
         </div>
       ) : (
         <AssetCollection
@@ -124,7 +124,7 @@ export function VehicleList({ vehicles, initialView }: Props) {
           initialDirs={INITIAL_DIRS}
           renderActions={renderActions}
           onOpen={(v) => router.push(`/assets/vehicles/${v.id}`)}
-          label="vehicles"
+          label="车辆"
         />
       )}
 

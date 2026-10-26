@@ -37,12 +37,12 @@ export async function loadRecordFormContext(assetType: AssetType, assetId: strin
 
   if (assetType === "VEHICLE") {
     const vehicle = await prisma.vehicle.findUnique({ where: { id: assetId }, select: { meterUnit: true } })
-    if (!vehicle) return { error: "Not found" }
+    if (!vehicle) return { error: "未找到" }
     return { meterUnit: vehicle.meterUnit, reminderOptions: await reminders({ assetType, assetId }) }
   }
   if (assetType === "PROPERTY") {
     const property = await prisma.property.findUnique({ where: { id: assetId }, select: { name: true } })
-    if (!property) return { error: "Not found" }
+    if (!property) return { error: "未找到" }
     const equipment = await prisma.equipment.findMany({ where: { propertyId: assetId }, select: { id: true, name: true, roomId: true } })
     const [reminderOptions, roomOptions] = await Promise.all([
       reminders({
@@ -54,7 +54,7 @@ export async function loadRecordFormContext(assetType: AssetType, assetId: strin
   }
   if (assetType === "PERSON") {
     const person = await prisma.person.findUnique({ where: { id: assetId }, select: { conditions: { select: { id: true, name: true } } } })
-    if (!person) return { error: "Not found" }
+    if (!person) return { error: "未找到" }
     const [providerOptions, reminderOptions] = await Promise.all([
       prisma.provider.findMany({ select: { id: true, name: true }, orderBy: { name: "asc" } }),
       reminders({ assetType, assetId }),
@@ -63,7 +63,7 @@ export async function loadRecordFormContext(assetType: AssetType, assetId: strin
   }
   if (assetType === "EQUIPMENT") {
     const equipment = await prisma.equipment.findUnique({ where: { id: assetId }, select: { roomId: true } })
-    if (!equipment) return { error: "Not found" }
+    if (!equipment) return { error: "未找到" }
     const [reminderOptions, roomOptions] = await Promise.all([reminders({ assetType, assetId }), roomOptionsFor(assetType, assetId)])
     return { roomOptions, defaultRoomId: equipment.roomId, reminderOptions }
   }
@@ -76,7 +76,7 @@ export async function loadRecordForEdit(id: string) {
   if (!session) redirect("/login")
 
   const record = await prisma.serviceRecord.findUnique({ where: { id }, include: { attachments: true } })
-  if (!record) return { error: "Not found" }
+  if (!record) return { error: "未找到" }
   const ctx = await loadRecordFormContext(record.assetType, record.assetId)
   if ("error" in ctx) return ctx
   return { record, ctx }
@@ -119,7 +119,7 @@ export async function deleteServiceRecord(id: string, assetType: AssetType, asse
   // Look the record up first: the id arrives from the client and must be proven
   // real before it is used to build a directory path.
   const record = await prisma.serviceRecord.findUnique({ where: { id }, select: { id: true } })
-  if (!record) return { error: "Not found" }
+  if (!record) return { error: "未找到" }
 
   await prisma.serviceRecord.delete({ where: { id: record.id } })
   await removeUploadDir("service", record.id)

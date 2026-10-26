@@ -24,9 +24,9 @@ import { useFormat } from "@/components/regional-provider"
 const NO_LINK = "__none__"
 
 const schema = z.object({
-  assetKey: z.string().min(1, "Choose what this is for"),
-  date: z.string().min(1, "Date is required"),
-  title: z.string().min(1, "Title is required"),
+  assetKey: z.string().min(1, "请选择所属资产"),
+  date: z.string().min(1, "请填写日期"),
+  title: z.string().min(1, "请填写标题"),
   vendor: z.string(),
   cost: z.string(),
   category: z.string(),
@@ -82,8 +82,8 @@ export function FileInboxDialog({
       return
     }
     const completed = values.scheduleId ? assetReminders.find((r) => r.id === values.scheduleId) : undefined
-    toast.success(completed ? `Filed. "${completed.title}" marked complete.` : `Filed "${values.title}".`, {
-      action: { label: "View", onClick: () => router.push(result.href) },
+    toast.success(completed ? `已归档。“${completed.title}”已标记完成。` : `已归档“${values.title}”。`, {
+      action: { label: "查看", onClick: () => router.push(result.href) },
     })
     onClose()
     router.refresh()
@@ -93,14 +93,14 @@ export function FileInboxDialog({
     <Dialog open onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{isPerson ? "File as a visit" : "File as a service record"}</DialogTitle>
+          <DialogTitle>{isPerson ? "归档为就诊" : "归档为维护记录"}</DialogTitle>
           <DialogDescription className="truncate">{fileName}</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField control={form.control} name="assetKey" render={({ field, fieldState }) => (
               <FormItem>
-                <FormLabel>For *</FormLabel>
+                <FormLabel>所属 *</FormLabel>
                 <AssetSelect
                   assets={assets}
                   value={field.value}
@@ -119,7 +119,7 @@ export function FileInboxDialog({
             {assetReminders.length > 0 && (
               <FormField control={form.control} name="scheduleId" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Completes reminder</FormLabel>
+                  <FormLabel>完成提醒</FormLabel>
                   <Select
                     value={field.value || NO_LINK}
                     onValueChange={(v) => {
@@ -131,18 +131,18 @@ export function FileInboxDialog({
                   >
                     <FormControl>
                       <SelectTrigger className="w-full">
-                        <SelectValue>{(v: string) => assetReminders.find((r) => r.id === v)?.title ?? "None"}</SelectValue>
+                        <SelectValue>{(v: string) => assetReminders.find((r) => r.id === v)?.title ?? "无"}</SelectValue>
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value={NO_LINK}>None</SelectItem>
+                      <SelectItem value={NO_LINK}>无</SelectItem>
                       {assetReminders.map((r) => <SelectItem key={r.id} value={r.id}>{r.title}</SelectItem>)}
                     </SelectContent>
                   </Select>
                   {suggested && (
                     <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground" aria-live="polite">
                       <BellRing className="h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />
-                      <span>Looks like the reminder &ldquo;{suggested.title}&rdquo;.</span>
+                      <span>似乎是提醒“{suggested.title}”。</span>
                       <Button
                         type="button"
                         variant="link"
@@ -150,7 +150,7 @@ export function FileInboxDialog({
                         className="h-auto p-0 text-xs"
                         onClick={() => form.setValue("scheduleId", suggested.id, { shouldDirty: true })}
                       >
-                        Mark it complete
+                        标记完成
                       </Button>
                     </p>
                   )}
@@ -162,15 +162,15 @@ export function FileInboxDialog({
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <FormField control={form.control} name="title" render={({ field }) => (
                 <FormItem className="sm:col-span-2">
-                  <FormLabel>Title *</FormLabel>
-                  <FormControl><Input placeholder={isPerson ? "Annual physical" : "Oil Change"} {...field} /></FormControl>
+                  <FormLabel>标题 *</FormLabel>
+                  <FormControl><Input placeholder={isPerson ? "年度体检" : "换机油"} {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
 
               <FormField control={form.control} name="date" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Date *</FormLabel>
+                  <FormLabel>日期 *</FormLabel>
                   <FormControl><Input type="date" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -178,7 +178,7 @@ export function FileInboxDialog({
 
               <FormField control={form.control} name="cost" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{`Cost (${fmt.currencySymbol})`}</FormLabel>
+                  <FormLabel>{`费用（${fmt.currencySymbol}）`}</FormLabel>
                   <FormControl><Input type="number" step="0.01" inputMode="decimal" placeholder="89.99" {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -186,25 +186,25 @@ export function FileInboxDialog({
 
               <FormField control={form.control} name="vendor" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{isPerson ? "Facility" : "Vendor / Shop"}</FormLabel>
-                  <FormControl><Input placeholder={isPerson ? "City Medical Center" : "Jiffy Lube"} {...field} /></FormControl>
+                  <FormLabel>{isPerson ? "机构" : "商家"}</FormLabel>
+                  <FormControl><Input placeholder={isPerson ? "市医疗中心" : "快修养护店"} {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />
 
               <FormField control={form.control} name="category" render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Category</FormLabel>
+                  <FormLabel>分类</FormLabel>
                   <Select value={field.value} onValueChange={(v) => field.onChange(v ?? NO_CATEGORY)}>
                     <FormControl>
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Uncategorized">
-                          {(v: string) => SERVICE_CATEGORIES.find((c) => c.value === v)?.label ?? "Uncategorized"}
+                        <SelectValue placeholder="未分类">
+                          {(v: string) => SERVICE_CATEGORIES.find((c) => c.value === v)?.label ?? "未分类"}
                         </SelectValue>
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value={NO_CATEGORY}>Uncategorized</SelectItem>
+                      <SelectItem value={NO_CATEGORY}>未分类</SelectItem>
                       {categoriesFor(asset?.assetType ?? "PROPERTY").map((c) => (
                         <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
                       ))}
@@ -217,7 +217,7 @@ export function FileInboxDialog({
               {asset?.assetType === "VEHICLE" && (
                 <FormField control={form.control} name="mileageAtService" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{fmt.meterNoun(chosen?.meterUnit ?? "MILES")} at Service</FormLabel>
+                    <FormLabel>{fmt.meterNoun(chosen?.meterUnit ?? "MILES")}（维护时读数）</FormLabel>
                     <FormControl><Input type="number" inputMode="numeric" placeholder={chosen?.meterUnit === "HOURS" ? "1250" : "45230"} {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
@@ -226,7 +226,7 @@ export function FileInboxDialog({
 
               <FormField control={form.control} name="description" render={({ field }) => (
                 <FormItem className="sm:col-span-2">
-                  <FormLabel>Notes</FormLabel>
+                  <FormLabel>备注</FormLabel>
                   <FormControl><Textarea rows={2} {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
@@ -234,9 +234,9 @@ export function FileInboxDialog({
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+              <Button type="button" variant="outline" onClick={onClose}>取消</Button>
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Filing…" : "File it"}
+                {form.formState.isSubmitting ? "归档中……" : "归档"}
               </Button>
             </DialogFooter>
           </form>

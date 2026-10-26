@@ -65,14 +65,14 @@ export async function AssetCostPanel({
 
   return (
     <div className="space-y-4 rounded-lg border bg-card p-4">
-      <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Cost</div>
+      <div className="text-xs font-medium uppercase tracking-wide text-muted-foreground">费用</div>
 
       <div>
         {/* Proportional figures on the panel's headline number; tabular is for
             the aligned rows below it. */}
         <div className="text-xl font-semibold leading-none">{fmt.money(lifetime)}</div>
         <div className="mt-1 text-xs text-muted-foreground">
-          Service, across {rows.length} record{rows.length === 1 ? "" : "s"}
+          维护记录共 {rows.length} 条
         </div>
       </div>
 
@@ -91,17 +91,17 @@ export async function AssetCostPanel({
       ) : null}
 
       <dl className="space-y-1.5 text-sm">
-        <Row label={`${now.getFullYear()} to date`} value={fmt.money(sum(yearToDate(rows, now)))} />
+        <Row label={`${now.getFullYear()} 年至今`} value={fmt.money(sum(yearToDate(rows, now)))} />
         {perMeter != null && (
-          <Row label={`Per ${fmt.meterWord(meterUnit!)}`} value={fmt.money(perMeter)} />
+          <Row label={`每 ${fmt.meterWord(meterUnit!)}`} value={fmt.money(perMeter)} />
         )}
         {purchasePrice != null && (
           <>
-            <Row label="Purchase" value={fmt.money(purchasePrice)} />
-            <Row label="Total owned cost" value={fmt.money(ownedCost)} strong />
+            <Row label="购入价格" value={fmt.money(purchasePrice)} />
+            <Row label="持有总成本" value={fmt.money(ownedCost)} strong />
           </>
         )}
-        {perYear != null && <Row label="Per year owned" value={fmt.money(perYear)} />}
+        {perYear != null && <Row label="年均持有成本" value={fmt.money(perYear)} />}
       </dl>
 
       {/* Looking ahead rather than back: what is due next, and how long the

@@ -18,7 +18,7 @@ export function BackupList({ data, onChanged, onRestore }: { data: BackupOvervie
     try {
       await fn()
     } catch {
-      toast.error("That didn't work. Check the connection and try again.")
+      toast.error("操作失败，请检查网络连接后重试。")
     }
   })
 
@@ -26,8 +26,8 @@ export function BackupList({ data, onChanged, onRestore }: { data: BackupOvervie
   return (
     <Card className="py-5">
       <CardHeader className="px-5">
-        <CardTitle>Backups</CardTitle>
-        <CardDescription>In {data.settings.folder}</CardDescription>
+        <CardTitle>备份</CardTitle>
+        <CardDescription>位于 {data.settings.folder}</CardDescription>
       </CardHeader>
       <CardContent className="px-5">
         <ul className="divide-y">
@@ -42,21 +42,21 @@ export function BackupList({ data, onChanged, onRestore }: { data: BackupOvervie
                     {PROTECTION_LABEL[b.protection]}
                     {b.keyFingerprint ? ` ${b.keyFingerprint}` : ""}
                   </span>
-                  {b.warningCount > 0 && <span className="text-amber-600 dark:text-amber-400">{b.warningCount} missing file(s)</span>}
+                  {b.warningCount > 0 && <span className="text-amber-600 dark:text-amber-400">{b.warningCount} 个文件缺失</span>}
                 </p>
               </div>
               <div className="flex gap-1">
-                <a className={buttonVariants({ variant: "ghost", size: "sm" })} href={`/api/backup/download?file=${encodeURIComponent(b.file)}`} aria-label={`Download ${b.file}`}>
+                <a className={buttonVariants({ variant: "ghost", size: "sm" })} href={`/api/backup/download?file=${encodeURIComponent(b.file)}`} aria-label={`下载 ${b.file}`}>
                   <Download className="h-4 w-4" aria-hidden="true" />
                 </a>
-                <Button variant="ghost" size="sm" disabled={pending} aria-label="Check this backup"
+                <Button variant="ghost" size="sm" disabled={pending} aria-label="校验此备份"
                   onClick={() => act(async () => { const r = await verifyBackup(b.file); if ("error" in r) toast.error(r.error); else toast.success(r.message) })}>
                   <ShieldCheck className="h-4 w-4" aria-hidden="true" />
                 </Button>
-                {onRestore && <Button variant="outline" size="sm" onClick={() => onRestore(b)}>Restore</Button>}
-                <Button variant="ghost" size="sm" disabled={pending} aria-label="Delete this backup"
+                {onRestore && <Button variant="outline" size="sm" onClick={() => onRestore(b)}>恢复</Button>}
+                <Button variant="ghost" size="sm" disabled={pending} aria-label="删除此备份"
                   onClick={() => act(async () => {
-                    if (!window.confirm(`Delete the backup from ${fmt.dateTime(b.createdAt)}? This can't be undone.`)) return
+                    if (!window.confirm(`删除 ${fmt.dateTime(b.createdAt)} 的备份？此操作无法撤销。`)) return
                     const r = await removeBackup(b.file)
                     if ("error" in r) toast.error(r.error)
                     await onChanged()

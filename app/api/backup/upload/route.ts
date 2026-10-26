@@ -14,13 +14,13 @@ import { hasPending } from "@/lib/backup/restore"
 // The body streams straight to disk. The client never names the file: the id is made here.
 export async function POST(request: NextRequest) {
   const session = await adminSession()
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!session) return NextResponse.json({ error: "未登录" }, { status: 401 })
   // The proxy's forced password change doesn't run for this route, so it is repeated here.
-  if (session.user.mustResetPassword) return NextResponse.json({ error: "Change your password first." }, { status: 403 })
-  if (!request.body) return NextResponse.json({ error: "No file" }, { status: 400 })
-  if (isJobRunning()) return NextResponse.json({ error: "Wait for the running backup or export to finish." }, { status: 409 })
+  if (session.user.mustResetPassword) return NextResponse.json({ error: "请先修改密码。" }, { status: 403 })
+  if (!request.body) return NextResponse.json({ error: "未提供文件" }, { status: 400 })
+  if (isJobRunning()) return NextResponse.json({ error: "请等待正在运行的备份或导出完成。" }, { status: 409 })
   const root = restoreDir()
-  if (await hasPending(root)) return NextResponse.json({ error: "A restore is already waiting for a restart." }, { status: 409 })
+  if (await hasPending(root)) return NextResponse.json({ error: "已有恢复任务在等待重启。" }, { status: 409 })
 
   const dir = path.join(root, "incoming")
   const id = randomUUID()
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     if (Number.isFinite(declared) && declared > 0) {
       const fs = await statfs(dir)
       if (Number(fs.bavail) * Number(fs.bsize) < declared * 2) {
-        return NextResponse.json({ error: "Not enough free disk space to restore a file this size (about twice its size is needed)." }, { status: 507 })
+        return NextResponse.json({ error: "磁盘剩余空间不足，无法恢复这么大的文件（约需其两倍的空间）。" }, { status: 507 })
       }
     }
     await pipeline(Readable.fromWeb(request.body as never), createWriteStream(dest, { flags: "wx" }))
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     await rm(dest, { force: true }).catch(() => undefined)
     const full = (e as NodeJS.ErrnoException).code === "ENOSPC"
     return NextResponse.json(
-      { error: full ? "The disk filled up during the upload." : "The upload didn't finish." },
+      { error: full ? "上传过程中磁盘已满。" : "上传未完成。" },
       { status: full ? 507 : 400 },
     )
   }

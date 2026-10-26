@@ -92,11 +92,11 @@ function formatDate(date: Date | null | undefined, fmt: Formatter): string {
 }
 
 const PROPERTY_TYPE_LABELS: Record<string, string> = {
-  HOUSE: "House",
-  CONDO: "Condo",
-  TOWNHOUSE: "Townhouse",
-  LOT: "Lot",
-  OTHER: "Other",
+  HOUSE: "独立屋",
+  CONDO: "公寓",
+  TOWNHOUSE: "联排别墅",
+  LOT: "地块",
+  OTHER: "其他",
 }
 
 export async function loadReport(assetType: AssetType, assetId: string): Promise<ReportData | null> {
@@ -179,7 +179,7 @@ async function loadAsset(assetType: AssetType, assetId: string): Promise<ReportA
       type: "PERSON",
       id: p.id,
       name: p.name,
-      subtitle: age != null ? `Age ${age}` : null,
+      subtitle: age != null ? `${age} 岁` : null,
       imageFilename: p.imageFilename,
       purchaseDate: null,
       purchasePrice: null,
@@ -187,10 +187,10 @@ async function loadAsset(assetType: AssetType, assetId: string): Promise<ReportA
       meterUnit: null,
       currentMeter: null,
       details: [
-        ...(p.dateOfBirth ? [{ label: "Date of birth", value: fmt.date(p.dateOfBirth, { utc: true }) }] : []),
-        ...(p.sex ? [{ label: "Sex", value: p.sex }] : []),
-        ...(p.bloodType ? [{ label: "Blood type", value: p.bloodType }] : []),
-        ...(p.primaryProvider ? [{ label: "Primary care", value: p.primaryProvider.name }] : []),
+        ...(p.dateOfBirth ? [{ label: "出生日期", value: fmt.date(p.dateOfBirth, { utc: true }) }] : []),
+        ...(p.sex ? [{ label: "性别", value: p.sex }] : []),
+        ...(p.bloodType ? [{ label: "血型", value: p.bloodType }] : []),
+        ...(p.primaryProvider ? [{ label: "主治医生", value: p.primaryProvider.name }] : []),
       ],
     }
   }
@@ -213,16 +213,16 @@ async function loadAsset(assetType: AssetType, assetId: string): Promise<ReportA
       meterUnit: null,
       currentMeter: null,
       details: [
-        { label: "Type", value: PROPERTY_TYPE_LABELS[p.type] ?? "Other" },
-        { label: "Address", value: p.address },
-        ...(p.yearBuilt ? [{ label: "Year built", value: String(p.yearBuilt) }] : []),
-        ...(p.sqFt ? [{ label: fmt.areaWords.replace(/^./, (c) => c.toUpperCase()), value: p.sqFt.toLocaleString() }] : []),
-        { label: "Purchased", value: formatDate(p.purchaseDate, fmt) },
+        { label: "类型", value: PROPERTY_TYPE_LABELS[p.type] ?? "其他" },
+        { label: "地址", value: p.address },
+        ...(p.yearBuilt ? [{ label: "建造年份", value: String(p.yearBuilt) }] : []),
+        ...(p.sqFt ? [{ label: fmt.areaWords, value: p.sqFt.toLocaleString() }] : []),
+        { label: "购置日期", value: formatDate(p.purchaseDate, fmt) },
         ...(p.purchasePrice != null
-          ? [{ label: "Purchase price", value: fmt.moneyWhole(p.purchasePrice) }]
+          ? [{ label: "购置价格", value: fmt.moneyWhole(p.purchasePrice) }]
           : []),
         ...(p.equipment.length > 0
-          ? [{ label: "Equipment on site", value: p.equipment.map((e) => e.name).join(", ") }]
+          ? [{ label: "所属设备", value: p.equipment.map((e) => e.name).join("、") }]
           : []),
       ],
     }
@@ -231,7 +231,7 @@ async function loadAsset(assetType: AssetType, assetId: string): Promise<ReportA
   if (assetType === "VEHICLE") {
     const v = await prisma.vehicle.findUnique({ where: { id: assetId } })
     if (!v) return null
-    const unit = v.meterUnit === "HOURS" ? "hours" : fmt.distanceWords
+    const unit = v.meterUnit === "HOURS" ? "小时" : fmt.distanceWords
     return {
       type: "VEHICLE",
       id: v.id,
@@ -244,17 +244,17 @@ async function loadAsset(assetType: AssetType, assetId: string): Promise<ReportA
       meterUnit: v.meterUnit,
       currentMeter: v.currentMileage,
       details: [
-        { label: "Make", value: v.make },
-        { label: "Model", value: v.model },
-        { label: "Year", value: String(v.year) },
+        { label: "品牌", value: v.make },
+        { label: "型号", value: v.model },
+        { label: "年份", value: String(v.year) },
         ...(v.vin ? [{ label: "VIN", value: v.vin }] : []),
-        ...(v.color ? [{ label: "Color", value: v.color }] : []),
+        ...(v.color ? [{ label: "颜色", value: v.color }] : []),
         ...(v.currentMileage != null
-          ? [{ label: `Current ${unit}`, value: v.currentMileage.toLocaleString() }]
+          ? [{ label: `当前${unit}`, value: v.currentMileage.toLocaleString() }]
           : []),
-        { label: "Purchased", value: formatDate(v.purchaseDate, fmt) },
+        { label: "购置日期", value: formatDate(v.purchaseDate, fmt) },
         ...(v.purchasePrice != null
-          ? [{ label: "Purchase price", value: fmt.moneyWhole(v.purchasePrice) }]
+          ? [{ label: "购置价格", value: fmt.moneyWhole(v.purchasePrice) }]
           : []),
       ],
     }
@@ -278,16 +278,16 @@ async function loadAsset(assetType: AssetType, assetId: string): Promise<ReportA
     meterUnit: null,
     currentMeter: null,
     details: [
-      { label: "Category", value: equipmentCategoryLabel(e.category) },
-      ...(e.manufacturer ? [{ label: "Manufacturer", value: e.manufacturer }] : []),
-      ...(e.modelNumber ? [{ label: "Model number", value: e.modelNumber }] : []),
-      ...(e.serialNumber ? [{ label: "Serial number", value: e.serialNumber }] : []),
-      ...(location ? [{ label: "Location", value: location }] : []),
-      ...(e.property ? [{ label: "Property", value: e.property.name }] : []),
-      ...(e.installDate ? [{ label: "Installed", value: formatDate(e.installDate, fmt) }] : []),
-      { label: "Purchased", value: formatDate(e.purchaseDate, fmt) },
+      { label: "分类", value: equipmentCategoryLabel(e.category) },
+      ...(e.manufacturer ? [{ label: "制造商", value: e.manufacturer }] : []),
+      ...(e.modelNumber ? [{ label: "型号", value: e.modelNumber }] : []),
+      ...(e.serialNumber ? [{ label: "序列号", value: e.serialNumber }] : []),
+      ...(location ? [{ label: "位置", value: location }] : []),
+      ...(e.property ? [{ label: "所属房产", value: e.property.name }] : []),
+      ...(e.installDate ? [{ label: "安装日期", value: formatDate(e.installDate, fmt) }] : []),
+      { label: "购置日期", value: formatDate(e.purchaseDate, fmt) },
       ...(e.purchasePrice != null
-        ? [{ label: "Purchase price", value: fmt.moneyWhole(e.purchasePrice) }]
+        ? [{ label: "购置价格", value: fmt.moneyWhole(e.purchasePrice) }]
         : []),
     ],
   }

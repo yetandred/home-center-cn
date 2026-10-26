@@ -16,31 +16,31 @@ export async function GET(
   { params }: { params: Promise<{ path: string[] }> }
 ) {
   const session = await auth()
-  if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  if (!session) return NextResponse.json({ error: "未登录" }, { status: 401 })
 
   const { path: segments } = await params
   // People's photos and documents go with the rest of Health.
   if (!(await loadFeatures()).health && (segments[0] === "people" || (segments[0] === "document" && (await isPerson(segments[1]))))) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 })
+    return NextResponse.json({ error: "未找到" }, { status: 404 })
   }
   if (!(await loadFeatures()).rooms && segments[0] === "room") {
-    return NextResponse.json({ error: "Not found" }, { status: 404 })
+    return NextResponse.json({ error: "未找到" }, { status: 404 })
   }
   let filePath: string
   try {
     filePath = resolveUploadPath(...segments)
   } catch {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+    return NextResponse.json({ error: "禁止访问" }, { status: 403 })
   }
 
   let fileStat
   try {
     fileStat = await stat(filePath)
   } catch {
-    return NextResponse.json({ error: "Not found" }, { status: 404 })
+    return NextResponse.json({ error: "未找到" }, { status: 404 })
   }
   if (!fileStat.isFile()) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 })
+    return NextResponse.json({ error: "未找到" }, { status: 404 })
   }
 
   const mime = UPLOAD_TYPES[path.extname(filePath).toLowerCase()]

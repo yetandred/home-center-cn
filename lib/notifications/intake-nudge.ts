@@ -46,8 +46,8 @@ export function decideIntakeNudge({ items, now, prior, health }: {
   const newest = old.reduce((a, b) => (b.createdAt > a.createdAt ? b : a)).createdAt
   const cycleKey = newest.toISOString()
   const n = old.length
-  const title = `${n} ${n === 1 ? "item" : "items"} waiting in Intake`
-  const message = `Added more than a week ago. File, keep or discard ${n === 1 ? "it" : "them"}.`
+  const title = `收件箱中有 ${n} 个项目待处理`
+  const message = "添加时间已超过一周，请归档、保留或丢弃。"
 
   if (open) {
     if (open.title === title && open.message === message && open.cycleKey === cycleKey) return NONE

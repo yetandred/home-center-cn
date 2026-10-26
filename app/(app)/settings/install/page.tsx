@@ -20,12 +20,11 @@ export default async function InstallPage() {
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
           <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
-          {session.user.role === "ADMIN" ? "Back to Settings" : "Back to dashboard"}
+          {session.user.role === "ADMIN" ? "返回设置" : "返回仪表盘"}
         </Link>
-        <h1 className="font-heading text-2xl font-semibold">Install HomeCenter as an app</h1>
+        <h1 className="font-heading text-2xl font-semibold">将 HomeCenter 安装为应用</h1>
         <p className="text-sm text-muted-foreground">
-          Put HomeCenter on your Home Screen. It opens full-screen with its own icon, like any other app. Nothing is
-          downloaded from an app store, and you can remove it any time.
+          把 HomeCenter 添加到主屏幕。它会像其他应用一样，以自己的图标全屏打开。无需从应用商店下载任何内容，随时可以移除。
         </p>
       </div>
 
@@ -33,46 +32,44 @@ export default async function InstallPage() {
 
       <Card className="py-5">
         <CardHeader className="px-5">
-          <CardTitle>iPhone and iPad</CardTitle>
-          <CardDescription>Do this on the device itself, with HomeCenter open in Safari.</CardDescription>
+          <CardTitle>iPhone 和 iPad</CardTitle>
+          <CardDescription>请在设备本身上操作，并在 Safari 中打开 HomeCenter。</CardDescription>
         </CardHeader>
         <CardContent className="px-5">
           <ol className="list-decimal space-y-2 pl-5 text-sm">
-            <li>Open HomeCenter in <strong>Safari</strong> and sign in.</li>
-            <li>Tap the <strong>Share</strong> button (the square with an arrow pointing up) in the toolbar.</li>
-            <li>Scroll down and tap <strong>Add to Home Screen</strong>. If you don&apos;t see it, tap <strong>View More</strong> first.</li>
-            <li>Leave the name as <strong>HomeCenter</strong> and tap <strong>Add</strong>.</li>
-            <li>Open HomeCenter from the new icon on your Home Screen.</li>
+            <li>在 <strong>Safari</strong> 中打开 HomeCenter 并登录。</li>
+            <li>点击工具栏中的<strong>分享</strong>按钮（带向上箭头的方框图标）。</li>
+            <li>向下滚动并点击<strong>添加到主屏幕</strong>。如果没有看到，请先点击<strong>更多</strong>。</li>
+            <li>保留名称 <strong>HomeCenter</strong>，然后点击<strong>添加</strong>。</li>
+            <li>从主屏幕上的新图标打开 HomeCenter。</li>
           </ol>
           <p className="mt-3 text-xs text-muted-foreground">
-            Other iOS browsers (Chrome, Edge) can do this too from their Share menu on iOS 16.4 or later; Safari works on
-            every version.
+            其他 iOS 浏览器（Chrome、Edge）在 iOS 16.4 及以上版本也可以从其分享菜单完成此操作；Safari 则在所有版本上均可用。
           </p>
         </CardContent>
       </Card>
 
       <Card className="py-5">
         <CardHeader className="px-5">
-          <CardTitle>Android and desktop Chrome or Edge</CardTitle>
+          <CardTitle>Android 以及桌面版 Chrome 或 Edge</CardTitle>
         </CardHeader>
         <CardContent className="px-5">
           <p className="text-sm">
-            Open the browser menu and choose <strong>Install app</strong> (or <strong>Add to Home screen</strong>).
+            打开浏览器菜单，选择<strong>安装应用</strong>（或<strong>添加到主屏幕</strong>）。
           </p>
         </CardContent>
       </Card>
 
       <Card className="py-5">
         <CardHeader className="px-5">
-          <CardTitle>Good to know</CardTitle>
+          <CardTitle>须知</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 px-5 text-sm text-muted-foreground">
-          <p>The installed app is the same site: it needs a connection and uses the same sign-in as the browser.</p>
+          <p>安装后的应用就是同一个网站：它需要网络连接，并使用与浏览器相同的登录凭据。</p>
           <p>
-            Access over <strong>https</strong> works best. If you reach HomeCenter by a plain http address on your
-            network, iOS still adds the icon but may open it as an ordinary browser tab.
+            通过 <strong>https</strong> 访问效果最佳。如果您在局域网内通过纯 http 地址访问 HomeCenter，iOS 仍会添加图标，但可能以普通浏览器标签页的方式打开。
           </p>
-          <p>To remove it, press and hold the icon on the Home Screen and choose Remove App.</p>
+          <p>如需移除，请在主屏幕上长按图标并选择移除应用。</p>
         </CardContent>
       </Card>
     </div>

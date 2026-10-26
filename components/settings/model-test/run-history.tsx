@@ -24,26 +24,26 @@ export function RunHistory({
   return (
     <Card className="py-5">
       <CardHeader className="px-5">
-        <CardTitle>History</CardTitle>
-        <CardDescription>The last {history.length ? "" : "10 "}runs, kept in this browser only.</CardDescription>
+        <CardTitle>历史</CardTitle>
+        <CardDescription>最近 {history.length ? "" : "10 "}次运行记录，仅保存在本浏览器中。</CardDescription>
       </CardHeader>
       <CardContent className="px-5">
         {!history.length ? (
-          <p className="text-sm text-muted-foreground">No runs yet — results appear here once a run finishes.</p>
+          <p className="text-sm text-muted-foreground">暂无运行记录 — 运行完成后结果会显示在这里。</p>
         ) : (
           <>
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>When</TableHead>
-                    <TableHead>Model</TableHead>
-                    <TableHead>Temp</TableHead>
-                    <TableHead>Rounds</TableHead>
-                    <TableHead>Extra JSON</TableHead>
-                    <TableHead>Score</TableHead>
-                    <TableHead>Avg</TableHead>
-                    <TableHead>By stage</TableHead>
+                    <TableHead>时间</TableHead>
+                    <TableHead>模型</TableHead>
+                    <TableHead>温度</TableHead>
+                    <TableHead>轮数</TableHead>
+                    <TableHead>额外 JSON</TableHead>
+                    <TableHead>得分</TableHead>
+                    <TableHead>平均</TableHead>
+                    <TableHead>分阶段</TableHead>
                     <TableHead />
                   </TableRow>
                 </TableHeader>
@@ -54,10 +54,10 @@ export function RunHistory({
                       <TableCell className="max-w-40 truncate font-medium" title={entry.model}>
                         {entry.model}
                         {entry.topics && (
-                          <span className="block text-xs font-normal text-muted-foreground">Only: {entry.topics.join(", ")}</span>
+                          <span className="block text-xs font-normal text-muted-foreground">仅：{entry.topics.join("、")}</span>
                         )}
                       </TableCell>
-                      <TableCell>{entry.temperature || "default"}</TableCell>
+                      <TableCell>{entry.temperature || "默认"}</TableCell>
                       <TableCell>{entry.rounds ?? "—"}</TableCell>
                       <TableCell className="max-w-48 truncate font-mono text-xs" title={entry.extraBody || undefined}>
                         {shortJson(entry.extraBody, 40)}
@@ -69,7 +69,7 @@ export function RunHistory({
                         </span>
                         {entry.stoppedEarly && (
                           <Badge variant="outline" className="ml-1.5 text-[0.65rem]">
-                            Stopped early
+                            提前停止
                           </Badge>
                         )}
                       </TableCell>
@@ -82,7 +82,7 @@ export function RunHistory({
                       </TableCell>
                       <TableCell>
                         <Button type="button" size="sm" variant="ghost" onClick={() => onUseSettings(entry)}>
-                          Use these settings
+                          使用此配置
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -91,7 +91,7 @@ export function RunHistory({
               </Table>
             </div>
             <Button type="button" size="sm" variant="outline" className="mt-3" onClick={onClear}>
-              Clear history
+              清空历史
             </Button>
           </>
         )}

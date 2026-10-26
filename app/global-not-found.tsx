@@ -5,8 +5,8 @@ import { fontVariables } from "./fonts"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "Not Found — HomeCenter",
-  description: "The page you're looking for doesn't exist.",
+  title: "未找到页面 — HomeCenter",
+  description: "您访问的页面不存在。",
 }
 
 export default function GlobalNotFound() {
@@ -23,12 +23,12 @@ export default function GlobalNotFound() {
             </div>
             <div className="rounded-lg border bg-card p-8">
               <SearchX className="h-8 w-8 mx-auto mb-3 text-muted-foreground/60" strokeWidth={1.5} />
-              <p className="font-medium">Page not found</p>
+              <p className="font-medium">页面未找到</p>
               <p className="text-sm text-muted-foreground mt-1">
-                The page you&apos;re looking for doesn&apos;t exist or may have been moved.
+                您访问的页面不存在或可能已被移动。
               </p>
               <Link href="/" className="inline-flex h-8 items-center justify-center gap-1.5 rounded-lg bg-primary px-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/80 transition-colors mt-5">
-                Back to Dashboard
+                返回仪表盘
               </Link>
             </div>
           </div>

@@ -34,8 +34,8 @@ const doseFill = (intensity: number | null) =>
 // Quiet, then mild (1) to severe (5): one hue, light to dark.
 const HEAT = ["#eef0f4", ...[28, 46, 64, 82].map((m) => `color-mix(in oklch, var(--accent) ${m}%, white)`), "var(--accent)"]
 
-const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-const monthYear = (t: number) => `${MONTH_NAMES[new Date(t).getUTCMonth()]} ${new Date(t).getUTCFullYear()}`
+const MONTH_NAMES = ["1 月", "2 月", "3 月", "4 月", "5 月", "6 月", "7 月", "8 月", "9 月", "10 月", "11 月", "12 月"]
+const monthYear = (t: number) => `${new Date(t).getUTCFullYear()} 年 ${MONTH_NAMES[new Date(t).getUTCMonth()]}`
 
 const faint = { color: "var(--ink-faint)" } as const
 const soft = { color: "var(--ink-soft)" } as const
@@ -64,12 +64,11 @@ export function MedicationReview({
       {show.review && (
         <div className="report-page-break">
           <section className="report-section report-break-avoid mt-7">
-            <SectionTitle>Medication &amp; behavior review</SectionTitle>
+            <SectionTitle>用药与行为回顾</SectionTitle>
             <p className="mt-1 text-[9pt]" style={soft}>
-              Medications from the record, with how the days went around each change. Each day is rated by the most severe
-              observation the family logged that day (meltdowns, symptoms, moods), 0 for nothing logged to 5 for severe;
-              an entry without a severity counts as mild. These are records, not assessments: they show when things
-              changed, for the reader and their clinician to interpret.
+              记录中的用药情况，以及每次调整前后日子的变化。每天的评分取当天家人记录中最严重的观察（情绪爆发、症状、情绪波动），
+              无记录为 0 分，重度为 5 分；未填写严重程度的记录按轻度计算。这些只是记录，不是评估结论：它们呈现变化发生的
+              时间，供读者与医生解读。
             </p>
             <Glance insights={insights} fmt={fmt} />
             <Findings insights={insights} now={now} day={day} />
@@ -90,29 +89,29 @@ export function MedicationReview({
 
 function Glance({ insights, fmt }: { insights: MedicationInsights; fmt: Formatter }) {
   const o = insights.observations
-  const trend = o.last90 > o.prior90 ? "more than" : o.last90 < o.prior90 ? "fewer than" : "same as"
+  const trend = o.last90 > o.prior90 ? "多于" : o.last90 < o.prior90 ? "少于" : "持平于"
   const tiles: { label: string; value: string; detail: React.ReactNode }[] = [
     {
-      label: "Taking now",
+      label: "当前在服",
       value: String(insights.current.length),
       detail: insights.current.length
-        ? insights.current.map((c) => `${c.name}${c.dosage ? ` ${c.dosage}` : ""} since ${fmt.dayMonth(new Date(c.since), { utc: true })}`).join("; ")
-        : "No current medications",
+        ? insights.current.map((c) => `${c.name}${c.dosage ? ` ${c.dosage}` : ""}，起始于 ${fmt.dayMonth(new Date(c.since), { utc: true })}`).join("；")
+        : "暂无当前用药",
     },
     {
-      label: "Medications tried",
+      label: "曾用药物",
       value: String(insights.tried),
-      detail: `${insights.changesLastYear} change${insights.changesLastYear === 1 ? "" : "s"} in the past 12 months`,
+      detail: `近 12 个月调整 ${insights.changesLastYear} 次`,
     },
     {
-      label: "Observations, last 90 days",
+      label: "近 90 天观察",
       value: String(o.last90),
-      detail: `${o.perWeek90} a week · ${trend} the 90 days before (${o.prior90}) · average day ${o.avgDay90}, ${o.severeDays90} severe day${o.severeDays90 === 1 ? "" : "s"}`,
+      detail: `${o.perWeek90} 次/周 · 前 90 天 ${trend} ${o.prior90} · 日均 ${o.avgDay90}，重度日 ${o.severeDays90} 天`,
     },
     {
-      label: "Busiest month",
+      label: "最忙的月份",
       value: o.busiestMonth ? String(o.busiestMonth.count) : "—",
-      detail: o.busiestMonth ? `${o.busiestMonth.label} · ${o.total} logged in all` : "Nothing logged",
+      detail: o.busiestMonth ? `${o.busiestMonth.label} · 共记录 ${o.total} 条` : "暂无记录",
     },
   ]
   return (
@@ -134,8 +133,8 @@ function effectLine(e: MedicationEffect, day: (t: number) => string) {
   const others = [...new Set(e.nearby.map((n) => n.name))]
   return (
     <>
-      <strong>{e.name} {e.label}</strong> on {day(e.at)}: average day {e.before.avg} in the 4 weeks before, {e.after.avg} in
-      the 4 weeks after; severe days {e.before.severe} → {e.after.severe}{others.length ? <> (also changed those weeks: {others.join(", ")})</> : null}.
+      <strong>{e.name} {e.label}</strong>（{day(e.at)}）：调整前 4 周日均 {e.before.avg}，调整后 4 周日均 {e.after.avg}；
+      重度日 {e.before.severe} → {e.after.severe}{others.length ? <>（同期另有调整：{others.join("、")}）</> : null}。
     </>
   )
 }
@@ -146,29 +145,29 @@ function Findings({ insights, now, day }: { insights: MedicationInsights; now: D
   if (insights.current.length && insights.lastChangeAt != null) {
     const latest = insights.current[0]
     items.push(
-      <>Most recent change: <strong>{latest.name}{latest.dosage ? ` ${latest.dosage}` : ""}</strong> from {day(latest.since)},{" "}
-        {formatSpan(daysBetween(latest.since, now.getTime()))} ago.</>
+      <>最近一次调整：<strong>{latest.name}{latest.dosage ? ` ${latest.dosage}` : ""}</strong> 起始于 {day(latest.since)}，
+        {formatSpan(daysBetween(latest.since, now.getTime()))}前。</>
     )
   }
   if (o.last90 + o.prior90 > 0) {
-    const word = o.last90 > o.prior90 * 1.1 ? "up from" : o.last90 < o.prior90 * 0.9 ? "down from" : "about the same as"
-    items.push(<>{o.last90} observations in the last 90 days, {word} {o.prior90} in the 90 days before.</>)
+    const word = o.last90 > o.prior90 * 1.1 ? "高于" : o.last90 < o.prior90 * 0.9 ? "低于" : "基本持平于"
+    items.push(<>近 90 天记录 {o.last90} 条，{word}前 90 天的 {o.prior90} 条。</>)
   }
-  if (insights.biggestRise) items.push(<>Largest rise after a change — {effectLine(insights.biggestRise, day)}</>)
-  if (insights.biggestDrop) items.push(<>Largest fall after a change — {effectLine(insights.biggestDrop, day)}</>)
+  if (insights.biggestRise) items.push(<>调整后上升最多 — {effectLine(insights.biggestRise, day)}</>)
+  if (insights.biggestDrop) items.push(<>调整后下降最多 — {effectLine(insights.biggestDrop, day)}</>)
   if (o.topTypes90.length) {
-    items.push(<>Most frequent entries in the last 90 days: {o.topTypes90.map((t) => `${t.type} (${t.count})`).join(", ")}.</>)
+    items.push(<>近 90 天最常见的记录：{o.topTypes90.map((t) => `${t.type}（${t.count}）`).join("、")}。</>)
   }
   if (o.regularFrom != null) {
     items.push(
-      <>Observations have been logged regularly since {monthYear(o.regularFrom)};
-        before/after comparisons earlier than that rest on few entries.</>
+      <>自 {monthYear(o.regularFrom)}起记录较为连续；
+        更早的前后对比参考的记录较少。</>
     )
   }
   if (!items.length) return null
   return (
     <div className="mt-3">
-      <div className="text-[8pt] font-semibold uppercase tracking-wide" style={faint}>What the record shows</div>
+      <div className="text-[8pt] font-semibold uppercase tracking-wide" style={faint}>记录反映的情况</div>
       <ul className="mt-1 list-disc space-y-1 pl-4 text-[9.5pt] leading-snug">
         {items.map((it, i) => <li key={i}>{it}</li>)}
       </ul>
@@ -202,19 +201,19 @@ function HistoryChart({ lanes: allLanes, observations, now, range }: { lanes: Ti
 
   return (
     <section className="report-section report-break-avoid mt-7">
-      <SectionTitle>Medication history{range === "all" ? "" : `, ${rangeLabel(Number(range))}`}</SectionTitle>
+      <SectionTitle>用药历史{range === "all" ? "" : `（${rangeLabel(Number(range))}）`}</SectionTitle>
       <p className="mt-1 text-[8.5pt]" style={faint}>
-        Each bar is one dose period; darker is a higher dose of that medication. ↑ ↓ dose change · ↻ restart ·
-        ◆ single day. The bottom row is each week&apos;s average day (each day rated by its worst observation).
+        每段条形代表一段用药期；颜色越深表示该药剂量越高。↑ ↓ 剂量调整 · ↻ 重新开始 ·
+        ◆ 单日用药。最下面一行是每周的日均评分（每天取其最严重的一条观察）。
       </p>
-      {lanes.length === 0 && <p className="mt-3 text-[9.5pt] italic" style={faint}>No medication was taken in this period.</p>}
+      {lanes.length === 0 && <p className="mt-3 text-[9.5pt] italic" style={faint}>该时段内没有用药记录。</p>}
       {lanes.length > 0 && <div className="mt-2 flex text-[8pt]">
         <div className="w-[1.3in] shrink-0 pr-2">
           <div style={{ height: 14 }} />
           {lanes.map((l) => (
             <div key={l.key} className="flex items-center truncate font-medium" style={{ height: LANE }}>{l.name}</div>
           ))}
-          {observations.length > 0 && <div className="flex items-center" style={{ height: 22, ...faint }}>Observations</div>}
+          {observations.length > 0 && <div className="flex items-center" style={{ height: 22, ...faint }}>观察</div>}
         </div>
 
         <div className="relative min-w-0 flex-1">
@@ -287,17 +286,17 @@ function HistoryList({ lanes, range, notes, fmt }: { lanes: TimelineLane[]; rang
 
   return (
     <section className="report-section mt-7">
-      <SectionTitle>Medication history{range === "all" ? "" : `, ${rangeLabel(Number(range))}`}</SectionTitle>
+      <SectionTitle>用药历史{range === "all" ? "" : `（${rangeLabel(Number(range))}）`}</SectionTitle>
       {lanes.length === 0 ? (
-        <p className="mt-3 text-[9.5pt] italic" style={faint}>No medication was taken in this period.</p>
+        <p className="mt-3 text-[9.5pt] italic" style={faint}>该时段内没有用药记录。</p>
       ) : (
         <table className="mt-2 w-full border-collapse text-[8pt] leading-tight">
           <thead>
             <tr style={faint}>
-              <th className={`${th} w-[1.8in]`}>Medication</th>
-              <th className={th}>Dose</th>
-              <th className={`${th} w-[0.8in]`}>Started</th>
-              <th className={`${th} w-[0.8in] !pr-0`}>Ended</th>
+              <th className={`${th} w-[1.8in]`}>用药</th>
+              <th className={th}>剂量</th>
+              <th className={`${th} w-[0.8in]`}>开始</th>
+              <th className={`${th} w-[0.8in] !pr-0`}>结束</th>
             </tr>
           </thead>
           {lanes.map((l) => {
@@ -322,7 +321,7 @@ function HistoryList({ lanes, range, notes, fmt }: { lanes: TimelineLane[]; rang
                     </td>
                     <td className={`${cell} whitespace-nowrap tabular-nums ${i === 0 ? "border-t" : ""}`} style={{ borderColor: "var(--rule-strong)", ...soft }} data-print-color="">{d(s.start)}</td>
                     <td className={`${cell} whitespace-nowrap pr-0 tabular-nums ${i === 0 ? "border-t" : ""}`} style={{ borderColor: "var(--rule-strong)", ...soft }} data-print-color="">
-                      {s.ongoing ? "now" : d(s.point ? s.start : s.end - DAY)}
+                      {s.ongoing ? "至今" : d(s.point ? s.start : s.end - DAY)}
                     </td>
                   </tr>
                   {withNote.has(s.med.id) ? (
@@ -354,24 +353,24 @@ function EffectsChart({ effects, day }: { effects: MedicationEffect[]; day: (t: 
 
   return (
     <section className="report-section report-break-avoid mt-7">
-      <SectionTitle>Before and after each medication change</SectionTitle>
+      <SectionTitle>每次用药调整前后对比</SectionTitle>
       <p className="mt-1 text-[8.5pt]" style={faint}>
-        The average day (0 quiet to 5 severe, each day rated by its worst observation), 4 weeks before each change (○)
-        and 4 weeks after (●); largest differences first. Other changes in the same weeks share any credit.
+        日均评分（0 为平稳，5 为重度，每天取其最严重的一条观察），分别为每次调整前 4 周（○）
+        与调整后 4 周（●）；差异最大的排在前面。同期其他调整也可能有贡献。
       </p>
       {rows.length === 0 ? (
-        <p className="mt-3 text-[9.5pt] italic" style={faint}>No change has four weeks of observations on both sides yet.</p>
+        <p className="mt-3 text-[9.5pt] italic" style={faint}>暂无调整在前后两侧各有 4 周观察数据。</p>
       ) : (
         <div className="mt-2 text-[8.5pt]">
           <div className={`grid ${cols} gap-3 border-b pb-1 text-[7.5pt] font-semibold uppercase tracking-wide`} style={{ borderColor: "var(--rule-strong)", ...faint }} data-print-color="">
-            <div>Change</div>
+            <div>调整</div>
             <div className="relative">
               {ticks.map((t) => (
                 <span key={t} className="absolute -translate-x-1/2 tabular-nums" style={{ left: `${(t / max) * 100}%` }}>{Number.isInteger(t) ? t : t.toFixed(1)}</span>
               ))}
               &nbsp;
             </div>
-            <div className="text-right">Average day</div>
+            <div className="text-right">日均</div>
           </div>
           {rows.map((e) => {
             const a = (e.before.avg / max) * 100
@@ -383,7 +382,7 @@ function EffectsChart({ effects, day }: { effects: MedicationEffect[]; day: (t: 
               <div key={`${e.medId}-${e.kind}-${e.at}`} className={`grid ${cols} items-center gap-3 border-b py-1.5`} style={{ borderColor: "var(--rule)" }} data-print-color="">
                 <div className="min-w-0 leading-tight">
                   <div className="truncate"><strong>{e.name}</strong> {e.label}</div>
-                  <div className="truncate text-[7.5pt]" style={faint}>{day(e.at)}{others.length ? ` · also: ${others.join(", ")}` : ""}</div>
+                  <div className="truncate text-[7.5pt]" style={faint}>{day(e.at)}{others.length ? ` · 另有：${others.join("、")}` : ""}</div>
                 </div>
                 <div className="relative h-4" aria-hidden="true">
                   {ticks.map((t) => (
@@ -396,8 +395,8 @@ function EffectsChart({ effects, day }: { effects: MedicationEffect[]; day: (t: 
                 <div className="text-right leading-tight tabular-nums">
                   <div>{e.before.avg} → <strong>{e.after.avg}</strong></div>
                   <div className="text-[7.5pt]" style={faint}>
-                    {more ? <strong style={{ color: "var(--ink)" }}>↑ {e.delta} higher</strong> : fewer ? <strong style={{ color: "var(--ink)" }}>↓ {Math.abs(e.delta)} lower</strong> : "about the same"}
-                    {" · "}severe {e.before.severe} → {e.after.severe}
+                    {more ? <strong style={{ color: "var(--ink)" }}>↑ 升高 {e.delta}</strong> : fewer ? <strong style={{ color: "var(--ink)" }}>↓ 降低 {Math.abs(e.delta)}</strong> : "基本持平"}
+                    {" · "}重度 {e.before.severe} → {e.after.severe}
                   </div>
                 </div>
               </div>
@@ -453,9 +452,9 @@ function ObservationYear({ observations, events, days, from, to, now, fmt }: {
 
   return (
     <section className="report-section report-break-avoid mt-7">
-      <SectionTitle>Observations, {rangeLabel(days)}</SectionTitle>
+      <SectionTitle>观察记录，{rangeLabel(days)}</SectionTitle>
       <p className="mt-1 text-[8.5pt]" style={faint}>
-        One square per day, shaded by its most severe entry ({cal.total} entries in this period). ◆ marks a week with a medication change.
+        每天一个方格，颜色深浅取决于当天最严重的一条记录（本期共 {cal.total} 条）。◆ 表示该周有用药调整。
       </p>
       <div className="mt-2 text-[7pt]" style={faint}>
         {rows.map((weeks, r) => {
@@ -479,7 +478,7 @@ function ObservationYear({ observations, events, days, from, to, now, fmt }: {
               </div>
               <div className="mt-0.5 grid gap-[2px]" style={{ gridTemplateColumns: columns }}>
                 <div className="grid grid-rows-7 gap-[2px]">
-                  {["Mon", "", "Wed", "", "Fri", "", ""].map((d, i) => <div key={i} className="flex items-center leading-none">{d}</div>)}
+                  {["一", "", "三", "", "五", "", ""].map((d, i) => <div key={i} className="flex items-center leading-none">{d}</div>)}
                 </div>
                 {weeks.map((wk) => (
                   <div key={wk.start} className="grid grid-rows-7 gap-[2px]">
@@ -493,8 +492,8 @@ function ObservationYear({ observations, events, days, from, to, now, fmt }: {
           )
         })}
         <div className="mt-1.5 flex items-center justify-end gap-1">
-          Quiet {HEAT.map((h, i) => <span key={i} className="h-2 w-2 rounded-[1.5px]" data-print-color="" style={{ background: h }} />)} Severe
-          <span className="ml-3">Generated {fmt.date(now, { utc: true })}</span>
+          平稳 {HEAT.map((h, i) => <span key={i} className="h-2 w-2 rounded-[1.5px]" data-print-color="" style={{ background: h }} />)} 重度
+          <span className="ml-3">生成于 {fmt.date(now, { utc: true })}</span>
         </div>
       </div>
     </section>
@@ -519,9 +518,9 @@ function SeverityHistogram({ observations, days, from, to, fmt }: {
   const H = 56
   return (
     <section className="report-section report-break-avoid mt-7">
-      <SectionTitle>Daily severity, {rangeLabel(days)}</SectionTitle>
+      <SectionTitle>每日严重程度，{rangeLabel(days)}</SectionTitle>
       <p className="mt-1 text-[8.5pt]" style={faint}>
-        One bar per day, as tall as its most severe entry (0 quiet to 5 severe); {logged} of {length} days have an entry.
+        每天一根条形，高度取当天最严重的一条记录（0 为平稳，5 为重度）；{length} 天中有 {logged} 天有记录。
       </p>
       <div className="mt-2 flex text-[7pt]" style={faint}>
         <div className="relative w-5 shrink-0" style={{ height: H }}>

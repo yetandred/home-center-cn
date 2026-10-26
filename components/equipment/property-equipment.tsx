@@ -22,15 +22,15 @@ export function PropertyEquipment({ equipment, property, openId }: { equipment: 
   return (
     <>
       <div className="mb-4 flex items-center justify-between gap-3">
-        <p className="text-sm text-muted-foreground">{equipment.length} item{equipment.length !== 1 ? "s" : ""}</p>
+        <p className="text-sm text-muted-foreground">{equipment.length} 项</p>
         <Button size="sm" onClick={() => { setTarget("new"); setDialogOpen(true) }}>
-          <Plus className="mr-1 h-3.5 w-3.5" /> Add equipment
+          <Plus className="mr-1 h-3.5 w-3.5" /> 添加设备
         </Button>
       </div>
 
       {equipment.length === 0 ? (
         <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-          No equipment at this property yet.
+          该房产暂无设备。
         </div>
       ) : (
         <EquipmentRows equipment={equipment} showLocation onEdit={(e) => { setTarget(e.id); setDialogOpen(true) }} />

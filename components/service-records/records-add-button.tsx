@@ -41,20 +41,20 @@ export function RecordsAddButton({ assets }: { assets: InboxAssetOption[] }) {
 
   return (
     <>
-      <AddSplitButton label="Add record" onAdd={() => setOpen(true)} />
+      <AddSplitButton label="添加记录" onAdd={() => setOpen(true)} />
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Add a record</DialogTitle>
-            <DialogDescription>Which asset is it for?</DialogDescription>
+            <DialogTitle>添加记录</DialogTitle>
+            <DialogDescription>属于哪个资产？</DialogDescription>
           </DialogHeader>
           <div className="space-y-2">
-            <Label htmlFor={id}>For</Label>
+            <Label htmlFor={id}>对象</Label>
             <AssetSelect id={id} assets={assets} value={key} onChange={setKey} />
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button type="button" disabled={!asset || loading} onClick={go}>Continue</Button>
+            <Button type="button" variant="outline" onClick={() => setOpen(false)}>取消</Button>
+            <Button type="button" disabled={!asset || loading} onClick={go}>继续</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

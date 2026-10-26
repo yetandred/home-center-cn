@@ -47,13 +47,13 @@ export async function updateMailSettings(data: MailSettingsInput) {
   const v = parsed.data
 
   const port = optionalInt(v.port, 1, 65535)
-  if (port === undefined) return { error: "Port must be a number between 1 and 65535." }
+  if (port === undefined) return { error: "端口必须是 1 到 65535 之间的数字。" }
 
   const digestHour = optionalInt(v.digestHour, 0, 23)
-  if (digestHour === undefined) return { error: "Digest hour must be between 0 and 23." }
+  if (digestHour === undefined) return { error: "摘要发送时间必须是 0 到 23 之间的小时数。" }
 
   const publicUrl = normalizePublicUrl(v.publicUrl)
-  if (v.publicUrl && !publicUrl) return { error: "Public address must start with http:// or https://, e.g. https://home.example.com." }
+  if (v.publicUrl && !publicUrl) return { error: "公网地址必须以 http:// 或 https:// 开头，例如 https://home.example.com。" }
 
   // Blank fields clear the override and fall back to the environment variable.
   const base = {
@@ -141,21 +141,21 @@ export async function sendTestEmail(input?: MailSettingsInput) {
   const session = await requireAdmin()
 
   const config = await draftConfig(input)
-  if (!isMailConfigured(config)) return { error: "No mail server configured." }
-  if (config.passwordUnreadable) return { error: "The saved password can't be decrypted — re-enter it." }
+  if (!isMailConfigured(config)) return { error: "未配置邮件服务器。" }
+  if (config.passwordUnreadable) return { error: "已保存的密码无法解密——请重新输入。" }
 
   const to = session.user.email
-  if (!to) return { error: "Your account has no email address." }
+  if (!to) return { error: "您的账户没有邮箱地址。" }
 
   try {
     await sendMail(
       {
         to,
-        subject: "HomeCenter test email",
-        text: "This is a test from HomeCenter. Your mail settings work.",
+        subject: "HomeCenter 测试邮件",
+        text: "这是来自 HomeCenter 的测试邮件，您的邮件设置工作正常。",
         html: `<div style="font-family:system-ui,-apple-system,Segoe UI,sans-serif">
-          <p>This is a test from HomeCenter.</p>
-          <p>Your mail settings work — reminders will be delivered this way.</p>
+          <p>这是来自 HomeCenter 的测试邮件。</p>
+          <p>您的邮件设置工作正常——提醒将通过此方式送达。</p>
         </div>`,
       },
       config

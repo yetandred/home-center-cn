@@ -58,21 +58,21 @@ export default async function ChangePasswordPage({
     <div className="min-h-svh flex items-center justify-center bg-muted/40 p-4">
       <div className="w-full max-w-sm space-y-6">
         <div className="text-center">
-          <h1 className="font-heading text-2xl font-semibold tracking-tight">Set your password</h1>
+          <h1 className="font-heading text-2xl font-semibold tracking-tight">设置您的密码</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Choose a new password before continuing.
+            请先设置新密码，然后继续。
           </p>
         </div>
 
         <Card>
           <CardHeader className="pb-4">
-            <CardTitle className="text-base">New password</CardTitle>
+            <CardTitle className="text-base">新密码</CardTitle>
             {errorText && (
               <CardDescription className="text-destructive">{errorText}</CardDescription>
             )}
             {message === "password-changed" && (
               <CardDescription className="text-emerald-700 dark:text-emerald-400">
-                Password changed — please sign in again.
+                密码已修改 — 请重新登录。
               </CardDescription>
             )}
           </CardHeader>
@@ -80,7 +80,7 @@ export default async function ChangePasswordPage({
             <form action={changePassword} className="space-y-4">
               {askCurrent && (
                 <div className="space-y-1.5">
-                  <Label htmlFor="currentPassword">Current password</Label>
+                  <Label htmlFor="currentPassword">当前密码</Label>
                   <Input
                     id="currentPassword"
                     name="currentPassword"
@@ -91,7 +91,7 @@ export default async function ChangePasswordPage({
                 </div>
               )}
               <div className="space-y-1.5">
-                <Label htmlFor="newPassword">New password</Label>
+                <Label htmlFor="newPassword">新密码</Label>
                 <Input
                   id="newPassword"
                   name="newPassword"
@@ -102,7 +102,7 @@ export default async function ChangePasswordPage({
                 />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="confirm">Confirm password</Label>
+                <Label htmlFor="confirm">确认密码</Label>
                 <Input
                   id="confirm"
                   name="confirm"
@@ -113,7 +113,7 @@ export default async function ChangePasswordPage({
                 />
               </div>
               <Button type="submit" className="w-full">
-                Set password
+                设置密码
               </Button>
             </form>
           </CardContent>

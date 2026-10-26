@@ -17,5 +17,5 @@ export async function uploadAll(files: File[], recordType: AttachmentRecordType,
   const results = await Promise.allSettled(files.map((f) => uploadFile(f, recordType, recordId)))
   const failure = results.find((r): r is PromiseRejectedResult => r.status === "rejected")
   if (!failure) return null
-  return failure.reason instanceof Error ? failure.reason.message : "Some files failed to upload."
+  return failure.reason instanceof Error ? failure.reason.message : "部分文件上传失败。"
 }

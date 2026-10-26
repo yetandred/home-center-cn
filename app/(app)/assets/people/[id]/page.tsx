@@ -83,16 +83,16 @@ export default async function PersonDetailPage({
         <AllergyCallout allergies={person.allergies} />
 
         <div className="space-y-2">
-          <Stat icon={Users} label="Relationship" value={labelFor(RELATIONSHIPS, person.relationship)} />
+          <Stat icon={Users} label="关系" value={labelFor(RELATIONSHIPS, person.relationship)} />
           {person.dateOfBirth && (
-            <Stat icon={Cake} label="Born" value={`${fmt.date(person.dateOfBirth, { utc: true })} (${age})`} />
+            <Stat icon={Cake} label="出生日期" value={`${fmt.date(person.dateOfBirth, { utc: true })}（${age} 岁）`} />
           )}
-          {person.sex && <Stat icon={User} label="Sex" value={person.sex} />}
-          {person.bloodType && <Stat icon={Droplet} label="Blood type" value={person.bloodType} />}
+          {person.sex && <Stat icon={User} label="性别" value={person.sex} />}
+          {person.bloodType && <Stat icon={Droplet} label="血型" value={person.bloodType} />}
           {person.primaryProvider && (
             <Stat
               icon={Stethoscope}
-              label="Primary care"
+              label="主治医生"
               value={<Link href="/providers" className="hover:underline">{person.primaryProvider.name}</Link>}
             />
           )}
@@ -101,7 +101,7 @@ export default async function PersonDetailPage({
         {person.insurancePolicies.length > 0 && (
           <div className="rounded-lg border bg-card p-3 text-sm">
             <div className="flex items-center gap-1.5 font-semibold">
-              <ShieldPlus className="h-4 w-4" aria-hidden="true" /> Insurance
+              <ShieldPlus className="h-4 w-4" aria-hidden="true" /> 保险
             </div>
             <ul className="mt-1.5 space-y-1">
               {person.insurancePolicies.map((p) => (
@@ -133,28 +133,28 @@ export default async function PersonDetailPage({
               href={`/reports/people/${id}`}
               className="inline-flex shrink-0 items-center gap-1.5 rounded-md border bg-background px-3 py-1.5 text-sm font-medium hover:bg-muted transition-colors"
             >
-              <FileText className="h-3.5 w-3.5" /> Medical summary
+              <FileText className="h-3.5 w-3.5" /> 医疗摘要
             </Link>
             <a
               href={`/api/assets/people/${id}/download`}
               download
               className="inline-flex shrink-0 items-center gap-1.5 rounded-md border bg-background px-3 py-1.5 text-sm font-medium hover:bg-muted transition-colors"
             >
-              <Download className="h-3.5 w-3.5" /> Download all files
+              <Download className="h-3.5 w-3.5" /> 下载全部文件
             </a>
           </div>
         </div>
 
         <Tabs defaultValue={tab ?? "visits"}>
           <TabsList variant="line" className="w-full justify-start border-b overflow-x-auto">
-            <TabsTrigger value="visits">Visits &amp; Expenses ({visits.length})</TabsTrigger>
-            <TabsTrigger value="observations">Observations ({observations.length})</TabsTrigger>
-            <TabsTrigger value="conditions">Conditions ({person.conditions.length})</TabsTrigger>
-            <TabsTrigger value="medications">Medications ({person.medications.length})</TabsTrigger>
-            <TabsTrigger value="immunizations">Immunizations ({person.immunizations.length})</TabsTrigger>
-            <TabsTrigger value="allergies">Allergies ({person.allergies.length})</TabsTrigger>
-            <TabsTrigger value="reminders">Reminders ({schedules.length})</TabsTrigger>
-            <TabsTrigger value="documents">Documents ({documents.length})</TabsTrigger>
+            <TabsTrigger value="visits">就诊与支出 ({visits.length})</TabsTrigger>
+            <TabsTrigger value="observations">观察记录 ({observations.length})</TabsTrigger>
+            <TabsTrigger value="conditions">病症 ({person.conditions.length})</TabsTrigger>
+            <TabsTrigger value="medications">用药 ({person.medications.length})</TabsTrigger>
+            <TabsTrigger value="immunizations">疫苗接种 ({person.immunizations.length})</TabsTrigger>
+            <TabsTrigger value="allergies">过敏 ({person.allergies.length})</TabsTrigger>
+            <TabsTrigger value="reminders">提醒 ({schedules.length})</TabsTrigger>
+            <TabsTrigger value="documents">文档 ({documents.length})</TabsTrigger>
           </TabsList>
           <TabsContent value="visits" className="mt-4">
             <ServiceRecordList records={visits} assetId={id} assetType="PERSON" providerOptions={providers} conditionOptions={conditionOptions} reminders={schedules} openId={tab === "visits" ? open : undefined} />
@@ -178,7 +178,7 @@ export default async function PersonDetailPage({
             <MaintenanceList schedules={schedules} assetId={id} assetType="PERSON" currentMileage={null} openId={tab === "reminders" ? open : undefined} />
           </TabsContent>
           <TabsContent value="documents" className="mt-4">
-            <AssetDocuments assetId={id} documents={documents} hint="Birth certificate, passport scan, advance directive: files for this person, not one visit." />
+            <AssetDocuments assetId={id} documents={documents} hint="出生证明、护照扫描件、生前预嘱：此成员本人的文件，而非单次就诊。" />
           </TabsContent>
         </Tabs>
       </div>

@@ -77,15 +77,15 @@ export async function detectProtection(p: string): Promise<Protection | "unknown
   return "unknown"
 }
 
-const WRONG_KEY = "That recovery key doesn't open this backup."
-const WRONG_PASSWORD = "That password doesn't open this backup."
+const WRONG_KEY = "该恢复密钥无法打开此备份。"
+const WRONG_PASSWORD = "该密码无法打开此备份。"
 
 /** A plain, secret-free sentence for a failure that isn't a wrong key or password. */
 function failureText(e: unknown): string {
   const code = (e as { code?: unknown })?.code
-  if (code === "ENOSPC") return "Not enough disk space to unlock this backup."
+  if (code === "ENOSPC") return "磁盘空间不足，无法解锁此备份。"
   if (typeof code === "string") return `Couldn't read this backup file (${code}).`
-  return "Couldn't unlock this backup. The file may be damaged."
+  return "无法解锁此备份，文件可能已损坏。"
 }
 
 export async function unprotectFile(src: string, destPlain: string, secret: UnlockSecret): Promise<{ ok: true } | { ok: false; error: string; needs?: "key" | "password" }> {
@@ -95,11 +95,11 @@ export async function unprotectFile(src: string, destPlain: string, secret: Unlo
   } catch (e) {
     return { ok: false, error: failureText(e) }
   }
-  if (kind === "unknown") return { ok: false, error: "This isn't a HomeCenter backup." }
-  if (kind === "none") return { ok: false, error: "This backup isn't protected." }
+  if (kind === "unknown") return { ok: false, error: "这不是 HomeCenter 备份。" }
+  if (kind === "none") return { ok: false, error: "此备份未启用保护。" }
   const id = kind === "key" && secret.key ? parseIdentity(secret.key) : null
-  if (kind === "key" && !id) return { ok: false, error: "This backup needs its recovery key.", needs: "key" }
-  if (kind === "password" && !secret.password) return { ok: false, error: "This backup needs its password.", needs: "password" }
+  if (kind === "key" && !id) return { ok: false, error: "此备份需要恢复密钥。", needs: "key" }
+  if (kind === "password" && !secret.password) return { ok: false, error: "此备份需要密码。", needs: "password" }
   try {
     if (kind === "key") {
       const d = new Decrypter()

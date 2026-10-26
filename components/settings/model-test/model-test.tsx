@@ -47,27 +47,26 @@ export function ModelTest({
     <div className="space-y-6">
       <Card className="py-5">
         <CardHeader className="px-5">
-          <CardTitle>Settings to test</CardTitle>
+          <CardTitle>测试配置</CardTitle>
           <CardDescription>
-            Server: <span className="font-medium text-foreground">{serverHost}</span> (from Settings). Changes here
-            are only for this test and aren&apos;t saved. Fixtures assume today is {today}; a test can take up to{" "}
-            {timeoutSeconds}s.
+            服务器：<span className="font-medium text-foreground">{serverHost}</span>（来自设置）。此处的更改仅用于本次测试，不会被保存。测试用例假定今天是 {today}；单次测试最长可能需要{" "}
+            {timeoutSeconds} 秒。
           </CardDescription>
         </CardHeader>
         <CardContent className="px-5">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
-              <Label htmlFor="mt-model">Model</Label>
+              <Label htmlFor="mt-model">模型</Label>
               <Input
                 id="mt-model"
                 value={t.model}
                 onChange={(e) => t.setModel(e.target.value)}
-                placeholder={savedModel || "Saved model"}
+                placeholder={savedModel || "已保存的模型"}
                 disabled={t.running}
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="mt-temp">Temperature</Label>
+              <Label htmlFor="mt-temp">温度</Label>
               <Input
                 id="mt-temp"
                 type="number"
@@ -76,12 +75,12 @@ export function ModelTest({
                 max={2}
                 value={t.temperature}
                 onChange={(e) => t.setTemperature(e.target.value)}
-                placeholder="Provider default"
+                placeholder="服务商默认值"
                 disabled={t.running}
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="mt-rounds">Lookup rounds</Label>
+              <Label htmlFor="mt-rounds">查询轮数</Label>
               <Input
                 id="mt-rounds"
                 type="number"
@@ -89,13 +88,13 @@ export function ModelTest({
                 max={12}
                 value={t.rounds}
                 onChange={(e) => t.setRounds(e.target.value)}
-                placeholder={`Default (${defaultRounds})`}
+                placeholder={`默认（${defaultRounds}）`}
                 disabled={t.running}
               />
-              <p className="text-xs text-muted-foreground">Used by the “Whole conversation” tests.</p>
+              <p className="text-xs text-muted-foreground">供“完整对话”类测试使用。</p>
             </div>
             <div className="space-y-1.5 sm:col-span-2">
-              <Label htmlFor="mt-extra">Extra request JSON</Label>
+              <Label htmlFor="mt-extra">额外请求 JSON</Label>
               <Textarea
                 id="mt-extra"
                 rows={3}
@@ -106,7 +105,7 @@ export function ModelTest({
                 disabled={t.running}
               />
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
-                <span className="text-muted-foreground">Presets:</span>
+                <span className="text-muted-foreground">预设：</span>
                 {EXTRA_PRESETS.map((p) => (
                   <button
                     key={p.label}
@@ -125,7 +124,7 @@ export function ModelTest({
                   disabled={t.running}
                   onClick={t.resetToSaved}
                 >
-                  Reset to saved
+                  恢复为已保存配置
                 </button>
               </div>
             </div>
@@ -135,9 +134,9 @@ export function ModelTest({
 
       <Card className="py-5">
         <CardHeader className="px-5">
-          <CardTitle>Which tests</CardTitle>
+          <CardTitle>测试范围</CardTitle>
           <CardDescription>
-            Everything runs by default. Untick a stage or pick topics to run just those. Repeat a run to check how consistent the answers are.
+            默认运行全部测试。取消勾选某个阶段或选择特定主题可只运行所选内容。可重复运行以检验回答的一致性。
           </CardDescription>
         </CardHeader>
         <CardContent className="px-5 space-y-4">
@@ -168,10 +167,10 @@ export function ModelTest({
           </div>
 
           <div className="space-y-2">
-            <p className="text-sm font-medium" id="mt-topics-label">Topics</p>
+            <p className="text-sm font-medium" id="mt-topics-label">主题</p>
             <div className="flex flex-wrap gap-1.5" role="group" aria-labelledby="mt-topics-label">
               <TopicChip
-                label="All topics"
+                label="全部主题"
                 count={catalog.filter((c) => t.selectedStages.has(c.stage)).length}
                 pressed={t.selectedTopics.size === 0}
                 disabled={t.running}
@@ -188,12 +187,12 @@ export function ModelTest({
                 />
               ))}
             </div>
-            <p className="text-xs text-muted-foreground">Pick one or more to run only those; pick “All topics” to go back to everything.</p>
+            <p className="text-xs text-muted-foreground">选择一个或多个主题以只运行这些测试；选择“全部主题”可恢复运行所有内容。</p>
           </div>
 
           <div className="flex items-center gap-3">
             <Label htmlFor="mt-repeat" className="text-sm">
-              Repeat
+              重复次数
             </Label>
             <Select value={String(t.repeat)} onValueChange={(v) => v && t.setRepeat(Number(v))} disabled={t.running}>
               <SelectTrigger id="mt-repeat" size="sm" className="w-16">
@@ -207,7 +206,7 @@ export function ModelTest({
                 ))}
               </SelectContent>
             </Select>
-            <span className="text-xs text-muted-foreground">Run each test this many times to check consistency.</span>
+            <span className="text-xs text-muted-foreground">每个测试运行相应次数以检验一致性。</span>
           </div>
         </CardContent>
       </Card>
@@ -215,16 +214,16 @@ export function ModelTest({
       <div className="flex flex-wrap items-center gap-3">
         {t.running ? (
           <Button type="button" size="lg" variant="destructive" onClick={t.stop}>
-            Stop
+            停止
           </Button>
         ) : (
           <Button type="button" size="lg" onClick={() => t.run()} disabled={!t.selectedCatalog.length}>
-            {t.selectedCatalog.length === catalog.length ? "Run all tests" : `Run ${t.selectedCatalog.length} test${t.selectedCatalog.length === 1 ? "" : "s"}`}
+            {t.selectedCatalog.length === catalog.length ? "运行全部测试" : `运行 ${t.selectedCatalog.length} 项测试`}
           </Button>
         )}
         {t.canRerunFailed && (
           <Button type="button" variant="outline" onClick={t.rerunFailed}>
-            Re-run failed
+            重跑失败项
           </Button>
         )}
       </div>
@@ -239,13 +238,13 @@ export function ModelTest({
             {t.startLine && <p className="text-sm text-muted-foreground">{t.startLine}</p>}
             {t.warmup && (
               <p className="text-sm">
-                {t.warmup.status === "pending" && <span className="text-muted-foreground">Waking up the model…</span>}
+                {t.warmup.status === "pending" && <span className="text-muted-foreground">正在唤醒模型…</span>}
                 {t.warmup.status === "ok" && (
-                  <span className="text-muted-foreground">Model ready in {formatSeconds(t.warmup.ms)}.</span>
+                  <span className="text-muted-foreground">模型已就绪，耗时 {formatSeconds(t.warmup.ms)}。</span>
                 )}
                 {t.warmup.status === "warn" && (
                   <span className="text-amber-600 dark:text-amber-400">
-                    The model didn&apos;t answer the wake-up check{t.warmup.error ? `: ${t.warmup.error}` : "."}
+                    模型未响应唤醒检查{t.warmup.error ? `：${t.warmup.error}` : "。"}
                   </span>
                 )}
               </p>
@@ -253,7 +252,7 @@ export function ModelTest({
             <div className="space-y-1.5">
               <div className="flex items-center justify-between text-sm">
                 <span>
-                  {t.liveSummary.completed} of {t.liveSummary.total}
+                  {t.liveSummary.completed} / {t.liveSummary.total}
                 </span>
                 <span className="text-muted-foreground">{progressPct}%</span>
               </div>
@@ -262,16 +261,16 @@ export function ModelTest({
               </div>
             </div>
             <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm">
-              <span className="text-green-600 dark:text-green-400">✓ {t.liveSummary.passed} passed</span>
-              <span className="text-destructive">✗ {t.liveSummary.failed} failed</span>
+              <span className="text-green-600 dark:text-green-400">✓ {t.liveSummary.passed} 项通过</span>
+              <span className="text-destructive">✗ {t.liveSummary.failed} 项失败</span>
               <span className="text-muted-foreground">
-                Score:{" "}
+                得分：{" "}
                 {t.liveSummary.completed
                   ? `${Math.round((t.liveSummary.passed / t.liveSummary.completed) * 100)}%`
                   : "—"}
               </span>
-              <span className="text-muted-foreground">Elapsed: {formatSeconds(t.liveSummary.elapsedMs)}</span>
-              <span className="text-muted-foreground">Avg/test: {formatSeconds(t.liveSummary.avgMs)}</span>
+              <span className="text-muted-foreground">已用时：{formatSeconds(t.liveSummary.elapsedMs)}</span>
+              <span className="text-muted-foreground">平均每项：{formatSeconds(t.liveSummary.avgMs)}</span>
             </div>
           </CardContent>
         </Card>
@@ -279,7 +278,7 @@ export function ModelTest({
 
       <Card className="py-5">
         <CardHeader className="px-5">
-          <CardTitle>Results</CardTitle>
+          <CardTitle>结果</CardTitle>
         </CardHeader>
         <CardContent className="px-5">
           <ResultsList catalog={t.selectedCatalog} stages={stages} repeat={t.repeat} results={t.results} />

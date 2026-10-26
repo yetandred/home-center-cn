@@ -18,7 +18,7 @@ export async function createRoom(data: RoomInput) {
   if (!parsed.success) return { error: parsed.error.flatten().fieldErrors }
 
   const property = await prisma.property.findUnique({ where: { id: parsed.data.propertyId }, select: { id: true } })
-  if (!property) return { error: "Property not found" }
+  if (!property) return { error: "未找到该房产" }
 
   const room = await prisma.room.create({
     data: { ...roomData(parsed.data), paints: { create: paintRows(parsed.data.paints) } },
@@ -39,8 +39,8 @@ export async function updateRoom(id: string, data: RoomInput) {
   if (!parsed.success) return { error: parsed.error.flatten().fieldErrors }
 
   const existing = await prisma.room.findUnique({ where: { id }, select: { id: true, propertyId: true } })
-  if (!existing) return { error: "Not found" }
-  if (parsed.data.propertyId !== existing.propertyId) return { error: "A room can't move to another property" }
+  if (!existing) return { error: "未找到" }
+  if (parsed.data.propertyId !== existing.propertyId) return { error: "房间不能移动到其他房产" }
 
   await prisma.$transaction([
     prisma.roomPaint.deleteMany({ where: { roomId: id } }),
@@ -60,7 +60,7 @@ export async function deleteRoom(id: string) {
   await requireRooms()
 
   const room = await prisma.room.findUnique({ where: { id }, select: { id: true, name: true, propertyId: true } })
-  if (!room) return { error: "Not found" }
+  if (!room) return { error: "未找到" }
 
   // Equipment keeps where it was: deleting the room clears the link, so its name becomes the free-text location.
   await prisma.$transaction([

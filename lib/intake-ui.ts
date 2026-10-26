@@ -17,10 +17,10 @@ export function intakeSummary<T extends { createdAt: Date; attachments: unknown[
 export type EmptyStateKind = "records" | "service" | "visits" | "documents"
 
 const EMPTY_COPY: Record<EmptyStateKind, string> = {
-  records: "No records yet — add one, or drop a receipt here.",
-  service: "No records yet — add one, or drop a receipt here.",
-  visits: "No visits yet — add one, or drop a receipt here.",
-  documents: "No documents yet — drop a manual or warranty card here, or use Attach file.",
+  records: "暂无记录——可添加一条，或将收据拖放到此处。",
+  service: "暂无记录——可添加一条，或将收据拖放到此处。",
+  visits: "暂无就诊记录——可添加一条，或将收据拖放到此处。",
+  documents: "暂无文档——可拖入说明书或保修卡，或使用“添加附件”。",
 }
 
 export function emptyStateCopy(kind: EmptyStateKind): string {

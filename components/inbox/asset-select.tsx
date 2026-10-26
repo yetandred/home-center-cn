@@ -8,7 +8,7 @@ import type { AssetType, MeterUnit } from "@/app/generated/prisma/client"
 export type InboxAssetOption = { type: AssetType; id: string; name: string; meterUnit?: MeterUnit }
 export type InboxReminderOption = { id: string; title: string; assetType: AssetType; assetId: string }
 
-const GROUP_LABEL: Record<AssetType, string> = { PROPERTY: "Properties", VEHICLE: "Vehicles", EQUIPMENT: "Equipment", PERSON: "People" }
+const GROUP_LABEL: Record<AssetType, string> = { PROPERTY: "房产", VEHICLE: "车辆", EQUIPMENT: "设备", PERSON: "成员" }
 
 /** Every asset, grouped by kind. The value is an assetKey ("TYPE:id"), or "" for none chosen. */
 export function AssetSelect({
@@ -28,10 +28,10 @@ export function AssetSelect({
   return (
     <Select value={value || null} onValueChange={(v) => onChange(typeof v === "string" ? v : "")}>
       <SelectTrigger id={id} className="w-full" aria-invalid={invalid || undefined}>
-        <SelectValue placeholder="Choose an asset">
+        <SelectValue placeholder="选择资产">
           {(v: string | null) => {
             const a = v ? byKey.get(v) : undefined
-            return a ? `${a.name} · ${assetLabel[a.type]}` : "Choose an asset"
+            return a ? `${a.name} · ${assetLabel[a.type]}` : "选择资产"
           }}
         </SelectValue>
       </SelectTrigger>

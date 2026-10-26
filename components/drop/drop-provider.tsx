@@ -95,7 +95,7 @@ export function DropProvider({ healthEnabled, children }: { healthEnabled: boole
       const landed = await Promise.all(files.map((f) => addFileToInbox(f, { successToast: false, asset: target })))
       const count = landed.filter(Boolean).length
       if (count) {
-        toast.success(intakeAddedMessage(count), { action: { label: "View", onClick: () => router.push("/intake") } })
+        toast.success(intakeAddedMessage(count), { action: { label: "查看", onClick: () => router.push("/intake") } })
         // The Intake badge and the Intake page, if that's where this is.
         router.refresh()
       }
@@ -154,7 +154,7 @@ export function DropProvider({ healthEnabled, children }: { healthEnabled: boole
       hide()
       if (!files.length) return
       if (d.kind === "blocked") {
-        toast.info(`${d.label}. Close it to add files to Intake.`)
+        toast.info(`${d.label}。关闭后可添加文件到收件箱。`)
         return
       }
       const { accepted, rejected } = splitDroppedFiles(files)

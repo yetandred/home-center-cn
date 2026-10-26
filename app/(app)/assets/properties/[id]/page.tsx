@@ -17,7 +17,7 @@ import { RoomList } from "@/components/rooms/room-list"
 import { PropertyEquipment } from "@/components/equipment/property-equipment"
 
 const typeLabel: Record<string, string> = {
-  HOUSE: "House", CONDO: "Condo", TOWNHOUSE: "Townhouse", LOT: "Lot / Land", OTHER: "Other",
+  HOUSE: "独栋住宅", CONDO: "公寓", TOWNHOUSE: "联排别墅", LOT: "地块 / 土地", OTHER: "其他",
 }
 
 export default async function PropertyDetailPage({
@@ -79,12 +79,12 @@ export default async function PropertyDetailPage({
         <AssetImageUploader assetType="PROPERTY" assetId={id} imageFilename={property.imageFilename} alt={property.name} />
 
         <div className="space-y-2">
-          <Stat icon={Home} label="Type" value={typeLabel[property.type]} />
-          <Stat icon={MapPin} label="Address" value={property.address} />
-          {property.yearBuilt && <Stat icon={Calendar} label="Year Built" value={property.yearBuilt.toString()} />}
+          <Stat icon={Home} label="类型" value={typeLabel[property.type]} />
+          <Stat icon={MapPin} label="地址" value={property.address} />
+          {property.yearBuilt && <Stat icon={Calendar} label="建造年份" value={property.yearBuilt.toString()} />}
           {property.sqFt && <Stat icon={Maximize} label={fmt.areaLabel} value={fmt.area(property.sqFt)} />}
-          {property.purchasePrice && <Stat icon={DollarSign} label="Purchase Price" value={fmt.moneyWhole(property.purchasePrice)} />}
-          {property.purchaseDate && <Stat icon={Calendar} label="Purchased" value={fmt.date(property.purchaseDate)} />}
+          {property.purchasePrice && <Stat icon={DollarSign} label="购买价格" value={fmt.moneyWhole(property.purchasePrice)} />}
+          {property.purchaseDate && <Stat icon={Calendar} label="购入日期" value={fmt.date(property.purchaseDate)} />}
         </div>
 
         <AssetCostPanel assetType="PROPERTY" assetId={id} purchasePrice={property.purchasePrice} ownedSince={property.purchaseDate} />
@@ -105,14 +105,14 @@ export default async function PropertyDetailPage({
               href={`/reports/properties/${id}`}
               className="inline-flex shrink-0 items-center gap-1.5 rounded-md border bg-background px-3 py-1.5 text-sm font-medium hover:bg-muted transition-colors"
             >
-              <FileText className="h-3.5 w-3.5" /> Report
+              <FileText className="h-3.5 w-3.5" /> 报告
             </Link>
             <a
               href={`/api/assets/properties/${id}/download`}
               download
               className="inline-flex shrink-0 items-center gap-1.5 rounded-md border bg-background px-3 py-1.5 text-sm font-medium hover:bg-muted transition-colors"
             >
-              <Download className="h-3.5 w-3.5" /> Download all files
+              <Download className="h-3.5 w-3.5" /> 下载全部文件
             </a>
           </div>
         </div>
@@ -120,15 +120,15 @@ export default async function PropertyDetailPage({
         {/* Keyed on the tab and open params so a link to ?tab=…&open=… from inside this page (a room's history) switches tabs, even to the tab already showing. */}
         <Tabs key={`${tab ?? ""}:${open ?? ""}`} defaultValue={(tab === "rooms" && !features.rooms) || (tab === "equipment" && !features.equipmentTab) ? "service" : tab ?? "service"}>
           <TabsList variant="line" className="w-full justify-start border-b">
-            <TabsTrigger value="service">Service ({serviceRecords.length})</TabsTrigger>
-            <TabsTrigger value="warranties">Warranties ({warranties.length})</TabsTrigger>
-            {features.rooms && <TabsTrigger value="rooms">Rooms ({rooms.length})</TabsTrigger>}
-            {features.equipmentTab && <TabsTrigger value="equipment">Equipment ({equipment.length})</TabsTrigger>}
-            <TabsTrigger value="maintenance">Maintenance Reminders ({maintenanceSchedules.length})</TabsTrigger>
-            <TabsTrigger value="documents">Documents ({documents.length})</TabsTrigger>
+            <TabsTrigger value="service">维护记录 ({serviceRecords.length})</TabsTrigger>
+            <TabsTrigger value="warranties">保修 ({warranties.length})</TabsTrigger>
+            {features.rooms && <TabsTrigger value="rooms">房间 ({rooms.length})</TabsTrigger>}
+            {features.equipmentTab && <TabsTrigger value="equipment">设备 ({equipment.length})</TabsTrigger>}
+            <TabsTrigger value="maintenance">维护提醒 ({maintenanceSchedules.length})</TabsTrigger>
+            <TabsTrigger value="documents">文档 ({documents.length})</TabsTrigger>
           </TabsList>
           <TabsContent value="service" className="mt-4">
-            <ServiceRecordList records={serviceRecords} assetId={id} assetType="PROPERTY" equipment={equipment} propertyName={property.name} roomOptions={roomOptions} reminders={maintenanceSchedules} openId={tab === "service" ? open : undefined} scopeToggle={equipment.length > 0 ? { ownLabel: "Property only", withLabel: "Property + equipment" } : undefined} />
+            <ServiceRecordList records={serviceRecords} assetId={id} assetType="PROPERTY" equipment={equipment} propertyName={property.name} roomOptions={roomOptions} reminders={maintenanceSchedules} openId={tab === "service" ? open : undefined} scopeToggle={equipment.length > 0 ? { ownLabel: "仅房产", withLabel: "房产 + 设备" } : undefined} />
           </TabsContent>
           <TabsContent value="warranties" className="mt-4">
             <WarrantyList warranties={warranties} assetId={id} assetType="PROPERTY" equipment={equipment} propertyName={property.name} openId={tab === "warranties" ? open : undefined} />
@@ -147,7 +147,7 @@ export default async function PropertyDetailPage({
             <MaintenanceList schedules={maintenanceSchedules} assetId={id} assetType="PROPERTY" equipment={equipment} propertyName={property.name} roomOptions={roomOptions} openId={tab === "maintenance" ? open : undefined} />
           </TabsContent>
           <TabsContent value="documents" className="mt-4">
-            <AssetDocuments assetId={id} documents={documents} hint="Deed, survey, closing papers, floor plans: files for the property itself, not one service." />
+            <AssetDocuments assetId={id} documents={documents} hint="契据、测绘图、成交文件、平面图：房产本身的文件，而非单次维护。" />
           </TabsContent>
         </Tabs>
       </div>

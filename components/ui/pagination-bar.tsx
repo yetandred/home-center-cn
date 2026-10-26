@@ -29,7 +29,7 @@ export function PaginationBar({
   per,
   onPage,
   onPer,
-  label = "rows",
+  label = "条",
 }: {
   page: number
   pageCount: number
@@ -46,17 +46,17 @@ export function PaginationBar({
 
   return (
     <nav
-      aria-label="Pagination"
+      aria-label="分页"
       className="flex flex-wrap items-center justify-between gap-3 border-t px-4 py-2.5 text-sm"
     >
       <p className="text-muted-foreground">
-        Showing <span className="tabular-nums text-foreground">{from}–{to}</span> of{" "}
+        显示第 <span className="tabular-nums text-foreground">{from}–{to}</span> 条，共{" "}
         <span className="tabular-nums text-foreground">{total}</span> {label}
       </p>
 
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-1.5">
-          <label htmlFor="per-page" className="text-xs text-muted-foreground">Per page</label>
+          <label htmlFor="per-page" className="text-xs text-muted-foreground">每页</label>
           <Select
             value={String(per)}
             onValueChange={(v) => v && onPer(Number(v))}
@@ -72,7 +72,7 @@ export function PaginationBar({
 
         {pageCount > 1 && (
           <div className="flex items-center gap-1">
-            <PageButton onClick={() => onPage(page - 1)} disabled={page <= 1} aria-label="Previous page">
+            <PageButton onClick={() => onPage(page - 1)} disabled={page <= 1} aria-label="上一页">
               <ChevronLeft className="h-3.5 w-3.5" />
             </PageButton>
 
@@ -84,7 +84,7 @@ export function PaginationBar({
                   key={item}
                   onClick={() => onPage(item)}
                   active={item === page}
-                  aria-label={`Page ${item}`}
+                  aria-label={`第 ${item} 页`}
                   aria-current={item === page ? "page" : undefined}
                 >
                   {item}
@@ -92,7 +92,7 @@ export function PaginationBar({
               )
             )}
 
-            <PageButton onClick={() => onPage(page + 1)} disabled={page >= pageCount} aria-label="Next page">
+            <PageButton onClick={() => onPage(page + 1)} disabled={page >= pageCount} aria-label="下一页">
               <ChevronRight className="h-3.5 w-3.5" />
             </PageButton>
           </div>

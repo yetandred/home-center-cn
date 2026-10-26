@@ -25,7 +25,7 @@ function revalidatePerson(personId: string) {
   revalidatePath("/assets/people")
 }
 
-const NOT_FOUND: ActionResult = { error: "Not found" }
+const NOT_FOUND: ActionResult = { error: "未找到" }
 
 // ─── Conditions ───────────────────────────────────────────────────────────────
 
@@ -104,7 +104,7 @@ export async function markMedicationRefilled(id: string): Promise<ActionResult> 
   await requireSession()
   const med = await prisma.medication.findUnique({ where: { id }, select: { personId: true, refillIntervalDays: true } })
   if (!med) return NOT_FOUND
-  if (!med.refillIntervalDays) return { error: "Set a refill interval first." }
+  if (!med.refillIntervalDays) return { error: "请先设置续药周期。" }
 
   const today = new Date()
   today.setUTCHours(0, 0, 0, 0)
@@ -189,7 +189,7 @@ export async function deleteImmunization(id: string): Promise<ActionResult> {
 async function conditionError(personId: string, conditionId: string | null): Promise<ActionResult | null> {
   if (!conditionId) return null
   const c = await prisma.healthCondition.findUnique({ where: { id: conditionId }, select: { personId: true } })
-  return c?.personId === personId ? null : { error: { conditionId: ["Pick one of this person's conditions"] } }
+  return c?.personId === personId ? null : { error: { conditionId: ["请选择该成员的一种病症"] } }
 }
 
 export async function createObservation(personId: string, values: FormValues): Promise<ActionResult> {

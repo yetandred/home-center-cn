@@ -169,7 +169,7 @@ export function SummaryCard({ icon, label, value, href, urgent, thumbnails, comp
               )}
               {i === shown.length - 1 && remaining > 0 && (
                 <span className="absolute bottom-1.5 right-1.5 rounded-full bg-black/60 px-2 py-0.5 text-[11px] font-medium text-white backdrop-blur-sm">
-                  +{remaining} more
+                  +{remaining} 张
                 </span>
               )}
             </Link>

@@ -34,10 +34,10 @@ function warrantyStatus(expirationDate: Date | null) {
   // to fall through and render "0d left". The status filter is SQL-side
   // (expirationDate < now), so the two have to agree on the same instant.
   const ms = new Date(expirationDate).getTime() - Date.now()
-  if (ms < 0) return { label: "Expired", variant: "destructive" as const }
+  if (ms < 0) return { label: "已过期", variant: "destructive" as const }
   const daysLeft = Math.ceil(ms / 86400000)
-  if (daysLeft <= WARN_DAYS) return { label: `${daysLeft}d left`, variant: "secondary" as const }
-  return { label: "Active", variant: "outline" as const }
+  if (daysLeft <= WARN_DAYS) return { label: `剩余 ${daysLeft} 天`, variant: "secondary" as const }
+  return { label: "生效中", variant: "outline" as const }
 }
 
 export default async function WarrantiesPage({
@@ -92,27 +92,27 @@ export default async function WarrantiesPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-heading text-2xl font-semibold">Warranties</h1>
+        <h1 className="font-heading text-2xl font-semibold">保修</h1>
         <p className="text-sm text-muted-foreground mt-0.5">
-          {total} warrant{total !== 1 ? "ies" : "y"}
+          {total} 项保修
           {expiringSoon > 0 && (
-            <span className="ml-2 text-amber-700 dark:text-amber-400 font-medium">· {expiringSoon} expiring soon</span>
+            <span className="ml-2 text-amber-700 dark:text-amber-400 font-medium">· {expiringSoon} 项即将到期</span>
           )}
         </p>
       </div>
 
       <Suspense>
         <SearchBar
-          placeholder="Search coverage, vendor…"
-          filters={[{ key: "status", placeholder: "All statuses", options: [{ value: "active", label: "Active" }, { value: "expiring", label: "Expiring soon" }, { value: "expired", label: "Expired" }] }]}
+          placeholder="搜索保障范围、商家…"
+          filters={[{ key: "status", placeholder: "全部状态", options: [{ value: "active", label: "生效中" }, { value: "expiring", label: "即将到期" }, { value: "expired", label: "已过期" }] }]}
         />
       </Suspense>
 
       {total === 0 ? (
         <div className="rounded-lg border border-dashed p-12 text-center text-muted-foreground">
-          <p className="font-medium">No warranties {q || status ? "match those filters" : "yet"}</p>
+          <p className="font-medium">{q || status ? "没有符合筛选条件的保修" : "暂无保修记录"}</p>
           <p className="text-sm mt-1">
-            {q || status ? "Try clearing the search or filter." : "Add warranties from a property, vehicle, or equipment detail page."}
+            {q || status ? "请尝试清除搜索或筛选条件。" : "请从房产、车辆或设备详情页添加保修。"}
           </p>
         </div>
       ) : (
@@ -121,18 +121,18 @@ export default async function WarrantiesPage({
             <table className="w-full text-sm">
               <thead className="bg-muted/50 text-muted-foreground">
                 <tr>
-                  <th scope="col" className="text-left font-medium px-4 py-2.5">Asset</th>
+                  <th scope="col" className="text-left font-medium px-4 py-2.5">资产</th>
                   <Suspense>
-                    <UrlSortHead column="product" label="Coverage" defaultSort={DEFAULT_SORT} defaultDir={DEFAULT_DIR} />
+                    <UrlSortHead column="product" label="保障内容" defaultSort={DEFAULT_SORT} defaultDir={DEFAULT_DIR} />
                   </Suspense>
                   <Suspense>
-                    <UrlSortHead column="vendor" label="Vendor" className="hidden sm:table-cell" defaultSort={DEFAULT_SORT} defaultDir={DEFAULT_DIR} />
+                    <UrlSortHead column="vendor" label="商家" className="hidden sm:table-cell" defaultSort={DEFAULT_SORT} defaultDir={DEFAULT_DIR} />
                   </Suspense>
                   <Suspense>
-                    <UrlSortHead column="expires" label="Expires" defaultSort={DEFAULT_SORT} defaultDir={DEFAULT_DIR} />
+                    <UrlSortHead column="expires" label="到期日" defaultSort={DEFAULT_SORT} defaultDir={DEFAULT_DIR} />
                   </Suspense>
                   <Suspense>
-                    <UrlSortHead column="status" label="Status" defaultSort={DEFAULT_SORT} defaultDir={DEFAULT_DIR} />
+                    <UrlSortHead column="status" label="状态" defaultSort={DEFAULT_SORT} defaultDir={DEFAULT_DIR} />
                   </Suspense>
                 </tr>
               </thead>
@@ -147,7 +147,7 @@ export default async function WarrantiesPage({
                       <td className="px-4 py-3">
                         <Link href={assetHref(w.assetType, w.assetId)} className="flex items-center gap-1.5 hover:underline">
                           <AssetIcon className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                          {assetName ?? <span className="text-muted-foreground italic">Unknown</span>}
+                          {assetName ?? <span className="text-muted-foreground italic">未知</span>}
                         </Link>
                       </td>
                       <td className="px-4 py-3 font-medium">
@@ -170,7 +170,7 @@ export default async function WarrantiesPage({
           </div>
 
           <Suspense>
-            <UrlPaginationBar page={page} pageCount={pageCount} total={total} per={per} label="warranties" />
+            <UrlPaginationBar page={page} pageCount={pageCount} total={total} per={per} label="项保修" />
           </Suspense>
         </div>
       )}

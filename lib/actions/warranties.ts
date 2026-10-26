@@ -12,7 +12,7 @@ import { z } from "zod"
 const schema = z.object({
   assetId: z.string().min(1),
   assetType: z.enum(ASSET_TYPES),
-  productName: z.string().min(1, "Product name is required"),
+  productName: z.string().min(1, "产品名称为必填项"),
   purchaseDate: z.string().optional(),
   expirationDate: z.string().optional(),
   vendor: z.string().optional(),
@@ -66,7 +66,7 @@ export async function deleteWarranty(id: string, assetType: AssetType, assetId: 
   if (!session) redirect("/login")
 
   const warranty = await prisma.warranty.findUnique({ where: { id }, select: { id: true } })
-  if (!warranty) return { error: "Not found" }
+  if (!warranty) return { error: "未找到" }
 
   await prisma.warranty.delete({ where: { id: warranty.id } })
   await removeUploadDir("warranty", warranty.id)

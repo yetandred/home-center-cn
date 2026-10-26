@@ -4,7 +4,7 @@ import { ChatThread } from "@/components/chat/chat-thread"
 export default function ChatPage() {
   return (
     <div className="mx-auto flex h-full max-w-3xl flex-col gap-4">
-      <h1 className="font-heading text-2xl font-semibold">Assistant</h1>
+      <h1 className="font-heading text-2xl font-semibold">AI 助手</h1>
       <ChatThread />
     </div>
   )

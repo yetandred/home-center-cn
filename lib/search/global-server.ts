@@ -348,16 +348,16 @@ async function searchAssets(where: Wheres, now: Date, terms: string[]): Promise<
   const propertyCards: AssetResult[] = p.items.map((r) => ({
     type: "PROPERTY", id: r.id, href: assetHref("PROPERTY", r.id), name: r.name, imageFilename: r.imageFilename,
     badge: labelFor([
-      { value: "HOUSE", label: "House" }, { value: "CONDO", label: "Condo" }, { value: "TOWNHOUSE", label: "Townhouse" },
-      { value: "LOT", label: "Lot / Land" }, { value: "OTHER", label: "Other" },
+      { value: "HOUSE", label: "独立屋" }, { value: "CONDO", label: "公寓" }, { value: "TOWNHOUSE", label: "联排别墅" },
+      { value: "LOT", label: "地块" }, { value: "OTHER", label: "其他" },
     ], r.type),
     subtitle: r.address,
     facts: facts([
-      ["Built", r.yearBuilt],
-      ["Size", r.sqFt ? fmt.area(r.sqFt) : null],
-      ["Purchased", money(r.purchasePrice)],
-      ["Equipment", r._count.equipment || null],
-      ["Last service", last(r.id)],
+      ["建造年份", r.yearBuilt],
+      ["面积", r.sqFt ? fmt.area(r.sqFt) : null],
+      ["购置价格", money(r.purchasePrice)],
+      ["设备", r._count.equipment || null],
+      ["最近维护", last(r.id)],
     ]),
     status: upkeep.status.get(r.id) ?? null,
   }))
@@ -368,9 +368,9 @@ async function searchAssets(where: Wheres, now: Date, terms: string[]): Promise<
     subtitle: `${r.year} ${r.make} ${r.model}`,
     facts: facts([
       [fmt.meterNoun(r.meterUnit), r.currentMileage != null ? `${r.currentMileage.toLocaleString()} ${fmt.meterShort(r.meterUnit)}` : null],
-      ["Color", r.color],
+      ["颜色", r.color],
       ["VIN", r.vin ? `…${r.vin.slice(-6)}` : null],
-      ["Last service", last(r.id)],
+      ["最近维护", last(r.id)],
     ]),
     status: upkeep.status.get(r.id) ?? null,
   }))
@@ -380,11 +380,11 @@ async function searchAssets(where: Wheres, now: Date, terms: string[]): Promise<
     badge: equipmentCategoryLabel(r.category),
     subtitle: [r.manufacturer, r.modelNumber].filter(Boolean).join(" · ") || null,
     facts: facts([
-      ["Property", r.property?.name],
-      ["Location", locationLabel(r)],
-      ["Serial", r.serialNumber],
-      ["Installed", day(r.installDate)],
-      ["Last service", last(r.id)],
+      ["所属房产", r.property?.name],
+      ["位置", locationLabel(r)],
+      ["序列号", r.serialNumber],
+      ["安装日期", day(r.installDate)],
+      ["最近维护", last(r.id)],
     ]),
     status: upkeep.status.get(r.id) ?? null,
   }))
@@ -392,22 +392,22 @@ async function searchAssets(where: Wheres, now: Date, terms: string[]): Promise<
   const personCards: AssetResult[] = pp.items.map((r) => ({
     type: "PERSON", id: r.id, href: assetHref("PERSON", r.id), name: r.name, imageFilename: r.imageFilename,
     badge: labelFor(RELATIONSHIPS, r.relationship),
-    subtitle: r.dateOfBirth ? `Age ${ageFrom(r.dateOfBirth, now)}` : null,
+    subtitle: r.dateOfBirth ? `${ageFrom(r.dateOfBirth, now)} 岁` : null,
     facts: facts([
-      ["Primary care", r.primaryProvider?.name],
-      ["Blood type", r.bloodType],
-      ["Medications", r.medications.filter((m) => isMedicationActive(m, now)).length || null],
-      ["Open conditions", r.conditions.length || null],
-      ["Last visit", last(r.id)],
+      ["主治医生", r.primaryProvider?.name],
+      ["血型", r.bloodType],
+      ["用药", r.medications.filter((m) => isMedicationActive(m, now)).length || null],
+      ["病症", r.conditions.length || null],
+      ["最近就诊", last(r.id)],
     ]),
     status: upkeep.status.get(r.id) ?? null,
   }))
 
   return kinds.mark([
-    { key: "properties", title: "Properties", layout: "assets", items: propertyCards, more: p.more },
-    { key: "vehicles", title: "Vehicles", layout: "assets", items: vehicleCards, more: v.more },
-    { key: "equipment", title: "Equipment", layout: "assets", items: equipmentCards, more: e.more },
-    { key: "people", title: "People", layout: "assets", items: personCards, more: pp.more },
+    { key: "properties", title: "房产", layout: "assets", items: propertyCards, more: p.more },
+    { key: "vehicles", title: "车辆", layout: "assets", items: vehicleCards, more: v.more },
+    { key: "equipment", title: "设备", layout: "assets", items: equipmentCards, more: e.more },
+    { key: "people", title: "成员", layout: "assets", items: personCards, more: pp.more },
   ])
 }
 
@@ -530,19 +530,19 @@ async function searchRecords(where: Wheres, owners: Owners, now: Date, terms: st
     const badge = dueBadge(due, Boolean(r.nextDueDate || r.nextDueMileage), fmt)
     const unit = fmt.meterShort(unitOf(r.assetId))
     const every = [
-      r.intervalDays ? `${r.intervalDays} days` : null,
+      r.intervalDays ? `${r.intervalDays} 天` : null,
       r.intervalMiles ? `${r.intervalMiles.toLocaleString()} ${unit}` : null,
-    ].filter(Boolean).join(" or ")
+    ].filter(Boolean).join(" 或 ")
     return {
       kind: "maintenance", id: r.id,
       href: tabHref(r.assetType, r.assetId, r.assetType === "PERSON" ? "reminders" : "maintenance", r.id),
       title: r.title, subtitle: clip(r.description),
-      date: r.nextDueDate ? `Due ${day(r.nextDueDate)}` : null, amount: null,
-      status: !r.isActive ? { label: "Paused", tone: "outline" } : badge ? { label: badge.label, tone: badge.variant } : null,
+      date: r.nextDueDate ? `到期 ${day(r.nextDueDate)}` : null, amount: null,
+      status: !r.isActive ? { label: "已暂停", tone: "outline" } : badge ? { label: badge.label, tone: badge.variant } : null,
       facts: facts([
-        ["Every", every || null],
-        ["Last done", day(r.lastCompletedDate)],
-        ["Due at", r.nextDueMileage != null ? `${r.nextDueMileage.toLocaleString()} ${unit}` : null],
+        ["周期", every || null],
+        ["上次完成", day(r.lastCompletedDate)],
+        ["到期读数", r.nextDueMileage != null ? `${r.nextDueMileage.toLocaleString()} ${unit}` : null],
       ]),
       owner: thumb(r.assetId), people: null,
     }
@@ -552,15 +552,15 @@ async function searchRecords(where: Wheres, owners: Owners, now: Date, terms: st
   const warrantyCards: RecordResult[] = w.items.map((r) => {
     const st = warrantyState(r.expirationDate, now, WARRANTY_WINDOW_DAYS)
     const status: Status | null = !r.expirationDate ? null
-      : st.state === "expired" ? { label: "Expired", tone: "destructive" }
-      : st.state === "expiring" ? { label: `${st.daysLeft}d left`, tone: "secondary" }
-      : { label: "Active", tone: "outline" }
+      : st.state === "expired" ? { label: "已过期", tone: "destructive" }
+      : st.state === "expiring" ? { label: `剩 ${st.daysLeft} 天`, tone: "secondary" }
+      : { label: "有效", tone: "outline" }
     return {
       kind: "warranty", id: r.id,
       href: r.assetType === "PERSON" ? assetHref("PERSON", r.assetId) : tabHref(r.assetType, r.assetId, "warranties", r.id),
       title: r.productName, subtitle: clip(r.notes),
-      date: r.expirationDate ? `Expires ${day(r.expirationDate)}` : null, amount: null, status,
-      facts: facts([["Vendor", r.vendor], ["Phone", r.vendorPhone], ["Purchased", day(r.purchaseDate)]]),
+      date: r.expirationDate ? `到期 ${day(r.expirationDate)}` : null, amount: null, status,
+      facts: facts([["供应商", r.vendor], ["电话", r.vendorPhone], ["购置日期", day(r.purchaseDate)]]),
       owner: thumb(r.assetId), people: null,
     }
   })
@@ -568,19 +568,19 @@ async function searchRecords(where: Wheres, owners: Owners, now: Date, terms: st
   const ins = page(kinds.rank(policies, (r) => textsOf(r, FIELDS.insurance, ...r.members.map((x) => x.name))))
   const insuranceCards: RecordResult[] = ins.items.map((r) => {
     const expired = r.endDate != null && r.endDate.getTime() < now.getTime() - 86_400_000
-    const status: Status | null = expired ? { label: "Ended", tone: "outline" }
-      : insuranceExpiring(r, now) ? { label: "Ending soon", tone: "secondary" } : null
+    const status: Status | null = expired ? { label: "已结束", tone: "outline" }
+      : insuranceExpiring(r, now) ? { label: "即将到期", tone: "secondary" } : null
     return {
       kind: "insurance", id: r.id, href: `/insurance?open=${r.id}`,
-      title: r.carrier, subtitle: r.planName, date: r.endDate ? `Ends ${day(r.endDate)}` : null, amount: null, status,
+      title: r.carrier, subtitle: r.planName, date: r.endDate ? `结束于 ${day(r.endDate)}` : null, amount: null, status,
       facts: facts([
-        ["Kind", labelFor(INSURANCE_KINDS, r.kind)],
-        ["Policy #", r.policyNumber],
-        ["Group #", r.groupNumber],
-        ["Deductible", money(r.deductible)],
-        ["Phone", r.phone],
+        ["类型", labelFor(INSURANCE_KINDS, r.kind)],
+        ["保单号", r.policyNumber],
+        ["团体号", r.groupNumber],
+        ["免赔额", money(r.deductible)],
+        ["电话", r.phone],
       ]),
-      owner: null, people: r.members.map((x) => x.name).join(", ") || null,
+      owner: null, people: r.members.map((x) => x.name).join("、") || null,
     }
   })
 
@@ -589,7 +589,7 @@ async function searchRecords(where: Wheres, owners: Owners, now: Date, terms: st
     kind: "provider", id: r.id, href: "/providers",
     title: r.name, subtitle: [r.specialty, r.practice].filter(Boolean).join(" · ") || null,
     date: null, amount: null, status: null,
-    facts: facts([["Phone", r.phone], ["Email", r.email], ["Address", r.address]]),
+    facts: facts([["电话", r.phone], ["邮箱", r.email], ["地址", r.address]]),
     owner: null, people: null,
   }))
 
@@ -598,10 +598,10 @@ async function searchRecords(where: Wheres, owners: Owners, now: Date, terms: st
     kind: "room", id: r.id, href: tabHref("PROPERTY", r.propertyId, "rooms", r.id),
     title: r.name, subtitle: r.level, date: null, amount: null, status: null,
     facts: facts([
-      ["Size", [r.area != null ? fmt.area(r.area) : null, r.dimensions].filter(Boolean).join(" · ") || null],
-      ["Flooring", [r.flooringType, r.flooringProduct].filter(Boolean).join(" · ") || null],
-      ["Paint", r.paints.map(paintLabel).join("; ") || null],
-      ["Notes", clip(r.notes, 80)],
+      ["面积", [r.area != null ? fmt.area(r.area) : null, r.dimensions].filter(Boolean).join(" · ") || null],
+      ["地板", [r.flooringType, r.flooringProduct].filter(Boolean).join(" · ") || null],
+      ["油漆", r.paints.map(paintLabel).join("; ") || null],
+      ["备注", clip(r.notes, 80)],
     ]),
     owner: thumb(r.propertyId), people: null,
   }))
@@ -609,51 +609,51 @@ async function searchRecords(where: Wheres, owners: Owners, now: Date, terms: st
   const health: RecordResult[] = [
     ...kinds.rank(conditions, (r) => textsOf(r, FIELDS.condition, personName(r.personId))).slice(0, PER_SECTION).map((r): RecordResult => ({
       kind: "condition", id: r.id, href: tabHref("PERSON", r.personId, "conditions"),
-      title: r.name, subtitle: clip(r.notes), date: r.diagnosedDate ? `Diagnosed ${day(r.diagnosedDate)}` : null, amount: null,
+      title: r.name, subtitle: clip(r.notes), date: r.diagnosedDate ? `确诊 ${day(r.diagnosedDate)}` : null, amount: null,
       status: { label: labelFor(CONDITION_STATUSES, r.status), tone: r.status === "RESOLVED" ? "outline" : "secondary" },
-      facts: facts([["Provider", r.provider?.name], ["Resolved", day(r.resolvedDate)]]),
+      facts: facts([["医生", r.provider?.name], ["痊愈日期", day(r.resolvedDate)]]),
       owner: thumb(r.personId), people: null,
     })),
     ...kinds.rank(medications, (r) => textsOf(r, FIELDS.medication, personName(r.personId))).slice(0, PER_SECTION).map((r): RecordResult => ({
       kind: "medication", id: r.id, href: tabHref("PERSON", r.personId, "medications", r.id),
       title: r.name, subtitle: [r.dosage, r.frequency].filter(Boolean).join(" · ") || null,
-      date: r.startDate ? `Started ${day(r.startDate)}` : null, amount: null,
-      status: isMedicationActive(r, now) ? { label: "Active", tone: "secondary" } : { label: "Stopped", tone: "outline" },
-      facts: facts([["Prescriber", r.prescriber?.name], ["Pharmacy", r.pharmacy], ["Next refill", day(r.nextRefillDate)]]),
+      date: r.startDate ? `开始 ${day(r.startDate)}` : null, amount: null,
+      status: isMedicationActive(r, now) ? { label: "服用中", tone: "secondary" } : { label: "已停用", tone: "outline" },
+      facts: facts([["处方医生", r.prescriber?.name], ["药房", r.pharmacy], ["下次续药", day(r.nextRefillDate)]]),
       owner: thumb(r.personId), people: null,
     })),
     ...kinds.rank(allergies, (r) => textsOf(r, FIELDS.allergy, personName(r.personId))).slice(0, PER_SECTION).map((r): RecordResult => ({
       kind: "allergy", id: r.id, href: tabHref("PERSON", r.personId, "allergies"),
       title: r.substance, subtitle: r.reaction, date: null, amount: null,
       status: { label: labelFor(ALLERGY_SEVERITIES, r.severity), tone: r.severity === "SEVERE" ? "destructive" : "secondary" },
-      facts: facts([["Notes", clip(r.notes, 80)]]),
+      facts: facts([["备注", clip(r.notes, 80)]]),
       owner: thumb(r.personId), people: null,
     })),
     ...kinds.rank(immunizations, (r) => textsOf(r, FIELDS.immunization, personName(r.personId))).slice(0, PER_SECTION).map((r): RecordResult => ({
       kind: "immunization", id: r.id, href: tabHref("PERSON", r.personId, "immunizations", r.id),
-      title: r.vaccine, subtitle: clip(r.notes), date: `Given ${day(r.dateGiven)}`, amount: null, status: null,
-      facts: facts([["Dose", r.dose], ["Given by", r.givenBy], ["Next due", day(r.nextDueDate)]]),
+      title: r.vaccine, subtitle: clip(r.notes), date: `接种 ${day(r.dateGiven)}`, amount: null, status: null,
+      facts: facts([["剂量", r.dose], ["接种方", r.givenBy], ["下次到期", day(r.nextDueDate)]]),
       owner: thumb(r.personId), people: null,
     })),
     ...kinds.rank(observations, (r) => textsOf(r, FIELDS.observation, personName(r.personId))).slice(0, PER_SECTION).map((r): RecordResult => ({
       kind: "observation", id: r.id, href: observationHref(r.personId, r.id),
       title: r.type, subtitle: clip(r.notes), date: [day(r.date), r.time].filter(Boolean).join(" "), amount: null,
-      status: r.severity ? { label: `Severity ${r.severity}/5`, tone: r.severity >= 4 ? "destructive" : "secondary" } : null,
-      facts: facts([["Duration", r.durationMinutes ? `${r.durationMinutes} min` : null], ["Tags", r.tags]]),
+      status: r.severity ? { label: `严重度 ${r.severity}/5`, tone: r.severity >= 4 ? "destructive" : "secondary" } : null,
+      facts: facts([["时长", r.durationMinutes ? `${r.durationMinutes} 分钟` : null], ["标签", r.tags]]),
       owner: thumb(r.personId), people: null,
     })),
   ]
   const healthMore = [conditions, medications, allergies, immunizations, observations].some((x) => x.length > PER_SECTION)
 
   return kinds.mark([
-    { key: "service", title: "Service records", layout: "records", items: serviceCards, more: s.more },
-    { key: "visits", title: "Health visits", layout: "records", items: visitCards, more: vi.more },
-    { key: "maintenance", title: "Maintenance", layout: "records", items: maintenanceCards, more: m.more },
-    { key: "warranties", title: "Warranties", layout: "records", items: warrantyCards, more: w.more },
-    { key: "rooms", title: "Rooms", layout: "records", items: roomCards, more: ro.more },
-    { key: "insurance", title: "Insurance", layout: "records", items: insuranceCards, more: ins.more },
-    { key: "health", title: "Health records", layout: "records", items: health, more: healthMore },
-    { key: "providers", title: "Providers", layout: "records", items: providerCards, more: pr.more },
+    { key: "service", title: "维护记录", layout: "records", items: serviceCards, more: s.more },
+    { key: "visits", title: "就诊记录", layout: "records", items: visitCards, more: vi.more },
+    { key: "maintenance", title: "维护", layout: "records", items: maintenanceCards, more: m.more },
+    { key: "warranties", title: "保修", layout: "records", items: warrantyCards, more: w.more },
+    { key: "rooms", title: "房间", layout: "records", items: roomCards, more: ro.more },
+    { key: "insurance", title: "保险", layout: "records", items: insuranceCards, more: ins.more },
+    { key: "health", title: "健康记录", layout: "records", items: health, more: healthMore },
+    { key: "providers", title: "供应商", layout: "records", items: providerCards, more: pr.more },
   ])
 }
 
@@ -733,7 +733,7 @@ export async function globalSearch(query: string, opts: { semantic: boolean }): 
         const docs = await toDocuments(fresh, [], "semantic", owners)
         bySemantic = [
           ...records,
-          ...(docs.items.length ? [{ key: "documents", title: "Documents", layout: "documents" as const, ...docs, more: false }] : []),
+          ...(docs.items.length ? [{ key: "documents", title: "文档", layout: "documents" as const, ...docs, more: false }] : []),
         ]
         semantic = { state: "ok", found: bySemantic.reduce((n, sec) => n + sec.items.length, 0) }
       } catch (error) {
@@ -746,7 +746,7 @@ export async function globalSearch(query: string, opts: { semantic: boolean }): 
   const keywordSections: Section[] = [
     ...assetSections,
     ...recordSections,
-    { key: "documents", title: "Documents", layout: "documents" as const, ...kwDocs },
+    { key: "documents", title: "文档", layout: "documents" as const, ...kwDocs },
   ]
   const sections = rankSections(mergeSemantic(keywordSections, bySemantic).filter((s) => s.items.length > 0))
   const total = sections.reduce((n, sec) => n + sec.items.length, 0)

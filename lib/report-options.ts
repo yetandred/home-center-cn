@@ -3,38 +3,38 @@
 // render. Pure and client-safe: the sidebar and the page share it.
 
 export const OBS_RANGES = [
-  { value: "off", label: "Off" },
-  { value: "30", label: "30 days" },
-  { value: "90", label: "90 days" },
-  { value: "365", label: "12 months" },
-  { value: "730", label: "2 years" },
-  { value: "1095", label: "3 years" },
-  { value: "1825", label: "5 years" },
-  { value: "all", label: "All time" },
+  { value: "off", label: "关闭" },
+  { value: "30", label: "30 天" },
+  { value: "90", label: "90 天" },
+  { value: "365", label: "12 个月" },
+  { value: "730", label: "2 年" },
+  { value: "1095", label: "3 年" },
+  { value: "1825", label: "5 年" },
+  { value: "all", label: "全部时间" },
 ] as const
 export const HISTORY_RANGES = [
-  { value: "30", label: "30 days" },
-  { value: "90", label: "90 days" },
-  { value: "365", label: "12 months" },
-  { value: "730", label: "2 years" },
-  { value: "1095", label: "3 years" },
-  { value: "1825", label: "5 years" },
-  { value: "all", label: "All time" },
+  { value: "30", label: "30 天" },
+  { value: "90", label: "90 天" },
+  { value: "365", label: "12 个月" },
+  { value: "730", label: "2 年" },
+  { value: "1095", label: "3 年" },
+  { value: "1825", label: "5 年" },
+  { value: "all", label: "全部时间" },
 ] as const
 export const MED_NOTES = [
-  { value: "off", label: "No notes" },
-  { value: "last", label: "Latest entry only" },
-  { value: "all", label: "Every entry" },
+  { value: "off", label: "不含备注" },
+  { value: "last", label: "仅最新一条" },
+  { value: "all", label: "全部条目" },
 ] as const
 export const OBS_VIEWS = [
-  { value: "heatmap", label: "Heatmap" },
-  { value: "histogram", label: "Daily severity histogram" },
-  { value: "none", label: "No chart" },
+  { value: "heatmap", label: "热力图" },
+  { value: "histogram", label: "每日严重度直方图" },
+  { value: "none", label: "无图表" },
 ] as const
 export const VISIT_MODES = [
-  { value: "off", label: "Off" },
-  { value: "cost", label: "On, with cost" },
-  { value: "nocost", label: "On, no cost" },
+  { value: "off", label: "关闭" },
+  { value: "cost", label: "包含，含费用" },
+  { value: "nocost", label: "包含，不含费用" },
 ] as const
 
 export type ObsRange = (typeof OBS_RANGES)[number]["value"]
@@ -130,7 +130,7 @@ export const obsDays = (o: ReportOptions): number | "all" | null =>
   o.obs === "off" ? null : o.obs === "all" ? "all" : Number(o.obs)
 
 export const rangeLabel = (days: number | "all") =>
-  days === "all" ? "all time"
-    : days === 365 ? "last 12 months"
-    : days > 365 && days % 365 === 0 ? `last ${days / 365} years`
-    : `last ${days} days`
+  days === "all" ? "全部时间"
+    : days === 365 ? "最近 12 个月"
+    : days > 365 && days % 365 === 0 ? `最近 ${days / 365} 年`
+    : `最近 ${days} 天`

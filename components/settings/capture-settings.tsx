@@ -17,9 +17,9 @@ import type { CaptureParser } from "@/app/generated/prisma/client"
 const ICONS = { OFF: CircleOff, BASIC: ScanText, LLM: Sparkles } satisfies Record<CaptureParser, unknown>
 
 const FILL: Record<FillLevel, { Icon: typeof Check; word: string; className: string }> = {
-  yes: { Icon: Check, word: "filled in", className: "text-primary" },
-  sometimes: { Icon: CircleDashed, word: "sometimes", className: "text-muted-foreground" },
-  no: { Icon: Minus, word: "not filled in", className: "text-muted-foreground/60" },
+  yes: { Icon: Check, word: "已填写", className: "text-primary" },
+  sometimes: { Icon: CircleDashed, word: "有时填写", className: "text-muted-foreground" },
+  no: { Icon: Minus, word: "未填写", className: "text-muted-foreground/60" },
 }
 
 /** Three bars of rising height, lit up to `strength`, like a signal meter. */
@@ -51,7 +51,7 @@ function FillList({ fills }: { fills: CaptureOption["fills"] }) {
             <span>
               {field}
               <span className="sr-only">: {word}</span>
-              {level === "sometimes" && <span className="text-muted-foreground"> (sometimes)</span>}
+              {level === "sometimes" && <span className="text-muted-foreground">（有时）</span>}
             </span>
           </li>
         )
@@ -78,7 +78,7 @@ export function CaptureSettings({ initial, llmReady }: { initial: CaptureParser;
         toast.error(r.error)
         return
       }
-      toast.success(`Receipt reading: ${OPTIONS.find((o) => o.value === next)?.label}.`)
+      toast.success(`收据读取：${OPTIONS.find((o) => o.value === next)?.label}。`)
     })
   }
 
@@ -90,17 +90,16 @@ export function CaptureSettings({ initial, llmReady }: { initial: CaptureParser;
     <Card className="py-5">
       <CardHeader className="px-5">
         <CardTitle className="flex items-center gap-2">
-          Receipt reading
+          收据读取
           {current && <Badge variant={shown === "OFF" ? "outline" : "secondary"}>{current.label}</Badge>}
         </CardTitle>
         <CardDescription>
-          How <Link href="/intake" className="underline underline-offset-2">Intake</Link> fills in the date, total and shop of a
-          receipt you add. Applies to new items; use Re-read on an item to read it again.
+          设置 <Link href="/intake" className="underline underline-offset-2">收件箱</Link> 如何识别并填写收据的日期、总额和商家。仅对新添加的条目生效；如需重新识别已有条目，可使用“重新读取”功能。
         </CardDescription>
       </CardHeader>
       <CardContent className="px-5">
         <fieldset className="grid gap-3 sm:grid-cols-3" aria-busy={pending}>
-          <legend className="sr-only">Receipt reading, from least to most accurate</legend>
+          <legend className="sr-only">收据读取，按准确度由低到高</legend>
           {OPTIONS.map((o) => {
             const unavailable = !captureParserAllowed(o.value, llmReady)
             const chosen = shown === o.value
@@ -131,7 +130,7 @@ export function CaptureSettings({ initial, llmReady }: { initial: CaptureParser;
                   <span className="absolute inset-0 rounded-xl" aria-hidden="true" />
                   <Icon className={cn("h-4 w-4 shrink-0", chosen || (o.best && !unavailable) ? "text-primary" : "text-muted-foreground")} aria-hidden="true" />
                   {o.label}
-                  {o.best && <Badge variant={unavailable ? "outline" : "default"} className="ml-auto">Best</Badge>}
+                  {o.best && <Badge variant={unavailable ? "outline" : "default"} className="ml-auto">推荐</Badge>}
                 </label>
                 <div className={cn("flex flex-col gap-3", unavailable && "opacity-60")}>
                   <StrengthMeter strength={o.strength} chosen={chosen} />
@@ -139,8 +138,8 @@ export function CaptureSettings({ initial, llmReady }: { initial: CaptureParser;
                 </div>
                 {unavailable ? (
                   <p className="relative text-xs text-muted-foreground">
-                    {mode === o.value ? "Chosen, but the assistant's model isn't set up or is off, so Basic runs for now. " : "Needs the assistant's model. "}
-                    <Link href={settingsHref("assistant")} className="font-medium text-primary underline underline-offset-2">Set it up under Assistant</Link>.
+                    {mode === o.value ? "已选择，但 AI 助手模型未设置或未开启，当前暂时按基础模式运行。" : "需要 AI 助手模型。"}
+                    <Link href={settingsHref("assistant")} className="font-medium text-primary underline underline-offset-2">前往“AI 助手”设置</Link>。
                   </p>
                 ) : (
                   <p className="text-xs text-muted-foreground">{o.hint}</p>

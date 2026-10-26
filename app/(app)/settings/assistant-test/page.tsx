@@ -23,18 +23,18 @@ export default async function AssistantTestPage() {
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
           <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
-          Back to Settings
+          返回设置
         </Link>
-        <h1 className="font-heading text-2xl font-semibold">Assistant model test</h1>
+        <h1 className="font-heading text-2xl font-semibold">AI 助手模型测试</h1>
       </div>
 
       {!config.baseUrl ? (
         <p className="text-sm text-muted-foreground">
-          No assistant server is set up yet.{" "}
+          尚未配置 AI 助手服务器。{" "}
           <Link href="/settings?tab=assistant" className="underline hover:text-foreground">
-            Set one up in Settings
-          </Link>{" "}
-          before running tests.
+            请先在设置中配置
+          </Link>
+          {" "}再运行测试。
         </p>
       ) : (
         <ModelTest

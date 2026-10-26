@@ -36,9 +36,9 @@ export default async function IntakePage() {
   return (
     <div className="max-w-4xl space-y-6">
       <div>
-        <h1 className="font-heading text-2xl font-semibold">Intake</h1>
+        <h1 className="font-heading text-2xl font-semibold">收件箱</h1>
         <p className="mt-0.5 text-sm text-muted-foreground">
-          Drop receipts, invoices and manuals here. HomeCenter reads them and suggests where they go. You can also drop files on any page.
+          将收据、发票和说明书拖到这里，HomeCenter 会读取内容并建议归类位置。您也可以把文件拖放到任意页面。
         </p>
       </div>
       <InboxDropZone />

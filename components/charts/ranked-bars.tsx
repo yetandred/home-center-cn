@@ -30,8 +30,8 @@ export type RankedRow = RankedEntry & {
 
 export function RankedBars({
   entries,
-  emptyMessage = "Nothing to show yet.",
-  valueLabel = "Total",
+  emptyMessage = "暂无数据",
+  valueLabel = "合计",
   caption,
   size = "default",
 }: {
@@ -67,8 +67,8 @@ export function RankedBars({
               rows: [
                 { label: valueLabel, value: fmt.money(entry.total) },
                 {
-                  label: entry.count === 1 ? "1 record" : entry.count + " records",
-                  value: fmt.money(entry.count > 0 ? entry.total / entry.count : 0) + " avg",
+                  label: entry.count === 1 ? "1 条记录" : entry.count + " 条记录",
+                  value: fmt.money(entry.count > 0 ? entry.total / entry.count : 0) + " 平均",
                   muted: true,
                 },
               ],
@@ -119,7 +119,7 @@ export function RankedBars({
                   {entry.history && entry.history.length > 1 ? (
                     <Sparkline
                       values={entry.history}
-                      ariaLabel={"Spending history for " + entry.label}
+                      ariaLabel={entry.label + " 的支出历史"}
                       className="h-5 w-16 shrink-0"
                       color="var(--chart-ghost)"
                       showArea={false}
@@ -171,9 +171,9 @@ export function RankedBars({
       <ChartTable
         caption={caption}
         columns={[
-          { key: "label", label: "Name" },
+          { key: "label", label: "名称" },
           { key: "total", label: valueLabel, align: "right" },
-          { key: "count", label: "Records", align: "right" },
+          { key: "count", label: "记录", align: "right" },
         ]}
         rows={entries.map((entry) => ({
           label: entry.depth ? "  " + entry.label : entry.label,

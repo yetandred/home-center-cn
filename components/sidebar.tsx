@@ -17,24 +17,24 @@ import {
 type NavItem = { href: string; label: string; icon: React.ElementType; section?: string }
 
 const navItems: NavItem[] = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/", label: "仪表盘", icon: LayoutDashboard },
   // Only when Intake is placed in the side menu (Settings → Appearance); otherwise it's in the header.
-  { href: "/intake", label: "Intake", icon: Inbox },
-  { href: "/chat", label: "Assistant", icon: Sparkles },
-  { href: "/assets/properties", label: "Properties", icon: Building2, section: "Home" },
-  { href: "/assets/vehicles", label: "Vehicles", icon: Car },
-  { href: "/assets/equipment", label: "Equipment", icon: Refrigerator },
-  { href: "/assets/people", label: "People", icon: HeartPulse, section: "Health" },
-  { href: "/providers", label: "Providers", icon: Stethoscope },
-  { href: "/insurance", label: "Insurance", icon: ShieldPlus },
-  { href: "/records", label: "Records", icon: Wrench, section: "Activity" },
-  { href: "/costs", label: "Costs", icon: PiggyBank },
-  { href: "/warranties", label: "Warranties", icon: ShieldCheck },
-  { href: "/maintenance", label: "Maintenance", icon: Calendar },
-  { href: "/notifications", label: "Notifications", icon: Bell },
+  { href: "/intake", label: "收件箱", icon: Inbox },
+  { href: "/chat", label: "AI 助手", icon: Sparkles },
+  { href: "/assets/properties", label: "房产", icon: Building2, section: "家庭" },
+  { href: "/assets/vehicles", label: "车辆", icon: Car },
+  { href: "/assets/equipment", label: "设备", icon: Refrigerator },
+  { href: "/assets/people", label: "成员", icon: HeartPulse, section: "健康" },
+  { href: "/providers", label: "供应商", icon: Stethoscope },
+  { href: "/insurance", label: "保险", icon: ShieldPlus },
+  { href: "/records", label: "维护记录", icon: Wrench, section: "动态" },
+  { href: "/costs", label: "支出", icon: PiggyBank },
+  { href: "/warranties", label: "保修", icon: ShieldCheck },
+  { href: "/maintenance", label: "维护", icon: Calendar },
+  { href: "/notifications", label: "通知", icon: Bell },
 ]
 
-const bottomItems = [{ href: "/settings", label: "Settings", icon: Settings }]
+const bottomItems = [{ href: "/settings", label: "设置", icon: Settings }]
 
 /**
  * The name beside an icon in the collapsed sidebar: shown at once on hover or
@@ -97,12 +97,12 @@ function NavLink({ href, label, icon: Icon, badge, onClick, collapsed = false }:
       </span>
       <span className={cn(collapsed && "sr-only")}>
         {label}
-        {collapsed && badge ? `, ${countText(badge)} waiting` : ""}
+        {collapsed && badge ? `，${countText(badge)} 条待处理` : ""}
       </span>
       {!collapsed && badge ? (
         <span className="ml-auto inline-flex min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-semibold leading-5 text-primary-foreground tabular-nums">
           {countText(badge)}
-          <span className="sr-only"> waiting</span>
+          <span className="sr-only"> 条待处理</span>
         </span>
       ) : null}
     </Link>
@@ -117,7 +117,7 @@ function SidebarContent({
   onNavClick, showAssistant, showHealth, intakeCount, collapsed = false, onToggle,
 }: NavProps & { onNavClick?: () => void; collapsed?: boolean; onToggle?: () => void }) {
   const ToggleIcon = collapsed ? PanelLeftOpen : PanelLeftClose
-  const toggleLabel = collapsed ? "Expand sidebar" : "Collapse sidebar"
+  const toggleLabel = collapsed ? "展开侧边栏" : "收起侧边栏"
   const toggle = onToggle && (
     <button
       type="button"
@@ -141,7 +141,7 @@ function SidebarContent({
         <span className={cn("font-heading font-semibold tracking-tight", collapsed && "sr-only")}>HomeCenter</span>
         {toggle && (collapsed ? <NavTooltip label={toggleLabel}>{toggle}</NavTooltip> : toggle)}
       </div>
-      <nav aria-label="Main" className="flex flex-1 flex-col gap-1 overflow-y-auto overflow-x-hidden">
+      <nav aria-label="主导航" className="flex flex-1 flex-col gap-1 overflow-y-auto overflow-x-hidden">
         {navItems
           .filter(
             (item) =>
@@ -162,7 +162,7 @@ function SidebarContent({
           </Fragment>
         ))}
       </nav>
-      <nav aria-label="Settings" className="mt-3 flex flex-col gap-1 border-t pt-3">
+      <nav aria-label="设置" className="mt-3 flex flex-col gap-1 border-t pt-3">
         {bottomItems.map((item) => <NavLink key={item.href} {...item} onClick={onNavClick} collapsed={collapsed} />)}
       </nav>
     </div>
@@ -196,7 +196,7 @@ export function MobileSidebarTrigger(props: NavProps) {
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-muted transition-colors md:hidden">
         <Menu className="h-4 w-4" />
-        <span className="sr-only">Menu</span>
+        <span className="sr-only">菜单</span>
       </SheetTrigger>
       <SheetContent side="left" className="w-56 p-0">
         <SidebarContent {...props} onNavClick={() => setOpen(false)} />

@@ -29,7 +29,7 @@ const MANAGED_DIRS = ["properties", "vehicles", "equipment", "people", "service"
 
 const ADMIN_EMAIL = process.env.DEMO_EMAIL ?? "demo@homecenter.local"
 const ADMIN_PASSWORD = process.env.DEMO_PASSWORD ?? "demo1234"
-const ADMIN_NAME = process.env.DEMO_NAME ?? "Alex Rivera"
+const ADMIN_NAME = process.env.DEMO_NAME ?? "李伟"
 
 const args = new Set(process.argv.slice(2))
 const SKIP_PROMPT = args.has("--yes") || args.has("-y")
@@ -65,34 +65,34 @@ async function confirmWipe() {
   }
   const total = Object.values(counts).reduce((a, b) => a + b, 0)
 
-  console.log("\n\x1b[1m\x1b[31m  WARNING — THIS WIPES THE ENTIRE DATABASE\x1b[0m\n")
-  console.log(`  Database:   ${url}`)
-  console.log(`  Uploads:    ${path.resolve(UPLOAD_DIR)}`)
-  console.log("\n  Every row below is deleted and replaced with demo data.")
-  console.log("  All uploaded files are deleted. User accounts are deleted, including yours.\n")
+  console.log("\n\x1b[1m\x1b[31m  警告——此操作将清空整个数据库\x1b[0m\n")
+  console.log(`  数据库：   ${url}`)
+  console.log(`  上传目录： ${path.resolve(UPLOAD_DIR)}`)
+  console.log("\n  下列所有数据都将被删除并替换为演示数据。")
+  console.log("  所有上传的文件都会被删除，用户账户（包括您的）也会被删除。\n")
   for (const [name, n] of Object.entries(counts)) {
     console.log(`    ${name.padEnd(16)} ${String(n).padStart(5)}`)
   }
-  console.log(`    ${"total rows".padEnd(16)} ${String(total).padStart(5)}\n`)
+  console.log(`    ${"总行数".padEnd(16)} ${String(total).padStart(5)}\n`)
 
   if (SKIP_PROMPT) {
-    console.log("  --yes given, continuing without prompting.\n")
+    console.log("  已指定 --yes，跳过确认直接继续。\n")
     return
   }
 
   if (!process.stdin.isTTY) {
-    console.error("  Refusing to wipe: not an interactive terminal. Re-run with --yes if you mean it.\n")
+    console.error("  拒绝清空：当前不是交互式终端。确认无误请加 --yes 重新运行。\n")
     process.exit(1)
   }
 
   const rl = createInterface({ input: process.stdin, output: process.stdout })
   const answer = await new Promise<string>((resolve) =>
-    rl.question("  Type WIPE to continue, anything else to abort: ", resolve)
+    rl.question("  输入 WIPE 继续，输入其他内容则中止：", resolve)
   )
   rl.close()
 
   if (answer.trim() !== "WIPE") {
-    console.log("\n  Aborted. Nothing was changed.\n")
+    console.log("\n  已中止，未做任何更改。\n")
     process.exit(0)
   }
   console.log()
@@ -386,19 +386,19 @@ const PROPERTIES: {
   yearBuilt: number | null; boughtDaysAgo: number; price: number; notes: string; photo: string
 }[] = [
   {
-    name: "Maple Street House", type: "HOUSE", address: "412 Maple St, Springfield, IL 62704",
+    name: "枫叶街住宅", type: "HOUSE", address: "春田市枫叶街 412 号",
     sqFt: 2400, yearBuilt: 1998, boughtDaysAgo: 2540, price: 342000, photo: "single family house exterior",
-    notes: "Primary residence. Roof replaced 2021 (30-yr architectural shingle). Original windows on the north side are due for replacement.",
+    notes: "主要居所。屋顶 2021 年更换（30 年沥青瓦）。北侧原装窗户即将到期需要更换。",
   },
   {
-    name: "Lake Cabin", type: "HOUSE", address: "88 Shoreline Rd, Lake Geneva, WI 53147",
+    name: "湖畔小屋", type: "HOUSE", address: "日内瓦湖岸线路 88 号",
     sqFt: 1150, yearBuilt: 1975, boughtDaysAgo: 1290, price: 268000, photo: "log cabin lake",
-    notes: "Seasonal. Water is shut off and lines blown out every November — see the winterizing reminder.",
+    notes: "季节性居住。每年 11 月关闭水源并吹空水管——见冬季防护提醒。",
   },
   {
-    name: "Cedar Street Rental", type: "TOWNHOUSE", address: "155 Cedar St Unit B, Peoria, IL 61602",
+    name: "雪松街出租屋", type: "TOWNHOUSE", address: "皮奥里亚市雪松街 B 座 155 号",
     sqFt: 1320, yearBuilt: 1962, boughtDaysAgo: 810, price: 158000, photo: "brick townhouse",
-    notes: "Tenant-occupied, lease renews each June. Landlord covers HVAC and appliance repairs.",
+    notes: "已出租，租约每年 6 月续签。HVAC 和家电维修由房东承担。",
   },
 ]
 
@@ -406,52 +406,52 @@ const VEHICLES: {
   name: string; make: string; model: string; year: number; color: string; vin: string
   mileage: number; boughtDaysAgo: number; notes: string; photo: string
 }[] = [
-  { name: "Daily Driver", make: "Toyota", model: "RAV4 XLE", year: 2019, color: "Silver", vin: "JTMRFREV8KJ012845", mileage: 62400, boughtDaysAgo: 1870, notes: "Commuter car. Winter tires stored in the garage rafters.", photo: "Toyota RAV4" },
-  { name: "Commuter", make: "Honda", model: "Civic Sport", year: 2021, color: "Blue", vin: "2HGFE2F52MH512087", mileage: 28900, boughtDaysAgo: 1130, notes: "Still under powertrain warranty.", photo: "Honda Civic" },
-  { name: "Work Truck", make: "Ford", model: "F-150 XLT", year: 2017, color: "White", vin: "1FTEW1EP7HFA24193", mileage: 96300, boughtDaysAgo: 1520, notes: "Tows the boat. Brake controller installed 2022.", photo: "Ford F-150" },
-  { name: "Cabin Car", make: "Subaru", model: "Outback", year: 2014, color: "Green", vin: "4S4BRBCC4E3271108", mileage: 138700, boughtDaysAgo: 980, notes: "Lives at the lake most of the year.", photo: "Subaru Outback" },
-  { name: "Family Van", make: "Honda", model: "Odyssey EX-L", year: 2020, color: "Gray", vin: "5FNRL6H73LB033921", mileage: 51200, boughtDaysAgo: 1420, notes: "Third row removed for hauling.", photo: "Honda Odyssey" },
+  { name: "日常代步车", make: "丰田", model: "RAV4 XLE", year: 2019, color: "银色", vin: "JTMRFREV8KJ012845", mileage: 62400, boughtDaysAgo: 1870, notes: "通勤用车。冬季轮胎存放在车库阁架上。", photo: "Toyota RAV4" },
+  { name: "通勤车", make: "本田", model: "Civic Sport", year: 2021, color: "蓝色", vin: "2HGFE2F52MH512087", mileage: 28900, boughtDaysAgo: 1130, notes: "仍在动力总成保修期内。", photo: "Honda Civic" },
+  { name: "工作皮卡", make: "福特", model: "F-150 XLT", year: 2017, color: "白色", vin: "1FTEW1EP7HFA24193", mileage: 96300, boughtDaysAgo: 1520, notes: "用于拖船。2022 年加装了拖车控制器。", photo: "Ford F-150" },
+  { name: "湖畔车", make: "斯巴鲁", model: "Outback", year: 2014, color: "绿色", vin: "4S4BRBCC4E3271108", mileage: 138700, boughtDaysAgo: 980, notes: "一年中大部分时间停在湖边。", photo: "Subaru Outback" },
+  { name: "家用 MPV", make: "本田", model: "Odyssey EX-L", year: 2020, color: "灰色", vin: "5FNRL6H73LB033921", mileage: 51200, boughtDaysAgo: 1420, notes: "第三排座椅已拆除以便载货。", photo: "Honda Odyssey" },
 ]
 
 const EQUIPMENT: {
   house: number; name: string; category: EquipmentCategory; manufacturer: string; model: string
   location: string; installedDaysAgo: number; price: number | null; photo: string; notes?: string
 }[] = [
-  // ── Maple Street House ──
-  { house: 0, name: "Kitchen Refrigerator", category: "APPLIANCE", manufacturer: "LG", model: "LRFVS3006S", location: "Kitchen", installedDaysAgo: 640, price: 2499, photo: "refrigerator kitchen" },
-  { house: 0, name: "Dishwasher", category: "APPLIANCE", manufacturer: "Bosch", model: "SHPM88Z75N", location: "Kitchen", installedDaysAgo: 1180, price: 1049, photo: "dishwasher" },
-  { house: 0, name: "Gas Range", category: "APPLIANCE", manufacturer: "GE", model: "JGB735SPSS", location: "Kitchen", installedDaysAgo: 1180, price: 899, photo: "gas stove kitchen" },
-  { house: 0, name: "Over-Range Microwave", category: "APPLIANCE", manufacturer: "Panasonic", model: "NN-SN67KS", location: "Kitchen", installedDaysAgo: 420, price: 289, photo: "microwave oven" },
-  { house: 0, name: "Washing Machine", category: "APPLIANCE", manufacturer: "Whirlpool", model: "WFW5620HW", location: "Laundry Room", installedDaysAgo: 1460, price: 799, photo: "washing machine top load" },
-  { house: 0, name: "Clothes Dryer", category: "APPLIANCE", manufacturer: "Whirlpool", model: "WED5620HW", location: "Laundry Room", installedDaysAgo: 1460, price: 749, photo: "clothes dryer" },
-  { house: 0, name: "Gas Furnace", category: "HVAC", manufacturer: "Carrier", model: "59SC5A100", location: "Basement", installedDaysAgo: 2190, price: 4200, photo: "gas furnace", notes: "96% AFUE. Filter is 16x25x4 — takes the thick media filter, not the cheap ones." },
-  { house: 0, name: "Central Air Conditioner", category: "HVAC", manufacturer: "Trane", model: "XR16", location: "Side Yard", installedDaysAgo: 2190, price: 5100, photo: "air conditioner condenser unit" },
-  { house: 0, name: "Whole-House Humidifier", category: "HVAC", manufacturer: "Aprilaire", model: "700M", location: "Basement", installedDaysAgo: 1830, price: 320, photo: "humidifier" },
-  { house: 0, name: "Water Heater", category: "WATER", manufacturer: "Rheem", model: "XE50T10H45U0", location: "Basement", installedDaysAgo: 1290, price: 1450, photo: "water heater tank" },
-  { house: 0, name: "Water Softener", category: "WATER", manufacturer: "Culligan", model: "HE 1.25", location: "Basement", installedDaysAgo: 980, price: 1890, photo: "water softener" },
-  { house: 0, name: "Sump Pump", category: "WATER", manufacturer: "Zoeller", model: "M53", location: "Basement", installedDaysAgo: 730, price: 240, photo: "sump pump", notes: "Battery backup was added at the same time — battery is the part that ages out." },
-  { house: 0, name: "Garage Door Opener", category: "SECURITY", manufacturer: "Chamberlain", model: "B4643T", location: "Garage", installedDaysAgo: 560, price: 329, photo: "garage door opener" },
-  { house: 0, name: "Doorbell Camera", category: "SECURITY", manufacturer: "Ring", model: "Pro 2", location: "Front Porch", installedDaysAgo: 410, price: 249, photo: "video doorbell" },
+  // ── 枫叶街住宅 ──
+  { house: 0, name: "厨房冰箱", category: "APPLIANCE", manufacturer: "LG", model: "LRFVS3006S", location: "厨房", installedDaysAgo: 640, price: 2499, photo: "refrigerator kitchen" },
+  { house: 0, name: "洗碗机", category: "APPLIANCE", manufacturer: "博世", model: "SHPM88Z75N", location: "厨房", installedDaysAgo: 1180, price: 1049, photo: "dishwasher" },
+  { house: 0, name: "燃气灶", category: "APPLIANCE", manufacturer: "GE", model: "JGB735SPSS", location: "厨房", installedDaysAgo: 1180, price: 899, photo: "gas stove kitchen" },
+  { house: 0, name: "灶台上方微波炉", category: "APPLIANCE", manufacturer: "松下", model: "NN-SN67KS", location: "厨房", installedDaysAgo: 420, price: 289, photo: "microwave oven" },
+  { house: 0, name: "洗衣机", category: "APPLIANCE", manufacturer: "惠而浦", model: "WFW5620HW", location: "洗衣房", installedDaysAgo: 1460, price: 799, photo: "washing machine top load" },
+  { house: 0, name: "烘干机", category: "APPLIANCE", manufacturer: "惠而浦", model: "WED5620HW", location: "洗衣房", installedDaysAgo: 1460, price: 749, photo: "clothes dryer" },
+  { house: 0, name: "燃气暖风炉", category: "HVAC", manufacturer: "开利", model: "59SC5A100", location: "地下室", installedDaysAgo: 2190, price: 4200, photo: "gas furnace", notes: "96% AFUE。滤网规格 16x25x4——使用厚型介质滤网，不要用便宜的。" },
+  { house: 0, name: "中央空调", category: "HVAC", manufacturer: "特灵", model: "XR16", location: "侧院", installedDaysAgo: 2190, price: 5100, photo: "air conditioner condenser unit" },
+  { house: 0, name: "全屋加湿器", category: "HVAC", manufacturer: "Aprilaire", model: "700M", location: "地下室", installedDaysAgo: 1830, price: 320, photo: "humidifier" },
+  { house: 0, name: "热水器", category: "WATER", manufacturer: "Rheem", model: "XE50T10H45U0", location: "地下室", installedDaysAgo: 1290, price: 1450, photo: "water heater tank" },
+  { house: 0, name: "软水机", category: "WATER", manufacturer: "康丽根", model: "HE 1.25", location: "地下室", installedDaysAgo: 980, price: 1890, photo: "water softener" },
+  { house: 0, name: "污水泵", category: "WATER", manufacturer: "Zoeller", model: "M53", location: "地下室", installedDaysAgo: 730, price: 240, photo: "sump pump", notes: "电池备份同时加装——电池是易老化的部件。" },
+  { house: 0, name: "车库门开启器", category: "SECURITY", manufacturer: "Chamberlain", model: "B4643T", location: "车库", installedDaysAgo: 560, price: 329, photo: "garage door opener" },
+  { house: 0, name: "门铃摄像头", category: "SECURITY", manufacturer: "Ring", model: "Pro 2", location: "前门廊", installedDaysAgo: 410, price: 249, photo: "video doorbell" },
 
-  // ── Lake Cabin ──
-  { house: 1, name: "Cabin Refrigerator", category: "APPLIANCE", manufacturer: "Frigidaire", model: "FFTR1835VS", location: "Kitchen", installedDaysAgo: 1150, price: 749, photo: "refrigerator" },
-  { house: 1, name: "Propane Range", category: "APPLIANCE", manufacturer: "Unique", model: "UGP-24V", location: "Kitchen", installedDaysAgo: 1150, price: 1299, photo: "propane stove" },
-  { house: 1, name: "Wood Stove", category: "HVAC", manufacturer: "Jøtul", model: "F 602 V2", location: "Living Room", installedDaysAgo: 1290, price: 1850, photo: "wood burning stove", notes: "Chimney needs sweeping every season before first use." },
-  { house: 1, name: "Mini-Split Heat Pump", category: "HVAC", manufacturer: "Mitsubishi", model: "MSZ-FH12NA", location: "Main Room", installedDaysAgo: 870, price: 3400, photo: "ductless mini split air conditioner" },
-  { house: 1, name: "Well Pump", category: "WATER", manufacturer: "Goulds", model: "10GS05", location: "Well House", installedDaysAgo: 1620, price: 1240, photo: "water well pump" },
-  { house: 1, name: "Cabin Water Heater", category: "WATER", manufacturer: "Bradford White", model: "RG240T6N", location: "Utility Closet", installedDaysAgo: 1620, price: 980, photo: "water heater tank" },
-  { house: 1, name: "Dock Lift", category: "OUTDOOR", manufacturer: "ShoreStation", model: "SSV30108", location: "Dock", installedDaysAgo: 1290, price: 6800, photo: "boat lift dock" },
-  { house: 1, name: "Standby Generator", category: "OUTDOOR", manufacturer: "Generac", model: "Guardian 18kW", location: "Side Yard", installedDaysAgo: 690, price: 5600, photo: "standby generator" },
-  { house: 1, name: "Chainsaw", category: "TOOL", manufacturer: "Stihl", model: "MS 271 Farm Boss", location: "Shed", installedDaysAgo: 1450, price: 449, photo: "chainsaw" },
+  // ── 湖畔小屋 ──
+  { house: 1, name: "小屋冰箱", category: "APPLIANCE", manufacturer: "Frigidaire", model: "FFTR1835VS", location: "厨房", installedDaysAgo: 1150, price: 749, photo: "refrigerator" },
+  { house: 1, name: "丙烷灶", category: "APPLIANCE", manufacturer: "Unique", model: "UGP-24V", location: "厨房", installedDaysAgo: 1150, price: 1299, photo: "propane stove" },
+  { house: 1, name: "燃木炉", category: "HVAC", manufacturer: "Jøtul", model: "F 602 V2", location: "客厅", installedDaysAgo: 1290, price: 1850, photo: "wood burning stove", notes: "每个供暖季首次使用前需清扫烟囱。" },
+  { house: 1, name: "迷你分体热泵", category: "HVAC", manufacturer: "三菱", model: "MSZ-FH12NA", location: "主厅", installedDaysAgo: 870, price: 3400, photo: "ductless mini split air conditioner" },
+  { house: 1, name: "井水泵", category: "WATER", manufacturer: "Goulds", model: "10GS05", location: "井房", installedDaysAgo: 1620, price: 1240, photo: "water well pump" },
+  { house: 1, name: "小屋热水器", category: "WATER", manufacturer: "Bradford White", model: "RG240T6N", location: "杂物间", installedDaysAgo: 1620, price: 980, photo: "water heater tank" },
+  { house: 1, name: "码头升降机", category: "OUTDOOR", manufacturer: "ShoreStation", model: "SSV30108", location: "码头", installedDaysAgo: 1290, price: 6800, photo: "boat lift dock" },
+  { house: 1, name: "备用发电机", category: "OUTDOOR", manufacturer: "Generac", model: "Guardian 18kW", location: "侧院", installedDaysAgo: 690, price: 5600, photo: "standby generator" },
+  { house: 1, name: "链锯", category: "TOOL", manufacturer: "斯蒂尔", model: "MS 271 Farm Boss", location: "工具棚", installedDaysAgo: 1450, price: 449, photo: "chainsaw" },
 
-  // ── Cedar Street Rental ──
-  { house: 2, name: "Rental Refrigerator", category: "APPLIANCE", manufacturer: "GE", model: "GTS18GTHWW", location: "Kitchen", installedDaysAgo: 760, price: 699, photo: "refrigerator white" },
-  { house: 2, name: "Rental Range", category: "APPLIANCE", manufacturer: "Hotpoint", model: "RBS360DMWW", location: "Kitchen", installedDaysAgo: 760, price: 549, photo: "electric stove" },
-  { house: 2, name: "Rental Washer", category: "APPLIANCE", manufacturer: "Maytag", model: "MVWC565FW", location: "Basement", installedDaysAgo: 520, price: 679, photo: "washing machine top load" },
-  { house: 2, name: "Rental Dryer", category: "APPLIANCE", manufacturer: "Maytag", model: "MEDC465HW", location: "Basement", installedDaysAgo: 520, price: 629, photo: "clothes dryer laundry room" },
-  { house: 2, name: "Boiler", category: "HVAC", manufacturer: "Weil-McLain", model: "CGa-4-PIDN", location: "Basement", installedDaysAgo: 2920, price: 3900, photo: "boiler heating", notes: "Cast iron, original to the 1990s remodel. Annual service is not optional at this age." },
-  { house: 2, name: "Rental Water Heater", category: "WATER", manufacturer: "A. O. Smith", model: "GCR-40", location: "Basement", installedDaysAgo: 1980, price: 890, photo: "water heater basement" },
-  { house: 2, name: "Smoke & CO Alarms", category: "SECURITY", manufacturer: "First Alert", model: "SC9120B", location: "Hallways", installedDaysAgo: 760, price: 180, photo: "smoke detector" },
+  // ── 雪松街出租屋 ──
+  { house: 2, name: "出租屋冰箱", category: "APPLIANCE", manufacturer: "GE", model: "GTS18GTHWW", location: "厨房", installedDaysAgo: 760, price: 699, photo: "refrigerator white" },
+  { house: 2, name: "出租屋灶具", category: "APPLIANCE", manufacturer: "Hotpoint", model: "RBS360DMWW", location: "厨房", installedDaysAgo: 760, price: 549, photo: "electric stove" },
+  { house: 2, name: "出租屋洗衣机", category: "APPLIANCE", manufacturer: "Maytag", model: "MVWC565FW", location: "地下室", installedDaysAgo: 520, price: 679, photo: "washing machine top load" },
+  { house: 2, name: "出租屋烘干机", category: "APPLIANCE", manufacturer: "Maytag", model: "MEDC465HW", location: "地下室", installedDaysAgo: 520, price: 629, photo: "clothes dryer laundry room" },
+  { house: 2, name: "锅炉", category: "HVAC", manufacturer: "Weil-McLain", model: "CGa-4-PIDN", location: "地下室", installedDaysAgo: 2920, price: 3900, photo: "boiler heating", notes: "铸铁材质，1990 年代改造时的原装设备。这个年头每年保养必不可少。" },
+  { house: 2, name: "出租屋热水器", category: "WATER", manufacturer: "A. O. Smith", model: "GCR-40", location: "地下室", installedDaysAgo: 1980, price: 890, photo: "water heater basement" },
+  { house: 2, name: "烟雾与一氧化碳报警器", category: "SECURITY", manufacturer: "First Alert", model: "SC9120B", location: "走廊", installedDaysAgo: 760, price: 180, photo: "smoke detector" },
 ]
 
 type Ref = { kind: "property" | "vehicle" | "equipment"; index: number }
@@ -464,48 +464,48 @@ const SERVICE: {
   description?: string; mileage?: number; receipt?: string
 }[] = [
   // Recent — these fill the dashboard's "Recent Service" panel
-  { ref: E(6), daysAgo: 4, title: "Annual furnace service", vendor: "Springfield Heating & Air", cost: 189, description: "Cleaned burners, checked heat exchanger, replaced 16x25x4 media filter. Inducer motor showing early bearing noise — flagged for next season.", receipt: "furnace-service-invoice.pdf" },
-  { ref: V(0), daysAgo: 9, title: "Oil change & tire rotation", vendor: "Jiffy Lube", cost: 82.4, mileage: 62180, description: "0W-20 full synthetic. Rear brakes at 5mm." },
-  { ref: E(11), daysAgo: 12, title: "Sump pump backup battery replaced", vendor: "DIY", cost: 164.99, description: "Original battery was five years old and failing the self-test." },
-  { ref: E(0), daysAgo: 18, title: "Ice maker repair", vendor: "Appliance Medics", cost: 245, description: "Replaced water inlet valve. Part under manufacturer warranty, labor billed.", receipt: "icemaker-repair.pdf" },
-  { ref: V(2), daysAgo: 23, title: "Brake pads & rotors — front", vendor: "Midas", cost: 612.35, mileage: 95980, receipt: "brake-invoice.pdf" },
-  { ref: P(0), daysAgo: 27, title: "Gutter cleaning", vendor: "Top Notch Exteriors", cost: 225 },
-  { ref: E(28), daysAgo: 31, title: "Boiler annual inspection", vendor: "Peoria Mechanical", cost: 210, description: "Combustion test passed. Recommended replacing the expansion tank within two years." },
+  { ref: E(6), daysAgo: 4, title: "暖风炉年度保养", vendor: "春田暖通空调", cost: 189, description: "清理燃烧器，检查热交换器，更换 16x25x4 介质滤网。引风机电机有早期轴承异响——已标记到下个供暖季处理。", receipt: "furnace-service-invoice.pdf" },
+  { ref: V(0), daysAgo: 9, title: "换机油与轮胎换位", vendor: "捷飞络", cost: 82.4, mileage: 62180, description: "0W-20 全合成机油。后刹车片剩余 5mm。" },
+  { ref: E(11), daysAgo: 12, title: "更换污水泵备用电池", vendor: "自行处理", cost: 164.99, description: "原电池已用五年，自检不通过。" },
+  { ref: E(0), daysAgo: 18, title: "制冰机维修", vendor: "家电维修通", cost: 245, description: "更换进水阀。配件在制造商保修范围内，人工另计。", receipt: "icemaker-repair.pdf" },
+  { ref: V(2), daysAgo: 23, title: "前刹车片与刹车盘更换", vendor: "美达斯", cost: 612.35, mileage: 95980, receipt: "brake-invoice.pdf" },
+  { ref: P(0), daysAgo: 27, title: "清理排水沟", vendor: "一流外墙服务", cost: 225 },
+  { ref: E(28), daysAgo: 31, title: "锅炉年度检查", vendor: "皮奥里亚机械", cost: 210, description: "燃烧测试通过。建议两年内更换膨胀水箱。" },
 
   // Last few months
-  { ref: V(1), daysAgo: 44, title: "Oil change", vendor: "Honda of Springfield", cost: 74.2, mileage: 27600 },
-  { ref: E(9), daysAgo: 52, title: "Water heater flush", vendor: "DIY", cost: 0, description: "Drained about four gallons of sediment. Anode rod still has life." },
-  { ref: P(1), daysAgo: 61, title: "Dock removal for the season", vendor: "Lakeside Marine", cost: 480 },
-  { ref: E(21), daysAgo: 66, title: "Generator load bank test", vendor: "Generac Authorized Service", cost: 295, receipt: "generator-service.pdf" },
-  { ref: E(16), daysAgo: 74, title: "Chimney sweep & inspection", vendor: "Ashes Chimney Service", cost: 260, description: "Level 1 inspection, no creosote glazing. Cap screen replaced." },
-  { ref: V(4), daysAgo: 88, title: "Transmission fluid service", vendor: "Honda of Springfield", cost: 268.5, mileage: 49900 },
-  { ref: E(4), daysAgo: 96, title: "Washer drain pump replaced", vendor: "Appliance Medics", cost: 318, description: "Sock in the pump housing. Again." },
-  { ref: V(3), daysAgo: 112, title: "Head gasket replacement", vendor: "Lakeside Auto", cost: 2340, mileage: 136400, description: "Known EJ25 issue. Resurfaced heads, new timing belt and water pump while it was apart.", receipt: "head-gasket-invoice.pdf" },
-  { ref: E(7), daysAgo: 128, title: "AC condenser coil cleaning", vendor: "Springfield Heating & Air", cost: 145 },
-  { ref: P(2), daysAgo: 140, title: "Tenant turnover — paint & carpet", vendor: "Cedar Property Services", cost: 2180, receipt: "turnover-invoice.pdf" },
-  { ref: E(10), daysAgo: 155, title: "Softener resin bed replaced", vendor: "Culligan", cost: 640 },
+  { ref: V(1), daysAgo: 44, title: "换机油", vendor: "春田本田", cost: 74.2, mileage: 27600 },
+  { ref: E(9), daysAgo: 52, title: "冲洗热水器", vendor: "自行处理", cost: 0, description: "排出约 15 升沉积物。阳极棒还有余量。" },
+  { ref: P(1), daysAgo: 61, title: "码头季节性拆除", vendor: "湖畔船务", cost: 480 },
+  { ref: E(21), daysAgo: 66, title: "发电机负载测试", vendor: "Generac 授权服务", cost: 295, receipt: "generator-service.pdf" },
+  { ref: E(16), daysAgo: 74, title: "烟囱清扫与检查", vendor: "灰烬烟囱服务", cost: 260, description: "一级检查，无焦油结壁。更换了顶盖防护网。" },
+  { ref: V(4), daysAgo: 88, title: "变速箱油保养", vendor: "春田本田", cost: 268.5, mileage: 49900 },
+  { ref: E(4), daysAgo: 96, title: "更换洗衣机排水泵", vendor: "家电维修通", cost: 318, description: "泵壳里有只袜子。又是。" },
+  { ref: V(3), daysAgo: 112, title: "更换缸垫", vendor: "湖畔汽修", cost: 2340, mileage: 136400, description: "EJ25 发动机的通病。拆解时一并更换了缸盖研磨、正时皮带和水泵。", receipt: "head-gasket-invoice.pdf" },
+  { ref: E(7), daysAgo: 128, title: "空调冷凝器盘管清洗", vendor: "春田暖通空调", cost: 145 },
+  { ref: P(2), daysAgo: 140, title: "租客更替——刷漆铺毯", vendor: "雪松物业服务", cost: 2180, receipt: "turnover-invoice.pdf" },
+  { ref: E(10), daysAgo: 155, title: "更换软水机树脂床", vendor: "康丽根", cost: 640 },
 
   // Older history
-  { ref: V(0), daysAgo: 178, title: "Oil change & cabin filter", vendor: "Jiffy Lube", cost: 96.8, mileage: 57400 },
-  { ref: E(18), daysAgo: 192, title: "Well pump pressure switch", vendor: "Geneva Well & Pump", cost: 385 },
-  { ref: P(0), daysAgo: 205, title: "Driveway sealcoating", vendor: "Blacktop Brothers", cost: 540 },
-  { ref: E(6), daysAgo: 218, title: "Furnace igniter replaced", vendor: "Springfield Heating & Air", cost: 232, description: "No-heat call on the coldest night of the year, naturally." },
-  { ref: V(2), daysAgo: 236, title: "Oil change", vendor: "Quick Lane", cost: 89.95, mileage: 91200 },
-  { ref: E(24), daysAgo: 250, title: "Rental range element replaced", vendor: "Cedar Property Services", cost: 145 },
-  { ref: V(1), daysAgo: 268, title: "Tires — set of four", vendor: "Discount Tire", cost: 812.6, mileage: 24100, receipt: "tire-invoice.pdf" },
-  { ref: E(17), daysAgo: 288, title: "Mini-split deep clean", vendor: "Northwoods HVAC", cost: 340, description: "Blower wheel was fully loaded with mold. Big improvement in airflow." },
-  { ref: P(1), daysAgo: 310, title: "Winterizing — water lines blown out", vendor: "Geneva Well & Pump", cost: 195 },
-  { ref: E(2), daysAgo: 340, title: "Range igniter replaced", vendor: "DIY", cost: 42.5 },
-  { ref: V(4), daysAgo: 366, title: "Oil change & alignment", vendor: "Honda of Springfield", cost: 214.3, mileage: 44800 },
-  { ref: E(29), daysAgo: 392, title: "Water heater T&P valve replaced", vendor: "Peoria Mechanical", cost: 165 },
-  { ref: P(0), daysAgo: 430, title: "Tree removal — dead ash", vendor: "Arbor Care", cost: 1450, receipt: "tree-removal.pdf" },
-  { ref: V(3), daysAgo: 468, title: "Oil change", vendor: "Lakeside Auto", cost: 78.5, mileage: 131900 },
-  { ref: E(12), daysAgo: 505, title: "Garage door spring replacement", vendor: "Overhead Door Co.", cost: 289 },
-  { ref: E(1), daysAgo: 548, title: "Dishwasher not draining", vendor: "Appliance Medics", cost: 198, description: "Check valve replaced." },
-  { ref: V(0), daysAgo: 590, title: "Brake fluid flush", vendor: "Toyota of Springfield", cost: 149, mileage: 51200 },
-  { ref: P(2), daysAgo: 640, title: "Roof repair — wind damage", vendor: "Peoria Roofing", cost: 1875, receipt: "roof-repair.pdf" },
-  { ref: E(20), daysAgo: 700, title: "Dock lift motor rebuild", vendor: "Lakeside Marine", cost: 720 },
-  { ref: E(26), daysAgo: 760, title: "Rental washer installed", vendor: "Cedar Property Services", cost: 0, description: "Replaced the previous unit after the tenant reported leaking." },
+  { ref: V(0), daysAgo: 178, title: "换机油与空调滤芯", vendor: "捷飞络", cost: 96.8, mileage: 57400 },
+  { ref: E(18), daysAgo: 192, title: "井水泵压力开关", vendor: "日内瓦井泵服务", cost: 385 },
+  { ref: P(0), daysAgo: 205, title: "车道密封涂层", vendor: "黑顶兄弟", cost: 540 },
+  { ref: E(6), daysAgo: 218, title: "更换暖风炉点火器", vendor: "春田暖通空调", cost: 232, description: "一年中最冷的晚上没了暖气——意料之中。" },
+  { ref: V(2), daysAgo: 236, title: "换机油", vendor: "快车道养护", cost: 89.95, mileage: 91200 },
+  { ref: E(24), daysAgo: 250, title: "更换出租屋灶具加热盘", vendor: "雪松物业服务", cost: 145 },
+  { ref: V(1), daysAgo: 268, title: "更换四条轮胎", vendor: "折扣轮胎", cost: 812.6, mileage: 24100, receipt: "tire-invoice.pdf" },
+  { ref: E(17), daysAgo: 288, title: "迷你分体深度清洗", vendor: "北林暖通", cost: 340, description: "风轮上积满了霉菌。风量明显改善。" },
+  { ref: P(1), daysAgo: 310, title: "冬季防护——吹空水管", vendor: "日内瓦井泵服务", cost: 195 },
+  { ref: E(2), daysAgo: 340, title: "更换灶具点火器", vendor: "自行处理", cost: 42.5 },
+  { ref: V(4), daysAgo: 366, title: "换机油与四轮定位", vendor: "春田本田", cost: 214.3, mileage: 44800 },
+  { ref: E(29), daysAgo: 392, title: "更换热水器安全阀", vendor: "皮奥里亚机械", cost: 165 },
+  { ref: P(0), daysAgo: 430, title: "移除枯死白蜡树", vendor: "树木养护", cost: 1450, receipt: "tree-removal.pdf" },
+  { ref: V(3), daysAgo: 468, title: "换机油", vendor: "湖畔汽修", cost: 78.5, mileage: 131900 },
+  { ref: E(12), daysAgo: 505, title: "更换车库门弹簧", vendor: "顶棚门业", cost: 289 },
+  { ref: E(1), daysAgo: 548, title: "洗碗机不排水", vendor: "家电维修通", cost: 198, description: "更换了止回阀。" },
+  { ref: V(0), daysAgo: 590, title: "更换刹车油", vendor: "春田丰田", cost: 149, mileage: 51200 },
+  { ref: P(2), daysAgo: 640, title: "屋顶维修——风灾损坏", vendor: "皮奥里亚屋顶工程", cost: 1875, receipt: "roof-repair.pdf" },
+  { ref: E(20), daysAgo: 700, title: "码头升降机电机大修", vendor: "湖畔船务", cost: 720 },
+  { ref: E(26), daysAgo: 760, title: "安装出租屋洗衣机", vendor: "雪松物业服务", cost: 0, description: "租客反映漏水后更换了原机。" },
 ]
 
 const WARRANTIES: {
@@ -513,26 +513,26 @@ const WARRANTIES: {
   boughtDaysAgo: number; expiresInDays: number | null; notes?: string; receipt?: string
 }[] = [
   // Expired
-  { ref: E(3), productName: "Microwave — 1 year limited", vendor: "Panasonic", boughtDaysAgo: 420, expiresInDays: -55, phone: "800-211-7262" },
-  { ref: E(13), productName: "Doorbell camera — 1 year", vendor: "Ring", boughtDaysAgo: 410, expiresInDays: -45, email: "support@ring.com" },
-  { ref: V(3), productName: "Powertrain — 5 yr / 60k", vendor: "Subaru of America", boughtDaysAgo: 980, expiresInDays: -190 },
+  { ref: E(3), productName: "微波炉——1 年有限保修", vendor: "松下", boughtDaysAgo: 420, expiresInDays: -55, phone: "800-211-7262" },
+  { ref: E(13), productName: "门铃摄像头——1 年", vendor: "Ring", boughtDaysAgo: 410, expiresInDays: -45, email: "support@ring.com" },
+  { ref: V(3), productName: "动力总成——5 年 / 6 万公里", vendor: "斯巴鲁（美国）", boughtDaysAgo: 980, expiresInDays: -190 },
 
   // Expiring soon — these drive the dashboard panel
-  { ref: E(0), productName: "Refrigerator — sealed system", vendor: "LG Electronics", boughtDaysAgo: 640, expiresInDays: 18, phone: "800-243-0000", notes: "Sealed system only. Compressor is covered 10 years, everything else has run out.", receipt: "lg-warranty.pdf" },
-  { ref: E(21), productName: "Standby generator — 5 yr limited", vendor: "Generac", boughtDaysAgo: 690, expiresInDays: 34, phone: "888-436-3722" },
-  { ref: E(12), productName: "Garage door opener — parts", vendor: "Chamberlain", boughtDaysAgo: 560, expiresInDays: 52 },
+  { ref: E(0), productName: "冰箱——密封系统", vendor: "LG 电子", boughtDaysAgo: 640, expiresInDays: 18, phone: "800-243-0000", notes: "仅限密封系统。压缩机保修 10 年，其余部件已过期。", receipt: "lg-warranty.pdf" },
+  { ref: E(21), productName: "备用发电机——5 年有限保修", vendor: "Generac", boughtDaysAgo: 690, expiresInDays: 34, phone: "888-436-3722" },
+  { ref: E(12), productName: "车库门开启器——仅零件", vendor: "Chamberlain", boughtDaysAgo: 560, expiresInDays: 52 },
 
   // Comfortably active
-  { ref: E(9), productName: "Water heater tank — 6 year", vendor: "Rheem", boughtDaysAgo: 1290, expiresInDays: 900, phone: "800-621-5622", receipt: "rheem-warranty.pdf" },
-  { ref: E(6), productName: "Furnace heat exchanger — 20 year", vendor: "Carrier", boughtDaysAgo: 2190, expiresInDays: 5110, notes: "Registered within 90 days, which is what kept the 20-year term." },
-  { ref: E(7), productName: "AC compressor — 10 year", vendor: "Trane", boughtDaysAgo: 2190, expiresInDays: 1460 },
-  { ref: E(17), productName: "Mini-split — 12 yr compressor", vendor: "Mitsubishi Electric", boughtDaysAgo: 870, expiresInDays: 3510 },
-  { ref: E(10), productName: "Water softener — 5 yr parts", vendor: "Culligan", boughtDaysAgo: 980, expiresInDays: 845 },
-  { ref: V(1), productName: "Powertrain — 5 yr / 60k", vendor: "American Honda", boughtDaysAgo: 1130, expiresInDays: 695 },
-  { ref: V(4), productName: "Powertrain — 5 yr / 60k", vendor: "American Honda", boughtDaysAgo: 1420, expiresInDays: 405 },
-  { ref: E(20), productName: "Dock lift — structural", vendor: "ShoreStation", boughtDaysAgo: 1290, expiresInDays: 1360 },
-  { ref: P(0), productName: "Roof — 30 yr architectural shingle", vendor: "GAF / Top Notch Exteriors", boughtDaysAgo: 1620, expiresInDays: 9330, receipt: "gaf-roof-warranty.pdf" },
-  { ref: E(24), productName: "Rental range — 1 yr parts & labor", vendor: "Hotpoint", boughtDaysAgo: 760, expiresInDays: null, notes: "Paperwork never came back from the installer — treat as uncovered." },
+  { ref: E(9), productName: "热水器内胆——6 年", vendor: "Rheem", boughtDaysAgo: 1290, expiresInDays: 900, phone: "800-621-5622", receipt: "rheem-warranty.pdf" },
+  { ref: E(6), productName: "暖风炉热交换器——20 年", vendor: "开利", boughtDaysAgo: 2190, expiresInDays: 5110, notes: "90 天内完成了注册，20 年保修期因此得以保留。" },
+  { ref: E(7), productName: "空调压缩机——10 年", vendor: "特灵", boughtDaysAgo: 2190, expiresInDays: 1460 },
+  { ref: E(17), productName: "迷你分体——12 年压缩机", vendor: "三菱电机", boughtDaysAgo: 870, expiresInDays: 3510 },
+  { ref: E(10), productName: "软水机——5 年零件", vendor: "康丽根", boughtDaysAgo: 980, expiresInDays: 845 },
+  { ref: V(1), productName: "动力总成——5 年 / 6 万公里", vendor: "美国本田", boughtDaysAgo: 1130, expiresInDays: 695 },
+  { ref: V(4), productName: "动力总成——5 年 / 6 万公里", vendor: "美国本田", boughtDaysAgo: 1420, expiresInDays: 405 },
+  { ref: E(20), productName: "码头升降机——结构保修", vendor: "ShoreStation", boughtDaysAgo: 1290, expiresInDays: 1360 },
+  { ref: P(0), productName: "屋顶——30 年沥青瓦", vendor: "GAF / 一流外墙服务", boughtDaysAgo: 1620, expiresInDays: 9330, receipt: "gaf-roof-warranty.pdf" },
+  { ref: E(24), productName: "出租屋灶具——1 年零件与人工", vendor: "Hotpoint", boughtDaysAgo: 760, expiresInDays: null, notes: "安装商的保修文件一直没寄回来——按无保修处理。" },
 ]
 
 const MAINTENANCE: {
@@ -540,34 +540,34 @@ const MAINTENANCE: {
   intervalMiles?: number; dueInMiles?: number; reminderDaysBefore?: number
 }[] = [
   // Overdue
-  { ref: E(8), title: "Replace humidifier water panel", description: "Aprilaire #35 panel. Takes ten minutes.", intervalDays: 365, dueInDays: -21 },
-  { ref: E(23), title: "Rental smoke alarm battery check", intervalDays: 182, dueInDays: -9, reminderDaysBefore: 14 },
-  { ref: V(2), title: "Oil change", intervalDays: 180, dueInDays: -4, intervalMiles: 7500, dueInMiles: 500 },
+  { ref: E(8), title: "更换加湿器水膜", description: "Aprilaire #35 水膜。十分钟搞定。", intervalDays: 365, dueInDays: -21 },
+  { ref: E(23), title: "出租屋烟雾报警器电池检查", intervalDays: 182, dueInDays: -9, reminderDaysBefore: 14 },
+  { ref: V(2), title: "换机油", intervalDays: 180, dueInDays: -4, intervalMiles: 7500, dueInMiles: 500 },
 
   // Due soon
-  { ref: E(6), title: "Replace furnace filter", description: "16x25x4 media filter — the thick one.", intervalDays: 90, dueInDays: 6, reminderDaysBefore: 14 },
-  { ref: E(11), title: "Test sump pump", description: "Pour a bucket into the pit and confirm it kicks on.", intervalDays: 90, dueInDays: 11 },
-  { ref: P(1), title: "Winterize cabin — blow out water lines", description: "Before first hard freeze. Geneva Well & Pump does it, book two weeks ahead.", intervalDays: 365, dueInDays: 19, reminderDaysBefore: 30 },
-  { ref: E(16), title: "Chimney sweep", intervalDays: 365, dueInDays: 24, reminderDaysBefore: 30 },
-  { ref: V(0), title: "Oil change", intervalDays: 180, dueInDays: 27, intervalMiles: 7500, dueInMiles: 4900 },
+  { ref: E(6), title: "更换暖风炉滤网", description: "16x25x4 介质滤网——厚的那种。", intervalDays: 90, dueInDays: 6, reminderDaysBefore: 14 },
+  { ref: E(11), title: "测试污水泵", description: "往集水坑倒一桶水，确认泵能自动启动。", intervalDays: 90, dueInDays: 11 },
+  { ref: P(1), title: "小屋冬季防护——吹空水管", description: "首次强冻前完成。日内瓦井泵服务承接，需提前两周预约。", intervalDays: 365, dueInDays: 19, reminderDaysBefore: 30 },
+  { ref: E(16), title: "烟囱清扫", intervalDays: 365, dueInDays: 24, reminderDaysBefore: 30 },
+  { ref: V(0), title: "换机油", intervalDays: 180, dueInDays: 27, intervalMiles: 7500, dueInMiles: 4900 },
 
   // Comfortably ahead
-  { ref: E(10), title: "Refill softener salt", intervalDays: 60, dueInDays: 38 },
-  { ref: E(9), title: "Flush water heater", intervalDays: 365, dueInDays: 52 },
-  { ref: P(0), title: "Clean gutters", description: "Twice a year — spring and after the leaves drop.", intervalDays: 182, dueInDays: 61 },
-  { ref: E(21), title: "Generator oil & filter", intervalDays: 365, dueInDays: 74, reminderDaysBefore: 21 },
-  { ref: E(7), title: "AC service before summer", intervalDays: 365, dueInDays: 96 },
-  { ref: V(1), title: "Oil change", intervalDays: 180, dueInDays: 104, intervalMiles: 7500, dueInMiles: 6100 },
-  { ref: E(28), title: "Boiler annual service", description: "Non-negotiable at this age.", intervalDays: 365, dueInDays: 118, reminderDaysBefore: 30 },
-  { ref: E(18), title: "Well water test", description: "Coliform and nitrate panel.", intervalDays: 365, dueInDays: 132 },
-  { ref: P(2), title: "HVAC filter — rental", intervalDays: 90, dueInDays: 41 },
-  { ref: E(5), title: "Clean dryer vent duct", description: "Full duct to the exterior hood, not just the lint trap.", intervalDays: 365, dueInDays: 147 },
-  { ref: V(4), title: "Tire rotation", intervalDays: 180, dueInDays: 158, intervalMiles: 7500, dueInMiles: 5200 },
-  { ref: E(19), title: "Cabin water heater anode check", intervalDays: 730, dueInDays: 186 },
-  { ref: E(20), title: "Dock lift cable inspection", intervalDays: 365, dueInDays: 205 },
-  { ref: E(22), title: "Sharpen chainsaw chain", intervalDays: 180, dueInDays: 74 },
-  { ref: V(3), title: "Timing belt — 105k interval", intervalDays: null, dueInDays: null, intervalMiles: 105000, dueInMiles: 3200 },
-  { ref: E(1), title: "Clean dishwasher filter", intervalDays: 90, dueInDays: 33 },
+  { ref: E(10), title: "补充软水机盐", intervalDays: 60, dueInDays: 38 },
+  { ref: E(9), title: "冲洗热水器", intervalDays: 365, dueInDays: 52 },
+  { ref: P(0), title: "清理排水沟", description: "一年两次——春季和落叶之后。", intervalDays: 182, dueInDays: 61 },
+  { ref: E(21), title: "发电机机油与滤芯", intervalDays: 365, dueInDays: 74, reminderDaysBefore: 21 },
+  { ref: E(7), title: "入夏前空调保养", intervalDays: 365, dueInDays: 96 },
+  { ref: V(1), title: "换机油", intervalDays: 180, dueInDays: 104, intervalMiles: 7500, dueInMiles: 6100 },
+  { ref: E(28), title: "锅炉年度保养", description: "这个年头没得商量。", intervalDays: 365, dueInDays: 118, reminderDaysBefore: 30 },
+  { ref: E(18), title: "井水水质检测", description: "大肠杆菌和硝酸盐检测。", intervalDays: 365, dueInDays: 132 },
+  { ref: P(2), title: "HVAC 滤网——出租屋", intervalDays: 90, dueInDays: 41 },
+  { ref: E(5), title: "清理烘干机通风管道", description: "从机体一直通到室外风口，不只是清理绒毛网。", intervalDays: 365, dueInDays: 147 },
+  { ref: V(4), title: "轮胎换位", intervalDays: 180, dueInDays: 158, intervalMiles: 7500, dueInMiles: 5200 },
+  { ref: E(19), title: "小屋热水器阳极棒检查", intervalDays: 730, dueInDays: 186 },
+  { ref: E(20), title: "码头升降机钢缆检查", intervalDays: 365, dueInDays: 205 },
+  { ref: E(22), title: "打磨链锯链条", intervalDays: 180, dueInDays: 74 },
+  { ref: V(3), title: "正时皮带——10.5 万公里周期", intervalDays: null, dueInDays: null, intervalMiles: 105000, dueInMiles: 3200 },
+  { ref: E(1), title: "清洗洗碗机滤网", intervalDays: 90, dueInDays: 33 },
 ]
 
 // ─── People ──────────────────────────────────────────────────────────────────
@@ -584,35 +584,35 @@ type VisitSeed = {
 }
 
 async function seedPeople(userId: string) {
-  const drChen = await prisma.provider.create({ data: { name: "Dr. Maria Chen", specialty: "Family medicine", practice: "Riverside Family Health", phone: "555-201-4410" } })
-  const drPatel = await prisma.provider.create({ data: { name: "Dr. Anil Patel", specialty: "Dentistry", practice: "Bright Smile Dental", phone: "555-201-8832" } })
-  const drOkafor = await prisma.provider.create({ data: { name: "Dr. Grace Okafor", specialty: "Pediatrics", practice: "Riverside Family Health", phone: "555-201-4411" } })
+  const drChen = await prisma.provider.create({ data: { name: "陈玛丽 医生", specialty: "全科医学", practice: "河畔家庭医疗", phone: "555-201-4410" } })
+  const drPatel = await prisma.provider.create({ data: { name: "帕特尔 医生", specialty: "口腔科", practice: "明洁口腔", phone: "555-201-8832" } })
+  const drOkafor = await prisma.provider.create({ data: { name: "奥卡佛 医生", specialty: "儿科", practice: "河畔家庭医疗", phone: "555-201-4411" } })
 
   const adult = await prisma.person.create({ data: { name: ADMIN_NAME, relationship: "SELF", dateOfBirth: new Date("1984-03-12"), bloodType: "O+", primaryProviderId: drChen.id } })
-  const child = await prisma.person.create({ data: { name: "Sam Rivera", relationship: "CHILD", dateOfBirth: new Date("2016-08-30"), primaryProviderId: drOkafor.id } })
+  const child = await prisma.person.create({ data: { name: "李小雨", relationship: "CHILD", dateOfBirth: new Date("2016-08-30"), primaryProviderId: drOkafor.id } })
 
-  const hypertension = await prisma.healthCondition.create({ data: { personId: adult.id, name: "Hypertension", status: "MANAGED", diagnosedDate: at(-900), providerId: drChen.id } })
-  await prisma.healthCondition.create({ data: { personId: child.id, name: "Seasonal asthma", status: "ACTIVE", diagnosedDate: at(-500), providerId: drOkafor.id } })
+  const hypertension = await prisma.healthCondition.create({ data: { personId: adult.id, name: "高血压", status: "MANAGED", diagnosedDate: at(-900), providerId: drChen.id } })
+  await prisma.healthCondition.create({ data: { personId: child.id, name: "季节性哮喘", status: "ACTIVE", diagnosedDate: at(-500), providerId: drOkafor.id } })
 
-  await prisma.medication.create({ data: { personId: adult.id, name: "Lisinopril", dosage: "10 mg", frequency: "Once daily", prescriberId: drChen.id, conditionId: hypertension.id, startDate: at(-890), refillIntervalDays: 30, nextRefillDate: at(4), pharmacy: "Walgreens on Main" } })
-  await prisma.medication.create({ data: { personId: child.id, name: "Amoxicillin", dosage: "250 mg", frequency: "Three times daily", prescriberId: drOkafor.id, startDate: at(-200), endDate: at(-190) } })
+  await prisma.medication.create({ data: { personId: adult.id, name: "赖诺普利", dosage: "10 mg", frequency: "每日一次", prescriberId: drChen.id, conditionId: hypertension.id, startDate: at(-890), refillIntervalDays: 30, nextRefillDate: at(4), pharmacy: "主街沃尔格林药房" } })
+  await prisma.medication.create({ data: { personId: child.id, name: "阿莫西林", dosage: "250 mg", frequency: "每日三次", prescriberId: drOkafor.id, startDate: at(-200), endDate: at(-190) } })
 
-  await prisma.allergy.create({ data: { personId: child.id, substance: "Penicillin", severity: "SEVERE", reaction: "Hives, facial swelling" } })
-  await prisma.allergy.create({ data: { personId: adult.id, substance: "Pollen", severity: "MILD", reaction: "Sneezing" } })
+  await prisma.allergy.create({ data: { personId: child.id, substance: "青霉素", severity: "SEVERE", reaction: "荨麻疹、面部肿胀" } })
+  await prisma.allergy.create({ data: { personId: adult.id, substance: "花粉", severity: "MILD", reaction: "打喷嚏" } })
 
-  await prisma.immunization.create({ data: { personId: adult.id, vaccine: "Tdap", dateGiven: at(-3400), nextDueDate: at(250) } })
-  await prisma.immunization.create({ data: { personId: child.id, vaccine: "Influenza", dateGiven: at(-340), nextDueDate: at(20) } })
+  await prisma.immunization.create({ data: { personId: adult.id, vaccine: "百白破（Tdap）", dateGiven: at(-3400), nextDueDate: at(250) } })
+  await prisma.immunization.create({ data: { personId: child.id, vaccine: "流感疫苗", dateGiven: at(-340), nextDueDate: at(20) } })
 
   const both = { connect: [{ id: adult.id }, { id: child.id }] }
-  await prisma.insurancePolicy.create({ data: { carrier: "Blue Cross", planName: "PPO Family", kind: "MEDICAL", memberId: "XJH448201", groupNumber: "77120", phone: "800-555-0199", startDate: at(-600), endDate: at(45), deductible: 3000, outOfPocketMax: 8000, members: both } })
-  await prisma.insurancePolicy.create({ data: { carrier: "Delta Dental", kind: "DENTAL", memberId: "DD-5521", startDate: at(-600), members: both } })
+  await prisma.insurancePolicy.create({ data: { carrier: "蓝十字", planName: "PPO 家庭计划", kind: "MEDICAL", memberId: "XJH448201", groupNumber: "77120", phone: "800-555-0199", startDate: at(-600), endDate: at(45), deductible: 3000, outOfPocketMax: 8000, members: both } })
+  await prisma.insurancePolicy.create({ data: { carrier: "Delta 牙科", kind: "DENTAL", memberId: "DD-5521", startDate: at(-600), members: both } })
 
   const visits: VisitSeed[] = [
-    { personId: adult.id, providerId: drChen.id, conditionId: hypertension.id, vendor: drChen.name, days: -60, title: "Blood pressure follow-up", category: "OFFICE_VISIT", cost: 45 },
-    { personId: adult.id, providerId: drChen.id, conditionId: null, vendor: drChen.name, days: -200, title: "Annual physical", category: "OFFICE_VISIT", cost: 0 },
-    { personId: adult.id, providerId: drPatel.id, conditionId: null, vendor: drPatel.name, days: -120, title: "Dental cleaning", category: "DENTAL", cost: 85 },
-    { personId: child.id, providerId: drOkafor.id, conditionId: null, vendor: drOkafor.name, days: -195, title: "Ear infection", category: "OFFICE_VISIT", cost: 35 },
-    { personId: child.id, providerId: null, conditionId: null, vendor: "Walgreens on Main", days: -194, title: "Amoxicillin prescription", category: "PRESCRIPTION", cost: 12.5 },
+    { personId: adult.id, providerId: drChen.id, conditionId: hypertension.id, vendor: drChen.name, days: -60, title: "血压复诊", category: "OFFICE_VISIT", cost: 45 },
+    { personId: adult.id, providerId: drChen.id, conditionId: null, vendor: drChen.name, days: -200, title: "年度体检", category: "OFFICE_VISIT", cost: 0 },
+    { personId: adult.id, providerId: drPatel.id, conditionId: null, vendor: drPatel.name, days: -120, title: "洗牙", category: "DENTAL", cost: 85 },
+    { personId: child.id, providerId: drOkafor.id, conditionId: null, vendor: drOkafor.name, days: -195, title: "耳部感染", category: "OFFICE_VISIT", cost: 35 },
+    { personId: child.id, providerId: null, conditionId: null, vendor: "主街沃尔格林药房", days: -194, title: "阿莫西林处方", category: "PRESCRIPTION", cost: 12.5 },
   ]
   for (const v of visits) {
     const record = await prisma.serviceRecord.create({
@@ -624,8 +624,8 @@ async function seedPeople(userId: string) {
     await attach("SERVICE", record.id, userId, `${v.title}.pdf`, [v.title, v.vendor, `Amount due: $${v.cost.toFixed(2)}`])
   }
 
-  await prisma.maintenanceSchedule.create({ data: { assetType: "PERSON", assetId: adult.id, title: "Annual physical", intervalDays: 365, nextDueDate: at(165) } })
-  await prisma.maintenanceSchedule.create({ data: { assetType: "PERSON", assetId: child.id, title: "Dental cleaning", intervalDays: 180, nextDueDate: at(10) } })
+  await prisma.maintenanceSchedule.create({ data: { assetType: "PERSON", assetId: adult.id, title: "年度体检", intervalDays: 365, nextDueDate: at(165) } })
+  await prisma.maintenanceSchedule.create({ data: { assetType: "PERSON", assetId: child.id, title: "洗牙", intervalDays: 180, nextDueDate: at(10) } })
 }
 
 // ─── Seed ────────────────────────────────────────────────────────────────────
@@ -633,7 +633,7 @@ async function seedPeople(userId: string) {
 async function main() {
   await confirmWipe()
 
-  console.log("  Wiping…")
+  console.log("  正在清空数据库…")
   await wipe()
 
   const passwordHash = await bcrypt.hash(ADMIN_PASSWORD, 12)
@@ -641,7 +641,7 @@ async function main() {
     data: { name: ADMIN_NAME, email: ADMIN_EMAIL, passwordHash, role: "ADMIN", mustResetPassword: false },
   })
 
-  console.log("  Creating assets…")
+  console.log("  正在创建资产…")
   const properties: { id: string }[] = []
   for (const p of PROPERTIES) {
     properties.push(
@@ -688,7 +688,7 @@ async function main() {
         ? { assetId: vehicles[ref.index].id, assetType: "VEHICLE" as const }
         : { assetId: equipment[ref.index].id, assetType: "EQUIPMENT" as const }
 
-  console.log("  Creating history…")
+  console.log("  正在创建历史记录…")
   for (const s of SERVICE) {
     const record = await prisma.serviceRecord.create({
       data: {
@@ -755,14 +755,14 @@ async function main() {
     })
   }
 
-  console.log(SKIP_IMAGES ? "  Generating placeholder images…" : "  Downloading photos…")
+  console.log(SKIP_IMAGES ? "  正在生成占位图片…" : "  正在下载照片…")
   const categoryFallback: Record<EquipmentCategory, string> = {
     APPLIANCE: "home appliance", HVAC: "heating ventilation air conditioning", WATER: "plumbing",
     ELECTRONICS: "consumer electronics", TOOL: "power tool", OUTDOOR: "garden equipment",
     SECURITY: "home security", OTHER: "hardware",
   }
 
-  console.log("  Creating people…")
+  console.log("  正在创建成员…")
   await seedPeople(user.id)
 
   const jobs: PhotoJob[] = [
@@ -784,19 +784,19 @@ async function main() {
   const expired = await prisma.warranty.count({ where: { expirationDate: { lt: new Date() } } })
 
   console.log(`
-  \x1b[32mDone.\x1b[0m
+  \x1b[32m完成。\x1b[0m
 
-    ${properties.length} properties, ${vehicles.length} vehicles, ${equipment.length} equipment
-    ${SERVICE.length} service records, ${WARRANTIES.length} warranties, ${MAINTENANCE.length} reminders
-    ${await prisma.attachment.count()} attachments
-    ${await prisma.person.count()} people, ${await prisma.provider.count()} providers, ${await prisma.insurancePolicy.count()} insurance policies
-    photos: ${cached} cached, ${downloaded} fetched, ${generated} generated
+    房产 ${properties.length} 处、车辆 ${vehicles.length} 辆、设备 ${equipment.length} 台
+    维护记录 ${SERVICE.length} 条、保修 ${WARRANTIES.length} 条、提醒 ${MAINTENANCE.length} 条
+    附件 ${await prisma.attachment.count()} 个
+    成员 ${await prisma.person.count()} 位、医生 ${await prisma.provider.count()} 位、保单 ${await prisma.insurancePolicy.count()} 份
+    照片：缓存 ${cached}、下载 ${downloaded}、生成 ${generated}
 
-  Timeline (relative to today):
-    ${overdue} maintenance overdue, ${dueSoon} due within 30 days
-    ${expired} warranties expired, ${expiring} expiring within 60 days
+  时间线（相对今天）：
+    维护已逾期 ${overdue} 条、30 天内到期 ${dueSoon} 条
+    保修已过期 ${expired} 条、60 天内到期 ${expiring} 条
 
-  Sign in:  ${ADMIN_EMAIL}  /  ${ADMIN_PASSWORD}
+  登录：  ${ADMIN_EMAIL}  /  ${ADMIN_PASSWORD}
 `)
 }
 

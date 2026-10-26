@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils"
 import type { HistoryScope } from "@/lib/rooms"
 
 /** Segmented "own only / with equipment" switch shared by the room History tab and the property Service tab. */
-export function ScopeToggle({ scope, onChange, ownLabel, withLabel, label = "Whose records" }: {
+export function ScopeToggle({ scope, onChange, ownLabel, withLabel, label = "记录范围" }: {
   scope: HistoryScope
   onChange: (scope: HistoryScope) => void
   ownLabel: string

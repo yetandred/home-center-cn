@@ -19,9 +19,9 @@ export function EquipmentRows({ equipment, onEdit, showLocation = false }: { equ
       {equipment.map((e) => {
         const make = [e.manufacturer, e.modelNumber].filter(Boolean).join(" · ")
         const facts = [
-          showLocation && locationLabel(e) && `Location: ${locationLabel(e)}`,
-          e.serialNumber && `Serial ${e.serialNumber}`,
-          e.installDate && `Installed ${fmt.date(e.installDate, { utc: true })}`,
+          showLocation && locationLabel(e) && `位置：${locationLabel(e)}`,
+          e.serialNumber && `序列号 ${e.serialNumber}`,
+          e.installDate && `安装于 ${fmt.date(e.installDate, { utc: true })}`,
           e.purchasePrice != null && fmt.money(e.purchasePrice),
         ].filter(Boolean).join(" · ")
         return (
@@ -35,7 +35,7 @@ export function EquipmentRows({ equipment, onEdit, showLocation = false }: { equ
               {facts && <span className="block truncate text-xs text-muted-foreground">{facts}</span>}
               {e.notes && <span className="block truncate text-xs text-muted-foreground">{e.notes}</span>}
             </button>
-            <Link href={`/assets/equipment/${e.id}`} aria-label={`Open ${e.name}'s page`} className="mr-2 shrink-0 rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground">
+            <Link href={`/assets/equipment/${e.id}`} aria-label={`打开“${e.name}”页面`} className="mr-2 shrink-0 rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground">
               <ExternalLink className="h-3.5 w-3.5" />
             </Link>
           </li>

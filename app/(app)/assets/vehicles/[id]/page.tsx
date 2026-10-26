@@ -41,13 +41,13 @@ export default async function VehicleDetailPage({
         <AssetImageUploader assetType="VEHICLE" assetId={id} imageFilename={vehicle.imageFilename} alt={vehicle.name} />
 
         <div className="space-y-2">
-          <Stat icon={Factory} label="Make" value={vehicle.make} />
-          <Stat icon={Tag} label="Model" value={vehicle.model} />
-          <Stat icon={Calendar} label="Year" value={vehicle.year.toString()} />
+          <Stat icon={Factory} label="品牌" value={vehicle.make} />
+          <Stat icon={Tag} label="型号" value={vehicle.model} />
+          <Stat icon={Calendar} label="年份" value={vehicle.year.toString()} />
           {vehicle.currentMileage != null && <Stat icon={Gauge} label={fmt.meterNoun(vehicle.meterUnit)} value={`${vehicle.currentMileage.toLocaleString()} ${fmt.meterShort(vehicle.meterUnit)}`} />}
-          {vehicle.color && <Stat icon={Palette} label="Color" value={vehicle.color} />}
+          {vehicle.color && <Stat icon={Palette} label="颜色" value={vehicle.color} />}
           {vehicle.vin && <Stat icon={Fingerprint} label="VIN" value={vehicle.vin} mono />}
-          {vehicle.purchaseDate && <Stat icon={Calendar} label="Purchased" value={fmt.date(vehicle.purchaseDate)} />}
+          {vehicle.purchaseDate && <Stat icon={Calendar} label="购入日期" value={fmt.date(vehicle.purchaseDate)} />}
         </div>
 
         <AssetCostPanel
@@ -74,24 +74,24 @@ export default async function VehicleDetailPage({
               href={`/reports/vehicles/${id}`}
               className="inline-flex shrink-0 items-center gap-1.5 rounded-md border bg-background px-3 py-1.5 text-sm font-medium hover:bg-muted transition-colors"
             >
-              <FileText className="h-3.5 w-3.5" /> Report
+              <FileText className="h-3.5 w-3.5" /> 报告
             </Link>
             <a
               href={`/api/assets/vehicles/${id}/download`}
               download
               className="inline-flex shrink-0 items-center gap-1.5 rounded-md border bg-background px-3 py-1.5 text-sm font-medium hover:bg-muted transition-colors"
             >
-              <Download className="h-3.5 w-3.5" /> Download all files
+              <Download className="h-3.5 w-3.5" /> 下载全部文件
             </a>
           </div>
         </div>
 
         <Tabs defaultValue={tab ?? "service"}>
           <TabsList variant="line" className="w-full justify-start border-b">
-            <TabsTrigger value="service">Service ({serviceRecords.length})</TabsTrigger>
-            <TabsTrigger value="warranties">Warranties ({warranties.length})</TabsTrigger>
-            <TabsTrigger value="maintenance">Maintenance Reminders ({maintenanceSchedules.length})</TabsTrigger>
-            <TabsTrigger value="documents">Documents ({documents.length})</TabsTrigger>
+            <TabsTrigger value="service">维护记录 ({serviceRecords.length})</TabsTrigger>
+            <TabsTrigger value="warranties">保修 ({warranties.length})</TabsTrigger>
+            <TabsTrigger value="maintenance">维护提醒 ({maintenanceSchedules.length})</TabsTrigger>
+            <TabsTrigger value="documents">文档 ({documents.length})</TabsTrigger>
           </TabsList>
           <TabsContent value="service" className="mt-4">
             <ServiceRecordList records={serviceRecords} assetId={id} assetType="VEHICLE" meterUnit={vehicle.meterUnit} reminders={maintenanceSchedules} openId={tab === "service" ? open : undefined} />
@@ -103,7 +103,7 @@ export default async function VehicleDetailPage({
             <MaintenanceList schedules={maintenanceSchedules} assetId={id} assetType="VEHICLE" currentMileage={vehicle.currentMileage} meterUnit={vehicle.meterUnit} openId={tab === "maintenance" ? open : undefined} />
           </TabsContent>
           <TabsContent value="documents" className="mt-4">
-            <AssetDocuments assetId={id} documents={documents} hint="Title, registration, owner's manual: files for the vehicle itself, not one service." />
+            <AssetDocuments assetId={id} documents={documents} hint="产权证、行驶证、车主手册：车辆本身的文件，而非单次维护。" />
           </TabsContent>
         </Tabs>
       </div>

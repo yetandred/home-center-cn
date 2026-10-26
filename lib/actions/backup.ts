@@ -36,10 +36,10 @@ export async function backUpNow() {
 
 const scheduleSchema = z.object({
   schedule: z.enum(["OFF", "DAILY", "WEEKLY"]),
-  time: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Time must look like 03:00."),
+  time: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "时间格式应为 03:00。"),
   weekday: z.coerce.number().int().min(0).max(6),
   folder: z.string().trim(),
-  keep: z.coerce.number().int().min(1, "Keep at least 1 backup.").max(365),
+  keep: z.coerce.number().int().min(1, "至少保留 1 份备份。").max(365),
 })
 
 export async function saveBackupSchedule(input: Omit<z.input<typeof scheduleSchema>, "weekday" | "keep"> & { weekday: string | number; keep: string | number }): Promise<{ ok: true; warning?: string } | { error: string }> {
@@ -47,11 +47,11 @@ export async function saveBackupSchedule(input: Omit<z.input<typeof scheduleSche
   const parsed = scheduleSchema.safeParse(input)
   if (!parsed.success) return { error: parsed.error.issues[0]?.message ?? "Invalid input." }
   const v = parsed.data
-  if (v.folder && !path.isAbsolute(v.folder)) return { error: "Use a full folder path, such as /backups." }
+  if (v.folder && !path.isAbsolute(v.folder)) return { error: "请使用完整的文件夹路径，例如 /backups。" }
   const folder = v.folder || null
   const status = await folderStatus(folder ?? backupFolder({ folder: null }), dataDir())
-  if (folder && !status.exists) return { error: "That folder doesn't exist inside the container. Mount it in docker-compose first." }
-  if (folder && !status.writable) return { error: "HomeCenter can't write to that folder." }
+  if (folder && !status.exists) return { error: "容器内不存在该文件夹，请先在 docker-compose 中挂载。" }
+  if (folder && !status.writable) return { error: "HomeCenter 无法写入该文件夹。" }
   // loadBackupSettings upserts the singleton row, so the update below can't miss it.
   const before = await loadBackupSettings()
   await prisma.backupSettings.update({
@@ -62,25 +62,25 @@ export async function saveBackupSchedule(input: Omit<z.input<typeof scheduleSche
     },
   })
   revalidatePath("/settings")
-  return status.sameDevice ? { ok: true, warning: "This folder is on the same disk as your data. If that disk fails, you lose both." } : { ok: true }
+  return status.sameDevice ? { ok: true, warning: "该文件夹与数据位于同一块磁盘上。磁盘故障时两者都会丢失。" } : { ok: true }
 }
 
 export async function verifyBackup(file: string): Promise<{ ok: true; message: string } | { error: string }> {
   await requireAdmin()
   const b = (await listBackups(backupFolder(await loadBackupSettings()))).find((x) => x.file === file)
-  if (!b) return { error: "That backup isn't in the backup folder any more." }
+  if (!b) return { error: "该备份已不在备份文件夹中。" }
   const { sha256 } = await hashFile(b.path)
-  if (sha256 !== b.sha256) return { error: "This file has changed or is damaged since it was written." }
-  if (b.protection !== "none") return { ok: true, message: "File intact. Its contents can be checked during a restore, with the key or password." }
+  if (sha256 !== b.sha256) return { error: "该文件自写入后已被更改或损坏。" }
+  if (b.protection !== "none") return { ok: true, message: "文件完好。恢复时可使用密钥或密码校验其内容。" }
   const v = await verifyArchive(b.path, { workDir: workDir() })
-  return v.ok ? { ok: true, message: "Backup checked: every file and the database are intact." } : { error: v.error }
+  return v.ok ? { ok: true, message: "备份校验通过：所有文件和数据库均完好。" } : { error: v.error }
 }
 
 export async function removeBackup(file: string): Promise<{ ok: true } | { error: string }> {
   await requireAdmin()
   const ok = await deleteBackup(backupFolder(await loadBackupSettings()), file)
   revalidatePath("/settings")
-  return ok ? { ok: true } : { error: "That backup isn't in the backup folder any more." }
+  return ok ? { ok: true } : { error: "该备份已不在备份文件夹中。" }
 }
 
 export async function dismissBackupHint(): Promise<void> {
@@ -103,15 +103,15 @@ export async function setProtectionNone(): Saved {
 export async function setProtectionKey(input: { publicKey: string; fingerprint: string }): Saved {
   await requireAdmin()
   const key = String(input.publicKey ?? "").trim()
-  if (!/^age1[0-9a-z]{20,}$/.test(key)) return { error: "That isn't a recovery key's public half." }
+  if (!/^age1[0-9a-z]{20,}$/.test(key)) return { error: "这不是恢复密钥的公钥部分。" }
   // The regex lets a mistyped key through; age checks the checksum, so backups can't fail on it later.
   try {
     new Encrypter().addRecipient(key)
   } catch {
-    return { error: "That isn't a recovery key's public half." }
+    return { error: "这不是恢复密钥的公钥部分。" }
   }
   // Recomputed here: the client's fingerprint is only trusted if it matches.
-  if ((await fingerprintOf(key)) !== input.fingerprint) return { error: "The key and its fingerprint don't match." }
+  if ((await fingerprintOf(key)) !== input.fingerprint) return { error: "密钥与指纹不匹配。" }
   await loadBackupSettings()
   await prisma.backupSettings.update({
     where: { id: BACKUP_SETTINGS_ID },
@@ -136,8 +136,8 @@ export async function setProtectionPassword(input: { password: string }): Saved 
 }
 
 const UPLOAD_ID = /^[0-9a-f-]{36}$/
-const BUSY = "Wait for the running backup or export to finish."
-const WAITING = "A restore is already waiting for a restart."
+const BUSY = "请等待正在运行的备份或导出完成。"
+const WAITING = "已有恢复操作在等待重启。"
 
 /** Runs fn holding the one job lock (shared with backups and exports), or returns null when it is taken. */
 async function withJobLock<T>(fn: () => Promise<T>): Promise<T | null> {
@@ -162,13 +162,13 @@ async function restoreDryRunLocked(input: { source: { upload: string } | { file:
   if (await hasPending(paths.restoreDir)) return { ok: false, error: WAITING }
   let archivePath: string
   if ("upload" in input.source) {
-    if (!UPLOAD_ID.test(String(input.source.upload))) return { ok: false, error: "Upload not found." }
+    if (!UPLOAD_ID.test(String(input.source.upload))) return { ok: false, error: "未找到上传文件。" }
     archivePath = path.join(paths.restoreDir, "incoming", `${input.source.upload}.upload`)
   } else {
     // Only a file that listBackups finds in the backup folder; the client's string is never joined to a path.
     const file = input.source.file
     const b = (await listBackups(backupFolder(await loadBackupSettings()))).find((x) => x.file === file)
-    if (!b) return { ok: false, error: "That backup isn't in the backup folder any more." }
+    if (!b) return { ok: false, error: "该备份已不在备份文件夹中。" }
     archivePath = b.path
   }
   await mkdir(paths.restoreDir, { recursive: true })
@@ -193,8 +193,8 @@ async function stageOrCancel(run: () => Promise<void>, fallback: string): Promis
 
 export async function restoreConfirm(input: { word: string }): Promise<{ ok: true } | { error: string }> {
   await requireAdmin()
-  if (String(input.word ?? "").trim() !== "RESTORE") return { error: "Type RESTORE to confirm." }
-  return stageOrCancel(() => stage({ paths: restorePaths() }), "Couldn't prepare the restore.")
+  if (String(input.word ?? "").trim() !== "RESTORE") return { error: "请输入 RESTORE 以确认。" }
+  return stageOrCancel(() => stage({ paths: restorePaths() }), "无法准备恢复。")
 }
 
 export async function restoreRestart(): Promise<{ restarting: boolean; reason?: "busy" | "nothing-staged" }> {
@@ -219,7 +219,7 @@ export async function restoreRestart(): Promise<{ restarting: boolean; reason?: 
 
 export async function restoreUndo(): Promise<{ ok: true } | { error: string }> {
   await requireAdmin()
-  return stageOrCancel(() => stageUndo({ paths: restorePaths() }), "Couldn't prepare the undo.")
+  return stageOrCancel(() => stageUndo({ paths: restorePaths() }), "无法准备撤销。")
 }
 
 export async function restoreCancel(): Promise<void> {
@@ -233,9 +233,9 @@ export async function restoreCancelStaged(): Promise<{ ok: true; keptIn: string 
   const r = await withJobLock(async (): Promise<{ ok: true; keptIn: string | null } | { error: string }> => {
     try {
       const c = await cancelStaged(restorePaths().restoreDir)
-      return c.cancelled ? { ok: true, keptIn: c.keptIn } : { error: "There's no restore waiting." }
+      return c.cancelled ? { ok: true, keptIn: c.keptIn } : { error: "没有等待中的恢复操作。" }
     } catch (e) {
-      return { error: e instanceof Error ? e.message : "Couldn't cancel the restore." }
+      return { error: e instanceof Error ? e.message : "无法取消恢复。" }
     }
   })
   revalidatePath("/settings")
@@ -247,7 +247,7 @@ export async function dismissRestoreNotice(): Promise<{ ok: true } | { error: st
   await requireAdmin()
   const ok = await markSeen(restorePaths().restoreDir)
   revalidatePath("/settings")
-  return ok ? { ok: true } : { error: "This notice can't be dismissed yet." }
+  return ok ? { ok: true } : { error: "目前还不能关闭此提示。" }
 }
 
 const RUN_ID = /^[A-Za-z0-9_-]{8,64}$/
@@ -268,8 +268,8 @@ export async function startExport(input: { scope: "all" | { assetType: AssetKind
     scope = { kind: "all", includeHealth: health && !!input.includeHealth }
   } else {
     const { assetType, assetId } = input.scope
-    if (!ASSET_KINDS.includes(assetType) || typeof assetId !== "string" || !assetId) return { error: "Pick what to export." }
-    if (assetType === "PERSON" && !health) return { error: "Health is turned off." }
+    if (!ASSET_KINDS.includes(assetType) || typeof assetId !== "string" || !assetId) return { error: "请选择要导出的内容。" }
+    if (assetType === "PERSON" && !health) return { error: "健康功能已关闭。" }
     scope = { kind: "asset", assetType, assetId }
   }
   return startExportJob({ scope, password: password || null, userId: session.user.id })
@@ -279,6 +279,6 @@ export async function startExport(input: { scope: "all" | { assetType: AssetKind
 export async function exportStatus(runId: string): Promise<{ status: string; done: number; total: number; error: string | null }> {
   const session = await requireAdmin()
   const r = RUN_ID.test(String(runId)) ? await prisma.backupRun.findUnique({ where: { id: runId } }) : null
-  if (!r || r.kind !== "EXPORT" || r.createdById !== session.user.id) return { status: "FAILED", done: 0, total: 0, error: "Export not found." }
+  if (!r || r.kind !== "EXPORT" || r.createdById !== session.user.id) return { status: "FAILED", done: 0, total: 0, error: "未找到导出任务。" }
   return { status: r.status, done: r.progressDone, total: r.progressTotal, error: r.error }
 }

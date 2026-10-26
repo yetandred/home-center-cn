@@ -15,18 +15,18 @@ export type ThemeOption = {
 }
 
 export const THEMES: readonly ThemeOption[] = [
-  { id: "light", label: "Spruce", dark: false },
-  { id: "dark", label: "Spruce Night", dark: true },
-  { id: "ledger", label: "Ledger", dark: false },
-  { id: "frost", label: "Frost", dark: false },
-  { id: "observatory", label: "Observatory", dark: true },
-  { id: "terminal", label: "Terminal", dark: true },
-  { id: "terracotta", label: "Terracotta", dark: false },
-  { id: "swiss", label: "Swiss", dark: false },
-  { id: "lodge", label: "Lodge", dark: true },
-  { id: "blueprint", label: "Blueprint", dark: true },
-  { id: "sage", label: "Sage", dark: false },
-  { id: "brutal", label: "Brutal", dark: false },
+  { id: "light", label: "云杉", dark: false },
+  { id: "dark", label: "云杉夜色", dark: true },
+  { id: "ledger", label: "账簿", dark: false },
+  { id: "frost", label: "霜白", dark: false },
+  { id: "observatory", label: "观星台", dark: true },
+  { id: "terminal", label: "终端", dark: true },
+  { id: "terracotta", label: "赤陶", dark: false },
+  { id: "swiss", label: "瑞士", dark: false },
+  { id: "lodge", label: "山间木屋", dark: true },
+  { id: "blueprint", label: "蓝图", dark: true },
+  { id: "sage", label: "鼠尾草", dark: false },
+  { id: "brutal", label: "粗野主义", dark: false },
 ]
 
 /** The ThemeProvider `themes` prop. */

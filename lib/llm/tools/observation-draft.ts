@@ -107,7 +107,7 @@ export const draftObservationTool = defineTool({
     "Call it whenever the user tells you something that happened to a person. One call per incident. You cannot save; the user saves from the card. " +
     "To change a draft, call again with its draftId and every field; keep severityEstimate as severityEstimate unless the user gave a severity.",
   schema,
-  label: (a) => `Drafting an observation for ${a.person}…`,
+  label: (a) => `正在为${a.person}起草观察记录…`,
   async run(a, ctx) {
     if (!healthOn(ctx)) throw new ToolInputError("draft_observation isn't available: Health is turned off in Settings.")
     const out = await buildDraft(a, {

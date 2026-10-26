@@ -8,7 +8,7 @@ import type { OpenAiTool, ToolCall } from "../types"
 // failure into a tool message the model can learn from. Pure — tools that touch
 // the database live in generic.ts / shortcuts.ts.
 
-export const FALLBACK_LABEL = "Looking things up…"
+export const FALLBACK_LABEL = "正在查询…"
 
 export type RegisteredTool = {
   name: string
