@@ -1,0 +1,416 @@
+"use client"
+
+import { useEffect, useRef, useState } from "react"
+import { useRouter } from "next/navigation"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
+import { toast } from "sonner"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import { useDropTarget } from "@/components/drop/drop-provider"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from "@/components/ui/form"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { createMaintenanceSchedule, updateMaintenanceSchedule } from "@/lib/actions/maintenance"
+import { deleteAttachment } from "@/lib/actions/attachments"
+import { ASSET_TYPES } from "@/lib/assets"
+import { useFormat } from "@/components/regional-provider"
+import { RoomSelect } from "@/components/rooms/room-select"
+import type { RoomOption } from "@/lib/rooms-server"
+import { Paperclip, Upload, X, Trash2, FileText, Image } from "lucide-react"
+import type { Attachment, MaintenanceSchedule, MeterUnit, AssetType } from "@/app/generated/prisma/client"
+
+const schema = z.object({
+  assetId: z.string(),
+  assetType: z.enum(ASSET_TYPES),
+  title: z.string().min(1, "Title is required"),
+  description: z.string().optional(),
+  intervalDays: z.string().optional(),
+  intervalMiles: z.string().optional(),
+  nextDueDate: z.string().optional(),
+  nextDueMileage: z.string().optional(),
+  reminderDaysBefore: z.string().optional(),
+  reminderMilesBefore: z.string().optional(),
+  roomId: z.string().optional(),
+})
+
+type FormValues = z.infer<typeof schema>
+
+interface Props {
+  open: boolean
+  onClose: () => void
+  assetId: string
+  assetType: AssetType
+  schedule?: MaintenanceSchedule | null
+  attachments?: Attachment[]
+  onAttachmentDeleted?: (scheduleId: string, attachmentId: string) => void
+  /** When set (property view), shows a target picker: this property or one of its equipment. */
+  equipmentOptions?: { id: string; name: string; roomId: string | null }[]
+  propertyName?: string
+  /** Rooms of the target's property. Empty or missing hides the room select. */
+  roomOptions?: RoomOption[]
+  /** A new schedule's room (on an equipment page: the equipment's own). */
+  defaultRoomId?: string | null
+  /** Vehicle's odometer unit, for the mileage field labels. Defaults to miles. */
+  meterUnit?: MeterUnit
+}
+
+function targetKey(assetType: AssetType, assetId: string) {
+  return `${assetType}:${assetId}`
+}
+
+function fileIcon(mimeType: string) {
+  if (mimeType.startsWith("image/")) return Image
+  return FileText
+}
+
+function formatBytes(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+  return `${(bytes / 1024 / 1024).toFixed(1)} MB`
+}
+
+export function MaintenanceFormDialog({ open, onClose, assetId, assetType, schedule, attachments: initialAttachments = [], onAttachmentDeleted, equipmentOptions, propertyName = "This property", roomOptions = [], defaultRoomId, meterUnit = "MILES" }: Props) {
+  const fmt = useFormat()
+  const [stagedFiles, setStagedFiles] = useState<File[]>([])
+  const [removedIds, setRemovedIds] = useState<Set<string>>(new Set())
+  const [createdScheduleId, setCreatedScheduleId] = useState<string | null>(null)
+  const [filePickerOpen, setFilePickerOpen] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const router = useRouter()
+
+  function openFilePicker() {
+    // The native OS file picker moves focus outside the dialog's DOM, which would
+    // otherwise trigger Base UI's modal focus-out dismissal and close the dialog
+    // before the file selection is even processed.
+    setFilePickerOpen(true)
+    window.addEventListener("focus", () => setFilePickerOpen(false), { once: true })
+    inputRef.current?.click()
+  }
+
+  const existingAttachments = initialAttachments.filter((a) => !removedIds.has(a.id))
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: { assetId, assetType, title: "", description: "", intervalDays: "", intervalMiles: "", nextDueDate: "", nextDueMileage: "", reminderDaysBefore: "14", reminderMilesBefore: "500", roomId: defaultRoomId ?? "" },
+  })
+
+  // A room that isn't one of the options (the equipment moved property since) would only fail to save, so it opens as None.
+  const roomKey = roomOptions.map((r) => r.id).join(" ")
+  useEffect(() => {
+    form.reset(schedule ? {
+      assetId: schedule.assetId, assetType: schedule.assetType,
+      title: schedule.title,
+      description: schedule.description ?? "",
+      intervalDays: schedule.intervalDays?.toString() ?? "",
+      intervalMiles: schedule.intervalMiles?.toString() ?? "",
+      nextDueDate: schedule.nextDueDate ? new Date(schedule.nextDueDate).toISOString().split("T")[0] : "",
+      nextDueMileage: schedule.nextDueMileage?.toString() ?? "",
+      reminderDaysBefore: schedule.reminderDaysBefore.toString(),
+      reminderMilesBefore: schedule.reminderMilesBefore.toString(),
+      roomId: schedule.roomId && roomKey.split(" ").includes(schedule.roomId) ? schedule.roomId : "",
+    } : {
+      assetId, assetType, title: "", description: "", intervalDays: "", intervalMiles: "", nextDueDate: "", nextDueMileage: "", reminderDaysBefore: "14", reminderMilesBefore: "500", roomId: defaultRoomId ?? "",
+    })
+  }, [schedule, open, form, assetId, assetType, defaultRoomId, roomKey])
+
+  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files
+    if (!files) return
+    setStagedFiles((prev) => [...prev, ...Array.from(files)])
+    if (inputRef.current) inputRef.current.value = ""
+  }
+
+  // A file dropped anywhere while this is open joins the files staged above.
+  useDropTarget({
+    label: "Add to this record's files",
+    onFiles: (files) => setStagedFiles((prev) => [...prev, ...files]),
+    enabled: open,
+  })
+
+  function removeStagedFile(index: number) {
+    setStagedFiles((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  async function handleDeleteExisting(attachment: Attachment) {
+    if (!confirm(`Remove "${attachment.originalName}"?`)) return
+    if (!schedule) return
+    const result = await deleteAttachment(attachment.id)
+    if (result?.error) { toast.error(result.error); return }
+    setRemovedIds((prev) => new Set(prev).add(attachment.id))
+    onAttachmentDeleted?.(schedule.id, attachment.id)
+    toast.success("Attachment removed.")
+  }
+
+  async function onSubmit(values: FormValues) {
+    const payload = {
+      ...values,
+      // No room select shown: send nothing, so an edit keeps the schedule's room.
+      roomId: roomOptions.length > 0 ? values.roomId : undefined,
+    } as unknown as Parameters<typeof createMaintenanceSchedule>[0]
+    const existingId = schedule?.id ?? createdScheduleId
+    const result = existingId
+      ? await updateMaintenanceSchedule(existingId, payload)
+      : await createMaintenanceSchedule(payload)
+
+    if (result?.error) {
+      const roomError = "roomId" in result.error ? result.error.roomId?.[0] : undefined
+      toast.error(roomError ?? "Please fix the errors and try again.")
+      return
+    }
+
+    const scheduleId = existingId ?? (result as { success: boolean; id?: string }).id
+    if (scheduleId && !existingId) setCreatedScheduleId(scheduleId)
+
+    if (stagedFiles.length > 0 && scheduleId) {
+      const uploads = await Promise.allSettled(
+        stagedFiles.map(async (file) => {
+          const formData = new FormData()
+          formData.append("file", file)
+          formData.append("recordId", scheduleId)
+          formData.append("recordType", "MAINTENANCE")
+          const res = await fetch("/api/uploads", { method: "POST", body: formData })
+          if (!res.ok) {
+            const json = await res.json().catch(() => ({}))
+            throw new Error(json.error ?? `Failed to upload "${file.name}"`)
+          }
+          return file
+        })
+      )
+
+      const succeeded = new Set(
+        uploads.flatMap((u) => (u.status === "fulfilled" ? [u.value] : []))
+      )
+      setStagedFiles((prev) => prev.filter((f) => !succeeded.has(f)))
+
+      const firstFailure = uploads.find((u): u is PromiseRejectedResult => u.status === "rejected")
+      if (firstFailure) {
+        toast.error(firstFailure.reason instanceof Error ? firstFailure.reason.message : "Some files failed to upload.")
+        return
+      }
+      router.refresh()
+    }
+
+    toast.success(schedule ? "Schedule updated." : "Maintenance schedule added.")
+    handleClose()
+  }
+
+  function handleClose() {
+    setStagedFiles([])
+    setRemovedIds(new Set())
+    setCreatedScheduleId(null)
+    onClose()
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={(v) => !v && handleClose()} disablePointerDismissal={filePickerOpen}>
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>{schedule ? "Edit Schedule" : "Add Maintenance Schedule"}</DialogTitle>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {equipmentOptions && equipmentOptions.length > 0 && (
+              <FormItem>
+                <FormLabel>For</FormLabel>
+                <Select
+                  value={targetKey(form.watch("assetType"), form.watch("assetId"))}
+                  onValueChange={(value) => {
+                    if (!value) return
+                    const [type, ...rest] = value.split(":")
+                    form.setValue("assetType", type as FormValues["assetType"])
+                    form.setValue("assetId", rest.join(":"))
+                    // Equipment with a room fills a blank room; a chosen room stays.
+                    const equipmentRoom = type === "EQUIPMENT" ? equipmentOptions.find((e) => e.id === rest.join(":"))?.roomId : null
+                    if (equipmentRoom && !form.getValues("roomId")) form.setValue("roomId", equipmentRoom)
+                  }}
+                >
+                  <FormControl>
+                    <SelectTrigger className="w-full">
+                      <SelectValue>
+                        {(v: string) => v === targetKey("PROPERTY", assetId) ? propertyName : equipmentOptions.find((e) => targetKey("EQUIPMENT", e.id) === v)?.name ?? v}
+                      </SelectValue>
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value={targetKey("PROPERTY", assetId)}>{propertyName}</SelectItem>
+                    {equipmentOptions.map((e) => (
+                      <SelectItem key={e.id} value={targetKey("EQUIPMENT", e.id)}>{e.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormItem>
+            )}
+
+            <RoomSelect value={form.watch("roomId") ?? ""} onChange={(v) => form.setValue("roomId", v)} options={roomOptions} />
+
+            <div className="grid grid-cols-2 gap-4">
+              <FormField control={form.control} name="title" render={({ field }) => (
+                <FormItem className="col-span-2">
+                  <FormLabel>Title *</FormLabel>
+                  <FormControl><Input placeholder="Oil Change" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              <FormField control={form.control} name="intervalDays" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Repeat Every (days)</FormLabel>
+                  <FormControl><Input type="number" placeholder="90" {...field} /></FormControl>
+                  <FormDescription className="text-xs">e.g. 90 for quarterly</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              {assetType === "VEHICLE" && (
+                <FormField control={form.control} name="intervalMiles" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Repeat Every ({fmt.meterShort(meterUnit)})</FormLabel>
+                    <FormControl><Input type="number" placeholder={meterUnit === "HOURS" ? "50" : "5000"} {...field} /></FormControl>
+                    <FormDescription className="text-xs">{meterUnit === "HOURS" ? "e.g. 50 for an oil change" : "e.g. 5000 for oil change"}</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              )}
+
+              <FormField control={form.control} name="nextDueDate" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Next Due Date</FormLabel>
+                  <FormControl><Input type="date" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              {assetType === "VEHICLE" && (
+                <FormField control={form.control} name="nextDueMileage" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Next Due {fmt.meterNoun(meterUnit)}</FormLabel>
+                    <FormControl><Input type="number" placeholder={meterUnit === "HOURS" ? "1300" : "50000"} {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              )}
+
+              <FormField control={form.control} name="reminderDaysBefore" render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Remind (days before)</FormLabel>
+                  <FormControl><Input type="number" placeholder="14" {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+
+              {assetType === "VEHICLE" && (
+                <FormField control={form.control} name="reminderMilesBefore" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Remind ({fmt.meterShort(meterUnit)} before)</FormLabel>
+                    <FormControl><Input type="number" placeholder={meterUnit === "HOURS" ? "10" : "500"} {...field} /></FormControl>
+                    <FormDescription className="text-xs">How close to the due {meterUnit === "HOURS" ? "hour count" : fmt.distanceNoun.toLowerCase()} to start warning</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )} />
+              )}
+
+              <FormField control={form.control} name="description" render={({ field }) => (
+                <FormItem className="col-span-2">
+                  <FormLabel>Notes</FormLabel>
+                  <FormControl><Textarea rows={2} {...field} /></FormControl>
+                  <FormMessage />
+                </FormItem>
+              )} />
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
+                  <Paperclip className="h-3.5 w-3.5" />
+                  Attachments {(existingAttachments.length + stagedFiles.length) > 0 && <span className="inline-flex items-center justify-center rounded-full bg-secondary px-1.5 py-0.5 text-xs font-medium">{existingAttachments.length + stagedFiles.length}</span>}
+                </div>
+                <label>
+                  <input
+                    ref={inputRef}
+                    type="file"
+                    multiple
+                    className="hidden"
+                    onChange={handleFileSelect}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={openFilePicker}
+                  >
+                    <Upload className="h-3.5 w-3.5 mr-1.5" />
+                    Attach file
+                  </Button>
+                </label>
+              </div>
+
+              {existingAttachments.length > 0 && (
+                <ul className="space-y-1">
+                  {existingAttachments.map((a) => {
+                    const Icon = fileIcon(a.mimeType)
+                    const href = `/api/files/maintenance/${schedule?.id}/${a.filename}`
+                    return (
+                      <li key={a.id} className="flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm">
+                        <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
+                        <a
+                          href={href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex-1 truncate hover:underline"
+                        >
+                          {a.originalName}
+                        </a>
+                        <span className="text-xs text-muted-foreground shrink-0">{formatBytes(a.sizeBytes)}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteExisting(a)}
+                          aria-label={`Remove "${a.originalName}"`}
+                          className="shrink-0 text-muted-foreground hover:text-destructive transition-colors"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </li>
+                    )
+                  })}
+                </ul>
+              )}
+
+              {stagedFiles.length > 0 && (
+                <ul className="space-y-1">
+                  {stagedFiles.map((file, index) => {
+                    const Icon = fileIcon(file.type)
+                    return (
+                      <li key={index} className="flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm">
+                        <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
+                        <span className="flex-1 truncate">{file.name}</span>
+                        <span className="text-xs text-muted-foreground shrink-0">{formatBytes(file.size)}</span>
+                        <button
+                          type="button"
+                          onClick={() => removeStagedFile(index)}
+                          aria-label={`Remove "${file.name}"`}
+                          className="shrink-0 text-muted-foreground hover:text-destructive transition-colors"
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      </li>
+                    )
+                  })}
+                </ul>
+              )}
+            </div>
+
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={handleClose}>Cancel</Button>
+              <Button type="submit" disabled={form.formState.isSubmitting}>
+                {form.formState.isSubmitting ? "Saving…" : schedule ? "Save Changes" : "Add Schedule"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  )
+}
