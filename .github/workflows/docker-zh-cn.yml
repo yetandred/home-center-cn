@@ -1,0 +1,112 @@
+name: Docker (zh-CN)
+
+# 构建中文版多架构镜像并推送到 GitHub Container Registry。
+# 触发：推送到 zh-CN 分支，或在 Actions 页面手动运行（可只构建单架构加速）。
+on:
+  push:
+    branches: [zh-CN]
+    paths-ignore:
+      - "**/*.md"
+      - "deploy/**"
+  workflow_dispatch:
+    inputs:
+      platforms:
+        description: "构建目标架构（多数 NAS 是 linux/amd64；ARM 型号才需要 arm64）"
+        type: choice
+        default: "linux/amd64,linux/arm64"
+        options:
+          - "linux/amd64,linux/arm64"
+          - "linux/amd64"
+          - "linux/arm64"
+      push:
+        description: "构建完推送到 GHCR（关掉只做构建验证）"
+        type: boolean
+        default: true
+
+concurrency:
+  group: docker-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # arm64 走 QEMU 模拟，Next.js 构建吃时间；给足余量避免中途被杀。
+    timeout-minutes: 180
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      # GHCR 只接受全小写的镜像名，GitHub 用户名里常有大写字母。
+      - name: 计算镜像名
+        id: image
+        run: echo "name=${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
+
+      - name: 安装 Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # 只是跑类型检查用的假路径，不会真的连数据库。
+      - name: 安装依赖
+        run: npm ci
+        env:
+          DATABASE_URL: "file:./ci.db"
+
+      - name: 类型检查
+        run: npx tsc --noEmit
+
+      - name: 准备 QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: 准备 Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 登录 GHCR
+        if: github.event_name == 'push' || inputs.push
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 生成镜像标签
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ steps.image.outputs.name }}
+          tags: |
+            type=raw,value=zh-cn
+            type=raw,value=zh-cn-{{date 'YYYYMMDD'}}
+            type=sha,format=short,prefix=zh-cn-
+
+      - name: 构建并推送
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: ${{ inputs.platforms || 'linux/amd64,linux/arm64' }}
+          push: ${{ github.event_name == 'push' || inputs.push }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          # 第二次构建能复用 layer，省掉 npm install 和模型下载的大头时间。
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: 输出部署提示
+        if: github.event_name == 'push' || inputs.push
+        run: |
+          {
+            echo "### 镜像已推送"
+            echo ""
+            echo '```'
+            echo "docker pull ${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:zh-cn"
+            echo '```'
+            echo ""
+            echo "在 NAS 的 docker-compose.yml 里填这个地址即可。"
+          } >> "$GITHUB_STEP_SUMMARY"

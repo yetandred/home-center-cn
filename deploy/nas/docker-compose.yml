@@ -1,0 +1,68 @@
+# HomeCenter 中文版 —— NAS 部署用 compose 文件
+#
+# 用法：
+#   1. 改下面 3 处：镜像地址、数据目录、AUTH_SECRET
+#   2. 在这个文件所在目录执行：docker compose up -d
+#   3. 浏览器打开 http://NAS的IP:3000
+#
+# 详细步骤见同目录的「NAS部署指南.md」。
+
+services:
+  homecenter:
+    # ① 改成你自己的镜像地址：
+    #    ghcr.io/<你的GitHub用户名小写>/<仓库名小写>:zh-cn
+    image: ghcr.io/CHANGE_ME/home-center:zh-cn
+    container_name: homecenter
+    restart: unless-stopped
+
+    ports:
+      # 左边是 NAS 上对外暴露的端口，被占用就改成 3001 / 8080 之类
+      - "3000:3000"
+
+    volumes:
+      # ② 数据目录：数据库、上传的附件、模型、备份全在这里。
+      #    建议放在 NAS 的存储卷上，别放在容器内部，否则删容器就全丢了。
+      #    群晖/绿联/极空间： /volume1/docker/homecenter
+      #    威联通：           /share/Container/homecenter
+      #    TrueNAS：          /mnt/<池名>/apps/homecenter
+      #    不想指定绝对路径就用 ./data（相对本文件所在目录）
+      - ./data:/data
+
+    environment:
+      # 数据库位置，固定为 /data 下，不要改
+      DATABASE_URL: "file:/data/homecenter.db"
+
+      # ③ 登录会话的加密密钥，必须自己生成一个，不要用示例值：
+      #    openssl rand -base64 32
+      #    生成后别再改，改了所有人会被登出。
+      AUTH_SECRET: "请替换成-openssl-rand-base64-32-的输出"
+
+      # 浏览器访问用的地址，例如 http://192.168.1.50:3000
+      # 留空也能用（程序会自动识别请求来源），填上更稳妥（邮件通知里的链接会用到）
+      AUTH_URL: ""
+
+      # 单个上传文件大小上限（字节），26214400 = 25 MiB
+      MAX_UPLOAD_BYTES: "26214400"
+
+      # 首次启动、数据库为空时创建的管理员账号
+      # 数据库一旦有数据，这三项就失效了（改密码请进应用里改）
+      ADMIN_NAME: "管理员"
+      ADMIN_EMAIL: "admin@example.com"
+      ADMIN_PASSWORD: "改成你自己的强密码"
+
+      # 时区，影响定时任务（维护提醒、邮件摘要）的触发时间
+      TZ: "Asia/Shanghai"
+
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 3
+
+    # 容器日志超过 30MB 自动轮转，避免长期运行塞满 NAS 系统盘
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
