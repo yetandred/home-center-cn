@@ -82,7 +82,7 @@ const CATEGORY_LABELS = Object.fromEntries(
 ) as Record<ServiceCategory, string>
 
 export function categoryLabel(key: CategoryKey): string {
-  return key === UNCATEGORIZED ? "Uncategorized" : CATEGORY_LABELS[key] ?? "Other"
+  return key === UNCATEGORIZED ? "未分类" : CATEGORY_LABELS[key] ?? "其他"
 }
 
 // Colours are CSS variables, not literals, so light and dark are one definition
