@@ -9,9 +9,8 @@
 
 services:
   homecenter:
-    # ① 改成你自己的镜像地址：
-    #    ghcr.io/<你的GitHub用户名小写>/<仓库名小写>:zh-cn
-    image: ghcr.io/CHANGE_ME/home-center:zh-cn
+    # ① 镜像地址（CI 构建成功后即可直接使用，无需修改）
+    image: ghcr.io/yetandred/home-center-cn:zh-cn
     container_name: homecenter
     restart: unless-stopped
 

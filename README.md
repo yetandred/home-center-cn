@@ -12,10 +12,20 @@
 
 **[5 分钟安装](#get-started)** · [功能](#features) · [AI 助手](#ask-your-house-a-question) · [演示](#see-it-in-action) · [常见问题](#faq) · [更新](#updating)
 
-![MIT licence](https://img.shields.io/badge/licence-MIT-blue) ![Self-hosted](https://img.shields.io/badge/self--hosted-Docker-2496ED) ![amd64 and arm64](https://img.shields.io/badge/arch-amd64%20%7C%20arm64-555) ![No cloud](https://img.shields.io/badge/cloud-none-success)
-[![Docker image build](https://github.com/yatzin/home-center/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/yatzin/home-center/actions/workflows/docker-publish.yml) [![Last commit](https://img.shields.io/github/last-commit/yatzin/home-center)](https://github.com/yatzin/home-center/commits/main)
+![License](https://img.shields.io/badge/license-PolyForm%20NC%201.0.0-orange) ![Self-hosted](https://img.shields.io/badge/self--hosted-Docker-2496ED) ![amd64 and arm64](https://img.shields.io/badge/arch-amd64%20%7C%20arm64-555) ![No cloud](https://img.shields.io/badge/cloud-none-success)
+[![Docker (zh-CN)](https://github.com/yetandred/home-center-cn/actions/workflows/docker-zh-cn.yml/badge.svg)](https://github.com/yetandred/home-center-cn/actions/workflows/docker-zh-cn.yml) [![Last commit](https://img.shields.io/github/last-commit/yetandred/home-center-cn/zh-CN)](https://github.com/yetandred/home-center-cn/commits/zh-CN)
 
 </div>
+
+> [!IMPORTANT]
+> **关于本仓库（中文版）**：这是 [yatzin/home-center](https://github.com/yatzin/home-center) 的深度汉化分支，在原版基础上做了——
+>
+> - **全量界面中文化**：约 220 个文件（页面、组件、共享文案、邮件模板、演示数据），术语统一见 [ZH-CN-GUIDE.md](ZH-CN-GUIDE.md)
+> - **本地化默认值**：货币 ¥ 人民币、公里、平方米、`2026-01-05` 日期格式、24 小时制（设置里可改）
+> - **AI 助手兼容性增强**：Base URL 自动补 `/v1`、Azure 支持、自定义请求头、`max_completion_tokens` 自适应、非流式降级、推理模型思维链保留、不支持工具的模型进入纯聊天模式
+> - **NAS 部署配置**：现成 compose 与中文指南见 [deploy/nas/](deploy/nas/NAS部署指南.md)
+>
+> 本分支镜像：`ghcr.io/yetandred/home-center-cn:zh-cn`（amd64 + arm64）。许可为 **PolyForm Noncommercial 1.0.0**（非 MIT，仅限非商业使用），与上游一致。以下为原版 README 内容，安装命令中的镜像地址已替换为本分支。
 
 ![HomeCenter dashboard](docs/screenshots/1.Dashboard.png)
 
@@ -195,7 +205,7 @@ HomeCenter 是一个容器加一个数据目录，两者都归你所有。
 
 ### 安装（Docker）
 
-这是运行 HomeCenter 的推荐方式。
+这是运行 HomeCenter 的推荐方式。**群晖 / 威联通 / 绿联 / 极空间 / TrueNAS 用户请直接看 [deploy/nas/NAS部署指南.md](deploy/nas/NAS部署指南.md)**，里面有现成的 compose 文件（本节示例已替换为本分支镜像，改三处即可用）。
 
 **1. 为数据创建一个目录**，例如在 Synology NAS 上：
 
@@ -208,7 +218,7 @@ mkdir -p /volume1/docker/homecenter
 ```yaml
 services:
   homecenter:
-    image: ghcr.io/yatzin/homecenter:latest
+    image: ghcr.io/yetandred/home-center-cn:zh-cn
     ports:
       - "3000:3000"
     volumes:

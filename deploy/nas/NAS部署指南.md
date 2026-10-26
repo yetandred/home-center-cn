@@ -26,7 +26,9 @@ uname -m
 
 ---
 
-## 1. 把代码推到你的 GitHub
+## 1. 把代码推到你的 GitHub（✅ 已完成，本节仅备查）
+
+仓库：`github.com/yetandred/home-center-cn`（public），分支 `zh-CN` 已推送。以下步骤仅在重建仓库时需要。
 
 代码目前在本机 `D:\AI_Agent\workspace\2026-10-26-10-28-34\home-center`，分支是 `zh-CN`。
 
@@ -34,11 +36,11 @@ uname -m
 
 ```bash
 cd D:/AI_Agent/workspace/2026-10-26-10-28-34/home-center
-git remote add origin https://github.com/<你的用户名>/<仓库名>.git
+git remote add origin git@github.com:yetandred/home-center-cn.git
 git push -u origin zh-CN
 ```
 
-> **代理提醒**：这台机器上 `github.com` 的 git 通道目前过不去（`CONNECT tunnel failed, response 502`），`api.github.com` 和 `ghcr.io` 是通的。push 之前先把代理软件切到全局/规则模式确认能连 `github.com`，或者在 NAS / 另一台机器上 push 也行。
+> **代理提醒**：HTTPS 方式的 git 通道走代理会被 502，实际走的是 SSH over 443（`~/.ssh/config` 已把 github.com 指到 ssh.github.com:443，公钥已加到账号）。
 
 推送成功后，仓库里应该能看到 `.github/workflows/docker-zh-cn.yml`。
 
@@ -58,7 +60,7 @@ git push -u origin zh-CN
 构建完成后，镜像在：
 
 ```
-ghcr.io/<用户名小写>/<仓库名小写>:zh-cn
+ghcr.io/yetandred/home-center-cn:zh-cn
 ```
 
 同时还有 `zh-cn-20261026` 和 `zh-cn-<commit短哈希>` 两个标签，方便回滚。
@@ -82,7 +84,7 @@ NAS 需要先登录一次。步骤：
 3. 在 NAS 的 SSH 里执行：
 
 ```bash
-docker login ghcr.io -u <你的GitHub用户名> -p <刚生成的token>
+docker login ghcr.io -u yetandred -p <刚生成的token>
 ```
 
 4. 登录信息会存在 `~/.docker/config.json`，之后 `docker pull` 就不用再登了
@@ -114,7 +116,7 @@ mkdir -p /mnt/<池名>/apps/homecenter/data
 
 | 位置 | 改成什么 |
 |---|---|
-| `image:` | `ghcr.io/<你的用户名>/<仓库名>:zh-cn` |
+| `image:` | `ghcr.io/yetandred/home-center-cn:zh-cn`（deploy 文件里已填好，不用改） |
 | `volumes:` | 上一步建的绝对路径，例如 `/share/Container/homecenter/data:/data` |
 | `AUTH_SECRET:` | 执行 `openssl rand -base64 32` 生成，粘进去 |
 
@@ -170,7 +172,7 @@ docker compose up -d
 
 ```bash
 # 看有哪些标签：GitHub → 个人主页 → Packages → homecenter
-docker pull ghcr.io/<用户名>/<仓库名>:zh-cn-20261026
+docker pull ghcr.io/yetandred/home-center-cn:zh-cn-20261027
 # 改 compose 里的 image 为这个标签，再 up -d
 ```
 
