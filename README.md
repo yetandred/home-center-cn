@@ -1,16 +1,16 @@
-English | [简体中文](README.zh-CN.md)
+[English](README.en.md) | 简体中文
 
 <div align="center">
 
 # HomeCenter
 
-**Every repair, warranty and receipt for your home, cars and family, on your own server.**
+**把家中、车辆和家人的每一次维修、保修和收据，都管理在自己的服务器上。**
 
-Service history, costs and reminders for your homes, vehicles, equipment and family health. Every receipt and manual is searchable, and it all runs in one Docker container.
+为你的房产、车辆、设备和家人健康提供维护历史、费用与提醒。每张收据和说明书都可搜索，全部运行在一个 Docker 容器里。
 
-**[More details at home-center.dazzos.com](https://home-center.dazzos.com/)**
+**[详情见 home-center.dazzos.com](https://home-center.dazzos.com/)**
 
-**[Install in 5 minutes](#get-started)** · [Features](#features) · [AI assistant](#ask-your-house-a-question) · [Demos](#see-it-in-action) · [FAQ](#faq) · [Updating](#updating)
+**[5 分钟安装](#get-started)** · [功能](#features) · [AI 助手](#ask-your-house-a-question) · [演示](#see-it-in-action) · [常见问题](#faq) · [更新](#updating)
 
 ![MIT licence](https://img.shields.io/badge/licence-MIT-blue) ![Self-hosted](https://img.shields.io/badge/self--hosted-Docker-2496ED) ![amd64 and arm64](https://img.shields.io/badge/arch-amd64%20%7C%20arm64-555) ![No cloud](https://img.shields.io/badge/cloud-none-success)
 [![Docker image build](https://github.com/yatzin/home-center/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/yatzin/home-center/actions/workflows/docker-publish.yml) [![Last commit](https://img.shields.io/github/last-commit/yatzin/home-center)](https://github.com/yatzin/home-center/commits/main)
@@ -20,61 +20,61 @@ Service history, costs and reminders for your homes, vehicles, equipment and fam
 ![HomeCenter dashboard](docs/screenshots/1.Dashboard.png)
 
 <p align="center">
-✓ Runs on your NAS or server &nbsp;·&nbsp; ✓ No third-party sign-in &nbsp;·&nbsp; ✓ OCR and search run on-device &nbsp;·&nbsp; ✓ Works with local AI models
+✓ 运行在你的 NAS 或服务器上 &nbsp;·&nbsp; ✓ 无第三方登录 &nbsp;·&nbsp; ✓ OCR 与搜索在本机运行 &nbsp;·&nbsp; ✓ 支持本地 AI 模型
 </p>
 
-## See it in action
+## 演示
 
-Short walkthroughs recorded on the demo data. Click one to play it.
+以下是在演示数据上录制的简短操作演示，点击即可播放。
 
 <table>
 <tr>
-<td width="33%" valign="top"><a href="docs/screenshots/demos/tour.gif"><img src="docs/screenshots/demos/posters/tour-play.jpg" alt="A quick tour demo"></a><br><b>A quick tour</b> <sub>1:03</sub><br><sub>A house, a truck and a person, tab by tab</sub></td>
-<td width="33%" valign="top"><a href="docs/screenshots/demos/ask-ai-warranty.gif"><img src="docs/screenshots/demos/posters/ask-ai-warranty-play.jpg" alt="Ask the assistant demo"></a><br><b>Ask the assistant</b> <sub>0:38</sub><br><sub>From a question to the warranty PDF that answers it</sub></td>
-<td width="33%" valign="top"><a href="docs/screenshots/demos/reminder-to-done.gif"><img src="docs/screenshots/demos/posters/reminder-to-done-play.jpg" alt="Reminder to done demo"></a><br><b>Reminder to done</b> <sub>0:32</sub><br><sub>An overdue filter change, completed, next date set</sub></td>
+<td width="33%" valign="top"><a href="docs/screenshots/demos/tour.gif"><img src="docs/screenshots/demos/posters/tour-play.jpg" alt="A quick tour demo"></a><br><b>快速浏览</b> <sub>1:03</sub><br><sub>一座房子、一辆卡车和一个人，逐个标签页看过去</sub></td>
+<td width="33%" valign="top"><a href="docs/screenshots/demos/ask-ai-warranty.gif"><img src="docs/screenshots/demos/posters/ask-ai-warranty-play.jpg" alt="Ask the assistant demo"></a><br><b>向助手提问</b> <sub>0:38</sub><br><sub>从一个问题，到能回答它的保修 PDF</sub></td>
+<td width="33%" valign="top"><a href="docs/screenshots/demos/reminder-to-done.gif"><img src="docs/screenshots/demos/posters/reminder-to-done-play.jpg" alt="Reminder to done demo"></a><br><b>提醒到完成</b> <sub>0:32</sub><br><sub>一条已逾期的更换滤芯提醒，完成并设定下次日期</sub></td>
 </tr>
 <tr>
-<td width="33%" valign="top"><a href="docs/screenshots/demos/costs-to-receipt.gif"><img src="docs/screenshots/demos/posters/costs-to-receipt-play.jpg" alt="Costs to receipt demo"></a><br><b>Costs to receipt</b> <sub>0:33</sub><br><sub>From the spending chart to the $2,340 invoice</sub></td>
-<td width="33%" valign="top"><a href="docs/screenshots/demos/search-documents.gif"><img src="docs/screenshots/demos/posters/search-documents-play.jpg" alt="Search your paperwork demo"></a><br><b>Search your paperwork</b> <sub>0:27</sub><br><sub>“roof” finds the 30-year shingle warranty</sub></td>
-<td width="33%" valign="top"><a href="docs/screenshots/demos/health-summary.gif"><img src="docs/screenshots/demos/posters/health-summary-play.jpg" alt="Health summary demo"></a><br><b>Health summary</b> <sub>0:32</sub><br><sub>Medications, shots and a printable summary</sub></td>
+<td width="33%" valign="top"><a href="docs/screenshots/demos/costs-to-receipt.gif"><img src="docs/screenshots/demos/posters/costs-to-receipt-play.jpg" alt="Costs to receipt demo"></a><br><b>从费用到收据</b> <sub>0:33</sub><br><sub>从支出图表一路查到那张 2,340 美元的发票</sub></td>
+<td width="33%" valign="top"><a href="docs/screenshots/demos/search-documents.gif"><img src="docs/screenshots/demos/posters/search-documents-play.jpg" alt="Search your paperwork demo"></a><br><b>搜索你的单据</b> <sub>0:27</sub><br><sub>搜索 “roof” 就能找到那份 30 年屋瓦保修</sub></td>
+<td width="33%" valign="top"><a href="docs/screenshots/demos/health-summary.gif"><img src="docs/screenshots/demos/posters/health-summary-play.jpg" alt="Health summary demo"></a><br><b>健康摘要</b> <sub>0:32</sub><br><sub>用药、疫苗接种，以及一份可打印的摘要</sub></td>
 </tr>
 </table>
 
-## New in 2.0
+## 2.0 版新功能
 
-These arrived after the demos and screenshots above were recorded.
+以下是上述演示和截图录制之后新增的功能。
 
-- **Intake:** drop receipts, photos, PDFs or forwarded emails (`.eml`, `.msg`) anywhere in the app. HomeCenter reads the date, vendor and total, suggests which asset they belong to, and lets you file them as a new service record or attach them to an existing one. Filing a receipt also offers to complete the matching reminder, and a nudge appears when files sit unfiled for more than a week.
-- **Receipt reading with local AI** *(optional)*: under **Settings → Receipt reading**, use the built-in parser or a local model for harder receipts. If the model can't read a file, Intake says so instead of quietly falling back.
-- **More reminder controls:** **Skip this time** moves a reminder to its next interval without logging a service, and **Add default reminders** fills an empty Maintenance tab with a starter plan.
-- **Themes:** twelve themes, light and dark, picked from the top bar or stepped through with its arrows.
-- **Layout your way:** collapse the sidebar to icons, and choose per device where the assistant button and Intake sit (**Settings → Appearance**).
-- **Sharper search:** exact matches come first, then results by meaning, then partial matches.
+- **收件箱（Intake）：** 把收据、照片、PDF 或转发的邮件（`.eml`、`.msg`）拖放到应用内任意位置。HomeCenter 会读取日期、商家和金额，建议它们归属哪个资产，并让你把它们归档为新的维护记录或附加到现有记录。归档收据时还会提示补全对应的提醒；文件超过一周未归档时会出现提醒。
+- **本地 AI 读取收据** *（可选）*：在**设置 → 收据读取**中，可使用内置解析器或本地模型处理较复杂的收据。如果模型读不了某个文件，收件箱会明确告知，而不是悄悄回退。
+- **更多提醒控制：** **跳过本次**可将提醒顺延到下一个周期而不记录维护；**添加默认提醒**可为空的维护标签页填入一套起始计划。
+- **主题：** 十二套主题，明暗皆有，可从顶栏选择，或用其箭头逐个切换。
+- **布局随心：** 侧边栏可折叠为图标，并可按设备选择 AI 助手按钮和收件箱的位置（**设置 → 外观**）。
+- **更精准的搜索：** 精确匹配优先，其次按语义排序，最后是部分匹配。
 
-## Features
+## 功能
 
-When was the furnace last serviced? Is the fridge still under warranty? What did the truck cost last year? HomeCenter keeps the answers in one place, and reminds you before things are due.
+上次保养暖气炉是什么时候？冰箱还在保修期内吗？去年那辆卡车花了多少钱？HomeCenter 把这些答案集中在一处，并在事项到期前提醒你。
 
 | | |
 |---|---|
-| **Home** | Properties, vehicles and equipment, with service records, warranties and reminders |
-| **Health** *(optional)* | People, providers and insurance, with visits, medications and immunizations |
-| **Money** | Costs by asset, category and vendor, and a 12-month spending chart |
-| **Finding things** | Global search across records and documents, plus an optional AI assistant |
-| **Reminders** | In-app bell and per-person email digests |
-| **Records & export** | Attachments, printable reports, a full offline export, and scheduled backups with restore ([how backups work](#how-do-i-back-it-up)) |
-| **Security** | Local login, admin and standard users, sign-in throttling, encrypted secrets |
+| **房产** | 房产、车辆和设备，附带维护记录、保修和提醒 |
+| **健康** *（可选）* | 成员、服务商和保险，附带就诊、用药和疫苗接种 |
+| **费用** | 按资产、分类和商家统计费用，附 12 个月支出图表 |
+| **查找** | 跨记录和文档的全局搜索，外加可选的 AI 助手 |
+| **提醒** | 应用内铃铛通知，以及按成员的邮件摘要 |
+| **记录与导出** | 附件、可打印报告、完整的离线导出，以及带恢复功能的定时备份（[备份说明](#how-do-i-back-it-up)） |
+| **安全** | 本地登录、管理员与普通用户、登录限流、加密存储的机密信息 |
 
-### Every house, car and appliance, with its whole history
+### 每栋房子、每辆车、每台电器，连同它的全部历史
 
-Give each thing you own a page: photo, details, and every repair, warranty and reminder attached to it.
+为你拥有的每件东西建一个页面：照片、详细信息，以及挂在上面的每一次维修、保修和提醒。
 
-- **Properties:** houses, condos, cabins and land.
-- **Vehicles:** service history that tracks mileage.
-- **Equipment:** linked to the property it's in, with model and serial numbers.
-- **Rooms** *(optional)*: a property's rooms with their paint colors and flooring, and the equipment, service and reminders in each. Turn them off under **Settings → Features**.
-- **Documents** that belong to the thing itself, like a deed, a car title or a manual, with no service record needed.
-- **Download all files** for any asset as a zip.
+- **房产：** 独栋住宅、公寓、度假小屋和土地。
+- **车辆：** 按里程记录的维护历史。
+- **设备：** 关联到所在房产，记录型号和序列号。
+- **房间** *（可选）*：房产内的各个房间，含油漆颜色和地板材质，以及每个房间内的设备、维护和提醒。可在**设置 → 功能**中关闭。
+- **文档：** 归属于资产本身的文件，如地契、车辆产权证或说明书，无需关联维护记录。
+- 为任意资产**打包下载全部文件**为 zip。
 
 ![A house and its service records](docs/screenshots/3.House.png)
 
@@ -85,15 +85,15 @@ Give each thing you own a page: photo, details, and every repair, warranty and r
 <a href="docs/screenshots/9.Equipment.png"><img src="docs/screenshots/9.Equipment.png" width="24%" alt="Equipment"></a>
 </p>
 
-### Know what's due before it's overdue
+### 在逾期之前就心中有数
 
-Set a reminder once, by days or miles. HomeCenter works out the next due date and tells you in time.
+只需按天数或里程设置一次提醒。HomeCenter 会算出下次到期日，并及时通知你。
 
-- **Date or mileage** intervals, with as much warning as you want.
-- **Warranty status** at a glance: active, expiring or expired.
-- **Overviews** across every asset, sortable and filterable.
-- **Closing the loop:** completing a reminder logs it in the service history with cost, vendor and receipt, and a service you log can mark its reminder done.
-- **Snooze or pause** a reminder from the dashboard or its asset page. Snoozed reminders come back when the snooze ends; paused ones stay quiet until resumed.
+- **按日期或里程**设置周期，提前预警时间由你决定。
+- **保修状态**一目了然：生效中、即将到期或已过期。
+- 跨所有资产的**总览**，可排序、可筛选。
+- **闭环管理：** 完成提醒时会自动记入维护历史，包含费用、商家和收据；反过来，记录一次维护也可同时把对应提醒标记为完成。
+- 可在仪表盘或资产页**稍后提醒或暂停**提醒。稍后提醒的会在到期后重新出现；暂停的会保持安静，直到你恢复。
 
 ![Maintenance overview](docs/screenshots/11.MaintenanceReminderOverview.png)
 
@@ -104,15 +104,15 @@ Set a reminder once, by days or miles. HomeCenter works out the next due date an
 <a href="docs/screenshots/4.ServiceRecord.png"><img src="docs/screenshots/4.ServiceRecord.png" width="24%" alt="Service record"></a>
 </p>
 
-### Your family's health records, close at hand *(optional)*
+### 家人的健康档案，触手可及 *（可选）*
 
-Keep each person's medical picture in one place, and print a clean summary for the next appointment.
+把每位成员的健康情况集中管理，就诊时打印一份清爽的摘要带走。
 
-- **Conditions, medications, allergies** and immunizations.
-- **Visits** linked to providers, with costs.
-- **Observation logs** to spot symptom patterns.
-- **Refill, vaccine and insurance** reminders.
-- If you don't need it, turn the whole section off in **Settings → Features**.
+- **病症、用药、过敏**和疫苗接种。
+- **就诊**关联服务商，并记录费用。
+- **观察记录**，便于发现症状规律。
+- **续药、疫苗和保险**提醒。
+- 不需要的话，可在**设置 → 功能**中关闭整个板块。
 
 ![A person's health record](docs/screenshots/13.Person.png)
 
@@ -122,50 +122,50 @@ Keep each person's medical picture in one place, and print a clean summary for t
 <a href="docs/screenshots/16.MedicalSummary.png"><img src="docs/screenshots/16.MedicalSummary.png" width="32%" alt="Medical summary"></a>
 </p>
 
-### See where the money goes
+### 看清钱花在了哪里
 
-Every service record carries a cost. HomeCenter adds them up across the whole household.
+每条维护记录都带有费用，HomeCenter 会汇总整个家庭的支出。
 
-- **Monthly, quarterly or yearly** trends with a rolling average.
-- Top assets, categories and vendors.
-- **Biggest expenses** and year-to-date totals.
-- Filter to properties, vehicles, equipment or people.
+- **按月、按季度或按年**的趋势，附带移动平均线。
+- 支出最多的资产、分类和商家。
+- **最大支出**与年初至今累计。
+- 可按房产、车辆、设备或成员筛选。
 
 <p>
 <a href="docs/screenshots/17.Costs1.png"><img src="docs/screenshots/17.Costs1.png" width="49%" alt="Costs over time"></a>
 <a href="docs/screenshots/17.Costs2.png"><img src="docs/screenshots/17.Costs2.png" width="49%" alt="Costs by asset and vendor"></a>
 </p>
 
-### Find anything, even inside the manual
+### 什么都能搜到，连说明书里都行
 
-One search box covers assets, records and the text of every file you've uploaded. Ask in your own words and it finds what you meant.
+一个搜索框覆盖所有资产、记录，以及你上传过的每个文件的正文。用你自己的话提问，它能找到你想表达的意思。
 
-- **Reads** PDF, Word, Excel, PowerPoint, OpenDocument, RTF and text files.
-- **OCR** for photos and scanned PDFs.
-- **Search by meaning**, using a small model that runs on your server.
-- Indexing and OCR run in the background, on your server.
+- 可**读取** PDF、Word、Excel、PowerPoint、OpenDocument、RTF 和文本文件。
+- 照片和扫描版 PDF 支持 **OCR**。
+- **按语义搜索**，使用一个运行在你服务器上的小型模型。
+- 索引和 OCR 在后台运行，全部在你的服务器上完成。
 
 ![Global search results](docs/screenshots/20.Search.png)
 
-### Ask your house a question
+### 向你的房子提问
 
-The assistant *(optional)* looks up your records and documents to answer plain-language questions, with links back to the source.
+AI 助手 *（可选）* 会查阅你的记录和文档，用平实的语言回答问题，并附上指向来源的链接。
 
-- Works with OpenAI, OpenRouter, Ollama, LM Studio or any OpenAI-compatible server.
-- **Run it fully local** and nothing leaves your network.
-- You choose whether it may read documents and health data.
-- Chats stay in your browser and are never stored on the server.
+- 支持 OpenAI、OpenRouter、Ollama、LM Studio 或任何 OpenAI 兼容服务器。
+- **完全本地运行**，任何数据都不会离开你的网络。
+- 由你决定它能否读取文档和健康数据。
+- 对话只保存在你的浏览器里，永远不会存储在服务器上。
 
 ![The assistant answering a spending question](docs/screenshots/21.Assistant.png)
 
-### Reminders and reports
+### 提醒与报告
 
-Reminders arrive in the app and, if you like, by email. Reports turn an asset's history into a document you can hand to a buyer, a mechanic or a doctor.
+提醒在应用内送达，也可以按你的需要通过邮件送达。报告则把一份资产的历史整理成文档，可以交给买家、修理厂或医生。
 
-- **Email digests** for each person: as soon as possible, daily or weekly.
-- **Mail server set up in Settings**, with a test button.
-- **Dismiss and restore** notifications.
-- **Printable asset reports** and medical summaries.
+- 按成员的**邮件摘要**：尽快、每天或每周。
+- **在设置中配置邮件服务器**，附测试按钮。
+- 通知可**忽略与恢复**。
+- **可打印的资产报告**和医疗摘要。
 
 <p>
 <a href="docs/screenshots/18.Notifications.png"><img src="docs/screenshots/18.Notifications.png" width="32%" alt="Notifications"></a>
@@ -173,37 +173,37 @@ Reminders arrive in the app and, if you like, by email. Reports turn an asset's 
 <a href="docs/screenshots/19.AssetReport.png"><img src="docs/screenshots/19.AssetReport.png" width="32%" alt="Asset report"></a>
 </p>
 
-## Private by design
+## 隐私优先的设计
 
-HomeCenter is one container and one data folder, and you own both.
+HomeCenter 是一个容器加一个数据目录，两者都归你所有。
 
-- **Self-hosted:** runs on a Synology, Unraid or any Docker host. Updates never touch your data folder.
-- **On-device processing:** OCR and meaning search run inside the container. Their only network call is an optional model download.
-- **You decide:** the AI assistant stays off until you turn it on, and Health can be hidden entirely. Login is local, users are admin or standard, repeated failed sign-ins are slowed down, and the mail password and API key are encrypted at rest.
+- **自托管：** 可运行在 Synology、Unraid 或任何 Docker 主机上。更新永远不会触碰你的数据目录。
+- **本机处理：** OCR 和语义搜索都在容器内运行，唯一的网络请求是可选的模型下载。
+- **由你决定：** AI 助手默认关闭，开启才生效；健康板块可以完全隐藏。登录为本地验证，用户分为管理员和普通用户，连续登录失败会被限速，邮件密码和 API 密钥均以加密形式存储。
 
-<sub>Photos in the screenshots are from <a href="https://commons.wikimedia.org/">Wikimedia Commons</a>, by various authors, under their individual licenses (mostly CC BY-SA).</sub>
+<sub>截图中的照片来自 <a href="https://commons.wikimedia.org/">Wikimedia Commons</a>，由多位作者提供，遵循各自声明（多为 CC BY-SA）。</sub>
 
-## Get started
+## 开始使用
 
-Setup takes about five minutes. You need:
+部署大约需要五分钟。你需要：
 
-| Requirement | Why |
+| 前提条件 | 原因 |
 |---|---|
-| Docker + Docker Compose | How the app runs. No Node.js or build setup needed. |
-| A folder on the host for data | Holds the database and uploaded files, and survives updates |
-| ~5 minutes | To set one required value and start the container |
+| Docker + Docker Compose | 应用的运行方式。无需 Node.js 或构建环境。 |
+| 宿主机上用于数据的目录 | 存放数据库和上传文件，且在更新后依然保留 |
+| 约 5 分钟 | 设置一个必填项并启动容器 |
 
-### Install (Docker)
+### 安装（Docker）
 
-This is the recommended way to run HomeCenter.
+这是运行 HomeCenter 的推荐方式。
 
-**1. Create a folder for its data**, e.g. on a Synology NAS:
+**1. 为数据创建一个目录**，例如在 Synology NAS 上：
 
 ```bash
 mkdir -p /volume1/docker/homecenter
 ```
 
-**2. Save this as `docker-compose.yml`** (or paste it into Portainer → Stacks → Add stack):
+**2. 把以下内容保存为 `docker-compose.yml`**（或粘贴到 Portainer → Stacks → Add stack）：
 
 ```yaml
 services:
@@ -230,243 +230,197 @@ services:
       start_period: 10s
 ```
 
-Update the volume path to the folder you created in step 1.
+把卷路径改为你第 1 步创建的目录。
 
-**3. Set these values:**
+**3. 设置这些值：**
 
-| Variable | Required? | What to put |
+| 变量 | 是否必填 | 填什么 |
 |---|---|---|
-| `AUTH_SECRET` | **Yes** | A random secret: `openssl rand -base64 32`. Without it, logins won't work. |
-| `AUTH_URL` | No | The address you'll browse to, e.g. `http://192.168.1.50:3000`. Leave blank to auto-detect it. |
-| `ADMIN_EMAIL` / `ADMIN_PASSWORD` | No | Your login, used once on first boot to create the admin account and ignored after that. If you remove `ADMIN_PASSWORD`, the password is `changeme` and you must change it on first login. Without `ADMIN_EMAIL`, the email is `admin@localhost`. |
-| `NOTIFY_INTERVAL_MINUTES` | No | How often to check for due maintenance and expiring warranties. Defaults to `360` (6 hours). Set `0` to turn reminders off. |
-| `SMTP_HOST` | No | Your mail server, e.g. `smtp.gmail.com`. **Leave blank and no email is ever sent.** The in-app bell still works. |
+| `AUTH_SECRET` | **必填** | 一个随机密钥：`openssl rand -base64 32`。不设置则无法登录。 |
+| `AUTH_URL` | 否 | 你访问时使用的地址，例如 `http://192.168.1.50:3000`。留空可自动检测。 |
+| `ADMIN_EMAIL` / `ADMIN_PASSWORD` | 否 | 你的登录凭据，仅在首次启动时用于创建管理员账户，之后会被忽略。如果删除 `ADMIN_PASSWORD`，密码为 `changeme`，且你必须首次登录后修改。不设置 `ADMIN_EMAIL` 时，邮箱为 `admin@localhost`。 |
+| `NOTIFY_INTERVAL_MINUTES` | 否 | 检查到期维护和即将过期保修的间隔。默认 `360`（6 小时）。设为 `0` 可关闭提醒。 |
+| `SMTP_HOST` | 否 | 你的邮件服务器，例如 `smtp.gmail.com`。**留空则绝不发送任何邮件。** 应用内的铃铛通知仍然可用。 |
 
-Everything else can stay at its default. Uploads (`/data/uploads`) and downloaded models (`/data/models`) are kept in the data folder automatically.
+其余项保持默认即可。上传文件（`/data/uploads`）和下载的模型（`/data/models`）会自动保存在数据目录中。
 
-**4. Start it:**
+**4. 启动：**
 
 ```bash
 docker compose up -d
 ```
 
-(Portainer: click **Deploy the stack**.)
+（Portainer：点击 **Deploy the stack**。）
 
-The container sets up its database and admin account automatically on first boot.
+容器会在首次启动时自动初始化数据库和管理员账户。
 
-**5. Log in** at `http://<your-server-ip>:3000/login` with the admin email/password from step 3.
+**5. 登录** `http://<你的服务器IP>:3000/login`，使用第 3 步设置的管理员邮箱和密码。
 
-## Optional extras
+## 可选功能
 
-HomeCenter works fully without these. Add them when you want them.
+没有这些功能 HomeCenter 也能完整运行，需要时再加即可。
 
-### Email notifications (optional)
+### 邮件通知（可选）
 
-Until a mail server is set up, reminders only appear in the app. There are two
-ways to configure one.
+在配置邮件服务器之前，提醒只出现在应用内。有两种配置方式。
 
-**In the app** (easiest): sign in as an admin and go to **Settings → Mail
-server**. Fill in the server, port, and login, save, then use **Send test
-email** to confirm it works. No restart needed, and the password is stored
-encrypted with your `AUTH_SECRET`.
+**在应用内**（最简单）：以管理员身份登录，进入**设置 → 邮件服务器**。填写服务器、端口和登录信息并保存，然后用**发送测试邮件**确认可用。无需重启，密码会以你的 `AUTH_SECRET` 加密存储。
 
-**Or by environment variable**, if you'd rather bake it into the container:
+**或通过环境变量**，如果你想把它固化在容器里：
 
-| Variable | Default | What it does |
+| 变量 | 默认值 | 作用 |
 |---|---|---|
-| `SMTP_HOST` | — | Mail server hostname. Nothing sends until this is set. |
-| `SMTP_PORT` | `587` | `465` for implicit TLS, `587` for STARTTLS. |
-| `SMTP_USER` / `SMTP_PASS` | — | Login for the mail server. With Gmail or iCloud, use an **app password**, not your account password. Omit both for an unauthenticated LAN relay. |
-| `SMTP_SECURE` | auto | `true` forces TLS. Defaults to on for port 465, off otherwise. |
-| `MAIL_FROM` | `HomeCenter <no-reply@homecenter.local>` | The From address. Many providers require this to match the authenticated account. |
-| `DIGEST_HOUR` | `8` | Hour of day (0–23) for daily and weekly digests. |
-| `MAIL_DRY_RUN` | — | `1` logs each message instead of sending it, so you can check the setup safely. |
+| `SMTP_HOST` | — | 邮件服务器主机名。不设置则不会发送任何邮件。 |
+| `SMTP_PORT` | `587` | `465` 为隐式 TLS，`587` 为 STARTTLS。 |
+| `SMTP_USER` / `SMTP_PASS` | — | 邮件服务器的登录凭据。使用 Gmail 或 iCloud 时请用**应用专用密码**，而非账户密码。两项都省略则为无需认证的局域网中继。 |
+| `SMTP_SECURE` | 自动 | `true` 强制 TLS。465 端口默认开启，其余默认关闭。 |
+| `MAIL_FROM` | `HomeCenter <no-reply@homecenter.local>` | 发件人地址。许多服务商要求它与认证账户一致。 |
+| `DIGEST_HOUR` | `8` | 每日和每周摘要的发送时刻（0–23 点）。 |
+| `MAIL_DRY_RUN` | — | 设为 `1` 时只记录每封邮件而不发送，便于安全地检查配置。 |
 
-**Anything set in Settings wins over the environment variable**, and clearing a
-field in Settings falls back to it. The form labels which values came from the
-environment, so it's clear what's in effect.
+**设置中的配置始终优先于环境变量**，清空设置中的某个字段则会回退到环境变量。表单会标注哪些值来自环境变量，哪些实际生效一目了然。
 
-Because the stored password is encrypted with `AUTH_SECRET`, **changing
-`AUTH_SECRET` makes it unreadable**. The app detects this, stops sending rather
-than failing silently, and Settings prompts you to enter the password again.
+由于存储的密码以 `AUTH_SECRET` 加密，**更改 `AUTH_SECRET` 会使旧密码无法读取**。应用能检测到这种情况，会停止发送而不是静默失败，并在设置中提示你重新输入密码。
 
-Each user picks their own cadence under **Settings → Notifications**: off,
-as soon as possible, daily, or weekly. New accounts default to daily.
+每位用户可在**设置 → 通知**中选择自己的频率：关闭、尽快、每天或每周。新账户默认为每天。
 
-Two caveats:
+两点注意：
 
-- Delivery is driven by the same timer as the reminder check, so a digest goes
-  out on the first pass **at or after** `DIGEST_HOUR`, not exactly at it. With
-  the default 6-hour interval it can be up to 6 hours late. Lower
-  `NOTIFY_INTERVAL_MINUTES` if you want tighter timing.
-- "As soon as possible" likewise means the next pass, not instantly.
+- 发送与提醒检查共用同一个定时器，因此摘要在**到达或晚于** `DIGEST_HOUR` 的第一次检查时发出，而不是正好在整点。按默认 6 小时间隔，最多可能晚 6 小时。想更精准可调低 `NOTIFY_INTERVAL_MINUTES`。
+- “尽快”同样指下一次检查，而不是立即发送。
 
-**Who and how often.** An admin picks which accounts get notifications under
-**Settings → Notifications → Who gets notifications** (everyone, by default).
-Each person then chooses how often the same due item is raised again:
+**发给谁、多久提醒一次。** 管理员在**设置 → 通知 → 谁接收通知**中选择哪些账户接收通知（默认所有人）。然后每个人自行选择同一到期事项再次提醒的频率：
 
-| Option | What you get |
+| 选项 | 效果 |
 |---|---|
-| When it's coming up, and on the due date *(default)* | One heads-up, then one on the day |
-| Only once | A single reminder |
-| Every check until dismissed | Comes back after you read it, until you dismiss it |
+| 临近时提醒，到期日当天再提醒一次 *（默认）* | 一次预告，到期当天再一次 |
+| 仅一次 | 只提醒一次 |
+| 每次检查都提醒，直到忽略 | 阅读后仍会再次出现，直到你忽略它 |
 
-A new due date always starts afresh, for example after you log the service or
-move a refill date. Emails cover only new or re-raised reminders, so lowering
-the interval doesn't mean repeat messages, except with "every check until
-dismissed".
+新的到期日总是重新开始计算，例如记录了一次维护或修改了续药日期之后。邮件只包含新增或重新触发的提醒，因此调低间隔不会导致重复邮件，“每次检查都提醒”除外。
 
-### AI assistant (optional)
+### AI 助手（可选）
 
-Sign in as an admin and go to **Settings → Assistant**. Pick a provider (OpenAI,
-Ollama, LM Studio, OpenRouter or any OpenAI-compatible server), enter the model
-name and, if the provider needs one, an API key (stored encrypted). Use **Test
-connection** to confirm the model supports tool calling, which the assistant needs.
+以管理员身份登录，进入**设置 → 助手**。选择服务商（OpenAI、Ollama、LM Studio、OpenRouter 或任何 OpenAI 兼容服务器），填入模型名称，以及该服务商需要时的 API 密钥（加密存储）。使用**测试连接**确认模型支持工具调用，这是助手所必需的。
 
-Questions, and the records needed to answer them, are sent to that server,
-including health records. Point it at a local model if that matters to you. When
-HomeCenter runs in Docker, `localhost` means the container: use the host's
-address (e.g. `http://host.docker.internal:11434/v1`) for a model running on the
-host.
+你的问题，以及回答所需的相关记录，会发送到该服务器，包括健康记录。如有顾虑，请指向本地模型。当 HomeCenter 运行在 Docker 中时，`localhost` 指的是容器本身：若模型运行在宿主机上，请使用宿主机地址（例如 `http://host.docker.internal:11434/v1`）。
 
-For Ollama, raise the context length. The default is too short for the tool
-definitions and results, so answers get cut off or ignore the data. Set
-`OLLAMA_CONTEXT_LENGTH=16384` (or more) on the Ollama server. Models of 7B
-parameters or larger are recommended; small models often call the tools wrongly
-or not at all.
+使用 Ollama 时请调大上下文长度。默认值对工具定义和返回结果来说太短，会导致回答被截断或忽略数据。在 Ollama 服务器上设置 `OLLAMA_CONTEXT_LENGTH=16384`（或更大）。建议使用 7B 参数以上的模型；小模型经常错误调用工具或干脆不调用。
 
-For slow local models, **Time limit per question** (default 180 seconds) caps the
-whole answer, including waiting for the model to load or read the prompt.
-Raise it if answers time out. Once a reply starts streaming, it also stops if
-the server then sends nothing for 60 seconds. **Extra request JSON** passes
-server-specific options with every request, e.g.
-`{"chat_template_kwargs": {"enable_thinking": true}}` to turn on a model's
-thinking in llama.cpp or vLLM, or `{"reasoning_effort": "low"}` for OpenAI
-reasoning models.
+对于较慢的本地模型，**每个问题的时间上限**（默认 180 秒）会限制整个回答过程，包括等待模型加载或读取提示词。如果回答经常超时，可调高它。回答开始流式输出后，若服务器连续 60 秒没有发送内容也会停止。**额外请求 JSON** 会随每次请求传递服务商特有的参数，例如在 llama.cpp 或 vLLM 中开启模型思考用 `{"chat_template_kwargs": {"enable_thinking": true}}`，OpenAI 推理模型可用 `{"reasoning_effort": "low"}`。
 
-Chats stay in your browser tab and are never stored on the server.
+对话只保留在你的浏览器标签页中，永远不会存储在服务器上。
 
-### Document search (optional)
+### 文档搜索（可选）
 
-HomeCenter reads the text of uploaded files in the background (PDF, Word
-(.doc/.docx), OpenDocument, PowerPoint, Excel, RTF, text/CSV, and photos or
-scanned PDFs via OCR) and indexes it so the assistant can search it. It runs
-entirely inside the container; nothing is sent anywhere until the assistant
-uses a passage to answer a question.
+HomeCenter 在后台读取上传文件的文本（PDF、Word（.doc/.docx）、OpenDocument、PowerPoint、Excel、RTF、文本/CSV，以及通过 OCR 处理的照片和扫描版 PDF）并建立索引，供助手搜索。整个过程完全在容器内进行；除非助手引用某段文本来回答问题，否则不会向任何地方发送任何内容。
 
-**Settings → Documents & search** turns indexing and OCR on or off and shows progress.
-**Settings → Assistant** decides whether the assistant may read documents at
-all, and separately whether it may read health documents (files on anything
-that belongs to a person, such as their visits, reminders and medications). That one is off
-by default.
+**设置 → 文档与搜索**可开关索引和 OCR 并查看进度。
+**设置 → 助手**决定助手是否可以读取文档，并可单独决定它能否读取健康文档（归属于某位成员的文件，例如其就诊、提醒和用药相关文件）。后者默认关闭。
 
-| Variable | Default | Meaning |
+| 变量 | 默认值 | 含义 |
 |---|---|---|
-| `SEARCH_INDEX_PATH` | next to the database (`/data/search-index.db`) | The keyword index. Derived data: it doesn't need backing up and is rebuilt automatically if missing. |
-| `DOCUMENT_REINDEX_HOURS` | `6` | How often to pick up missed or failed files. `0` disables the timer (uploads are still indexed immediately). |
+| `SEARCH_INDEX_PATH` | 数据库旁（`/data/search-index.db`） | 关键词索引。属于派生数据：无需备份，缺失时会自动重建。 |
+| `DOCUMENT_REINDEX_HOURS` | `6` | 补扫遗漏或失败文件的间隔。`0` 关闭定时器（上传仍会立即索引）。 |
 
-Not indexed: iWork files, .zip, legacy .xls/.ppt and HEIC photos.
+不索引：iWork 文件、.zip、旧版 .xls/.ppt 以及 HEIC 照片。
 
-#### Search by meaning
+#### 按语义搜索
 
-Besides exact words, HomeCenter can find passages by meaning ("how often do I
-swap the furnace filter?" finds "replace every 90 days"). A small AI model runs
-**on your server**, so no document text leaves it for this. The model loads only
-while documents are being indexed or searched, and unloads when idle.
+除了精确字词，HomeCenter 还能按语义查找段落（“暖气炉滤芯多久换一次？”能找到“每 90 天更换一次”）。一个小型 AI 模型**运行在你的服务器上**，因此不会为搜索而把文档内容发送出去。模型只在索引或搜索文档时加载，空闲时卸载。
 
-**Settings → Documents & search → Find documents by meaning** turns it on or off and
-picks the model:
+**设置 → 文档与搜索 → 按语义查找文档**可开关此功能并选择模型：
 
-| Model | Size | Good for |
+| 模型 | 大小 | 适合 |
 |---|---|---|
-| BGE small (built in) | 34 MB | Fast, English |
-| Arctic Embed M | 110 MB | Best quality for its size, English (recommended upgrade) |
-| BGE base | 110 MB | Better quality, English |
-| Nomic Embed Text | 137 MB | Good quality, English |
-| E5 base | 279 MB | Many languages |
-| BGE large | 337 MB | Highest quality, slow on small hosts |
+| BGE small（内置） | 34 MB | 快速，仅英文 |
+| Arctic Embed M | 110 MB | 同尺寸中质量最佳，英文（推荐升级） |
+| BGE base | 110 MB | 质量更好，英文 |
+| Nomic Embed Text | 137 MB | 质量良好，英文 |
+| E5 base | 279 MB | 多语言 |
+| BGE large | 337 MB | 质量最高，小型主机上较慢 |
 
-Larger models download from Hugging Face when you click **Download** (the
-only time HomeCenter goes online for this) and are stored in `/data/models`.
-Switching models re-processes your documents in the background.
+较大的模型在你点击**下载**时从 Hugging Face 下载（这是 HomeCenter 为此联网的唯一情形），并存储在 `/data/models` 中。切换模型会在后台重新处理你的文档。
 
-| Variable | Default | Meaning |
+| 变量 | 默认值 | 含义 |
 |---|---|---|
-| `MODELS_DIR` | `/data/models` | Where downloaded models are kept. |
-| `EMBEDDING_IDLE_MINUTES` | `10` | Unload the model this long after the last search. `0` unloads right after each search. |
+| `MODELS_DIR` | `/data/models` | 下载模型的存放位置。 |
+| `EMBEDDING_IDLE_MINUTES` | `10` | 最后一次搜索之后经过这么长时间即卸载模型。`0` 表示每次搜索后立即卸载。 |
 
-## FAQ
+## 常见问题
 
-### Does it need an internet connection?
+### 需要联网吗？
 
-No. HomeCenter runs on your local network. It goes online only for things you turn on: email reminders, a cloud AI provider, or downloading a larger search model.
+不需要。HomeCenter 运行在你的本地网络中。只有你主动开启的功能才会联网：邮件提醒、云端 AI 服务商，或下载较大的搜索模型。
 
-### What does the AI assistant send, and where?
+### AI 助手会发送什么，发送到哪里？
 
-Your question and the records needed to answer it go to the AI provider you configure, including health records if you allow it. Point it at Ollama or LM Studio on your own network and nothing leaves. The assistant is off until an admin sets it up, and chats are never stored on the server.
+你的问题和回答所需的相关记录会发送到你配置的 AI 服务商，如果你允许，还包括健康记录。把服务商指向你自己网络中的 Ollama 或 LM Studio，则不会有任何数据离开本地。助手在管理员配置之前处于关闭状态，对话也永远不会存储在服务器上。
 
-### How do I back it up?
+### 如何备份？
 
-Settings → Data. **Back up now** makes a verified backup; a daily or weekly **schedule** keeps the newest 14 (configurable). Point the folder at a different disk or NAS share (mount it in `docker-compose.yml`, e.g. `/backups`), because a backup on the same disk as your data doesn't survive that disk failing.
+进入 设置 → 数据。**立即备份**会生成一个经过校验的备份；每日或每周的**定时计划**会保留最新的 14 份（可配置）。请把备份目录指向另一块磁盘或 NAS 共享（在 `docker-compose.yml` 中挂载，例如 `/backups`），因为与数据同盘的备份无法在磁盘故障时幸存。
 
-Each backup is one file holding the database and every uploaded file. Protection is optional: none, a **recovery key** (the server can't open its own backups), or a **password zip** (opens in 7-Zip, WinRAR or Keka). From the command line: `npm run backup` and `npm run backup:verify -- <file>`.
+每个备份是包含数据库和所有上传文件的单个文件。保护方式可选：不保护、**恢复密钥**（服务器自身无法打开备份），或**密码 zip**（可用 7-Zip、WinRAR 或 Keka 打开）。命令行方式：`npm run backup` 和 `npm run backup:verify -- <文件>`。
 
-Keep your `AUTH_SECRET`: an unprotected backup restored under a different one asks you to re-enter the mail password and AI key. Protected backups carry them.
+请妥善保管你的 `AUTH_SECRET`：无保护的备份在另一个 `AUTH_SECRET` 下恢复时，会要求你重新输入邮件密码和 AI 密钥。受保护的备份则自带这些信息。
 
-**Restoring** is done in the app (Settings → Data), or from the command line when the app won't start: stop HomeCenter, then `npm run restore -- <file>` (`--dry-run` to only look). The command line swaps the data in right away. The next start upgrades the database if the backup is older and finishes the restore (everyone is signed out, carried secrets are put back); in Docker that start is the container restarting. `npm start` outside Docker does not run `prisma migrate deploy`, so run `npx prisma migrate deploy` before starting if the backup came from an older version. A restore made in the app waits for a restart; `npm run restore -- --cancel` (or **Cancel staged restore** in Settings → Data) takes it back. In Docker, `docker compose run --rm --no-deps --user nextjs --entrypoint npm homecenter run restore -- /data/backups/<file> --yes` runs it in a fresh container.
+**恢复**可在应用内进行（设置 → 数据），也可在应用无法启动时从命令行进行：停止 HomeCenter，然后执行 `npm run restore -- <文件>`（`--dry-run` 仅预览不执行）。命令行方式会立即换入数据。下次启动时，若备份来自旧版本会先升级数据库并完成恢复（所有人被登出，携带的机密信息被放回）；在 Docker 中，这次启动就是容器的重启。在 Docker 之外，`npm start` 不会执行 `prisma migrate deploy`，因此如果备份来自旧版本，请在启动前运行 `npx prisma migrate deploy`。在应用内发起的恢复会等待重启；`npm run restore -- --cancel`（或设置 → 数据中的**取消待执行的恢复**）可将其撤销。在 Docker 中，`docker compose run --rm --no-deps --user nextjs --entrypoint npm homecenter run restore -- /data/backups/<文件> --yes` 可在一个全新容器中执行恢复。
 
-### Will it run on my NAS?
+### 我的 NAS 上能跑吗？
 
-Images are built for amd64 and arm64, so it runs on Synology, Unraid and other Docker hosts, including 64-bit ARM boards such as a Raspberry Pi.
+镜像同时支持 amd64 和 arm64 架构，因此可运行在 Synology、Unraid 及其他 Docker 主机上，包括 Raspberry Pi 等 64 位 ARM 设备。
 
-### Can everyone in the house have their own login?
+### 家里每个人都能有自己的登录账号吗？
 
-Yes. An admin adds users under Settings → Users as admin or standard. Everyone sees the same household records. Admins also manage users, features, mail and the assistant, and each person chooses their own email reminders.
+可以。管理员在 设置 → 用户 中以管理员或普通用户身份添加用户。所有人看到的是同一份家庭记录。管理员还负责管理用户、功能、邮件和助手，而每位成员可自行选择邮件提醒频率。
 
-### How is health data protected?
+### 健康数据如何保护？
 
-It stays in the database on your server, behind HomeCenter's login with sign-in throttling. The database file itself isn't encrypted, so protect the data folder like any other private files. The assistant can't read health documents unless an admin allows it, and you can hide the Health section entirely.
+健康数据保存在你服务器上的数据库中，受 HomeCenter 登录和登录限流保护。数据库文件本身未加密，因此请像保护其他私密文件一样保护数据目录。除非管理员允许，助手无法读取健康文档，你也可以完全隐藏健康板块。
 
-## Updating
+## 更新
 
-Pull the new image and recreate the container. Your data folder is untouched:
+拉取新镜像并重建容器即可。你的数据目录不受影响：
 
 ```bash
 docker compose pull && docker compose up -d
 ```
 
-In Portainer: **Pull and redeploy**.
+Portainer 中：**Pull and redeploy**。
 
-From this version the image is based on Debian slim instead of Alpine. Nothing changes for you: pull and recreate as usual.
+自本版本起，镜像的基础从 Alpine 改为 Debian slim。对你没有任何影响：照常拉取并重建即可。
 
-## Local development
+## 本地开发
 
-For working on the app itself, not for regular use.
+仅用于开发应用本身，不面向日常使用。
 
 ```bash
 npm install
-cp .env.example .env   # fill in AUTH_SECRET
+cp .env.example .env   # 填写 AUTH_SECRET
 npm run db:seed
 npm run dev
 ```
 
-Runs at [http://localhost:3000](http://localhost:3000), database at `prisma/dev.db`.
+运行于 [http://localhost:3000](http://localhost:3000)，数据库位于 `prisma/dev.db`。
 
 ```bash
-npm run db:migrate   # create/apply a migration
-npm run db:studio    # browse the database
-npm run build         # production build
+npm run db:migrate   # 创建/应用迁移
+npm run db:studio    # 浏览数据库
+npm run build         # 生产构建
 ```
 
-`npm run models:fetch-builtin` downloads the built-in model into `./models/builtin/` (needed once for meaning search in development).
+`npm run models:fetch-builtin` 会把内置模型下载到 `./models/builtin/`（开发环境中使用语义搜索需要执行一次）。
 
-Images are built and published automatically by `.github/workflows/docker-publish.yml` on every push to `main`. To build locally: `docker build -t home-center .`
+镜像由 `.github/workflows/docker-publish.yml` 在每次推送到 `main` 时自动构建发布。本地构建：`docker build -t home-center .`
 
 ---
-## License
+## 许可证
 
-HomeCenter is source-available software licensed under the [PolyForm Noncommercial License 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0/).
+> 注：README 顶部的 MIT badge 与正文不一致，以正文为准。本项目实际许可并非 MIT，而是 PolyForm Noncommercial License 1.0.0。
 
-You may use, modify, and redistribute HomeCenter for permitted noncommercial purposes, subject to the license terms. Commercial use requires separate permission from the copyright holder.
+HomeCenter 是源码可得（source-available）软件，采用 [PolyForm Noncommercial License 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0/) 许可。
 
-HomeCenter is not open source under the standard Open Source Definition because the license restricts commercial use.
+你可以在允许的非商业目的下使用、修改和再分发 HomeCenter，但须遵守许可条款。商业使用需另行获得版权持有者的许可。
+
+由于该许可限制商业使用，HomeCenter 不符合开源定义（Open Source Definition），不属于严格意义上的开源软件。
