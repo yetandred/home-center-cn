@@ -46,7 +46,7 @@ export function HealthSummary({ health, now, options, fmt }: { health: ReportHea
           <Empty>暂无当前病症记录。</Empty>
         ) : (
           <Rows
-            head={["病症", "状态", "起始时间", "供应商"]}
+            head={["病症", "状态", "起始时间", "服务商"]}
             rows={conditions.map((c) => [c.name, labelFor(CONDITION_STATUSES, c.status), day(c.diagnosedDate), c.provider?.name ?? "—"])}
           />
         )}
@@ -113,10 +113,10 @@ export function HealthSummary({ health, now, options, fmt }: { health: ReportHea
       <section className="report-section report-break-avoid mt-7">
         <SectionTitle>医护团队</SectionTitle>
         {careTeam.length === 0 ? (
-          <Empty>暂无关联的供应商。</Empty>
+          <Empty>暂无关联的服务商。</Empty>
         ) : (
           <Rows
-            head={["供应商", "专科", "执业机构", "电话"]}
+            head={["服务商", "专科", "执业机构", "电话"]}
             rows={careTeam.map((p) => [p.name, p.specialty ?? "—", p.practice ?? "—", p.phone ?? "—"])}
           />
         )}

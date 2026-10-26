@@ -388,7 +388,7 @@ export function ServiceRecordFormDialog({ open, onClose, assetId, assetType, rec
               {providerOptions && (
                 <FormField control={form.control} name="providerId" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>供应商</FormLabel>
+                    <FormLabel>服务商</FormLabel>
                     <Select value={field.value || NO_LINK} onValueChange={(v) => field.onChange(!v || v === NO_LINK ? "" : v)}>
                       <FormControl>
                         <SelectTrigger className="w-full">

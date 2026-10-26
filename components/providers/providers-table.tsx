@@ -39,7 +39,7 @@ export function ProvidersTable({ providers, stats }: Props) {
 
   const columns: EntityColumn<Provider>[] = [
     {
-      key: "name", label: "供应商",
+      key: "name", label: "服务商",
       cell: (p) => (
         <div>
           <div className="font-medium">{p.name}</div>
@@ -60,17 +60,17 @@ export function ProvidersTable({ providers, stats }: Props) {
     if (!confirm(`删除“${p.name}”？就诊、病症和处方将保留历史记录，但会取消关联。`)) return
     const result = await deleteProvider(p.id)
     if (result.error) { toast.error("删除失败。"); return }
-    toast.success("供应商已删除。")
+    toast.success("服务商已删除。")
   }
 
   return (
     <>
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="font-heading text-2xl font-semibold">供应商</h1>
+          <h1 className="font-heading text-2xl font-semibold">服务商</h1>
           <p className="text-sm text-muted-foreground mt-0.5">家庭常用的医生、牙医、治疗师和诊所。</p>
         </div>
-        <Button onClick={() => { setEditing(null); setOpen(true) }}>添加供应商</Button>
+        <Button onClick={() => { setEditing(null); setOpen(true) }}>添加服务商</Button>
       </div>
 
       <EntityTable
@@ -79,7 +79,7 @@ export function ProvidersTable({ providers, stats }: Props) {
         describe={(p) => p.name}
         onEdit={(p) => { setEditing(p); setOpen(true) }}
         onDelete={handleDelete}
-        empty="暂无供应商。添加家庭就诊的医生和诊所。"
+        empty="暂无服务商。添加家庭就诊的医生和诊所。"
         renderExpanded={(p) => (
           <div className="flex flex-wrap gap-x-6 gap-y-1 text-sm text-muted-foreground">
             {p.email && <span>邮箱：<a href={`mailto:${p.email}`} className="hover:underline">{p.email}</a></span>}
@@ -92,9 +92,9 @@ export function ProvidersTable({ providers, stats }: Props) {
       <EntityFormDialog
         open={open}
         onClose={() => setOpen(false)}
-        title={editing ? "编辑供应商" : "添加供应商"}
-        submitLabel={editing ? "保存更改" : "添加供应商"}
-        successMessage={editing ? "供应商已更新。" : "供应商已添加。"}
+        title={editing ? "编辑服务商" : "添加服务商"}
+        submitLabel={editing ? "保存更改" : "添加服务商"}
+        successMessage={editing ? "服务商已更新。" : "服务商已添加。"}
         fields={FIELDS}
         initial={initialFor(editing)}
         onSubmit={(values) => (editing ? updateProvider(editing.id, values) : createProvider(values))}

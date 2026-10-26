@@ -44,7 +44,7 @@ export function FeatureSettings({ initial }: { initial: Values }) {
           {on ? <Badge variant="secondary">开启</Badge> : <Badge variant="outline">关闭</Badge>}
         </CardTitle>
         <CardDescription>
-          成员、供应商和保险，以及每个人的就诊、提醒、保修和健康记录。
+          成员、服务商和保险，以及每个人的就诊、提醒、保修和健康记录。
         </CardDescription>
       </CardHeader>
       <CardContent className="px-5 space-y-2">

@@ -560,7 +560,7 @@ async function searchRecords(where: Wheres, owners: Owners, now: Date, terms: st
       href: r.assetType === "PERSON" ? assetHref("PERSON", r.assetId) : tabHref(r.assetType, r.assetId, "warranties", r.id),
       title: r.productName, subtitle: clip(r.notes),
       date: r.expirationDate ? `到期 ${day(r.expirationDate)}` : null, amount: null, status,
-      facts: facts([["供应商", r.vendor], ["电话", r.vendorPhone], ["购置日期", day(r.purchaseDate)]]),
+      facts: facts([["服务商", r.vendor], ["电话", r.vendorPhone], ["购置日期", day(r.purchaseDate)]]),
       owner: thumb(r.assetId), people: null,
     }
   })
@@ -653,7 +653,7 @@ async function searchRecords(where: Wheres, owners: Owners, now: Date, terms: st
     { key: "rooms", title: "房间", layout: "records", items: roomCards, more: ro.more },
     { key: "insurance", title: "保险", layout: "records", items: insuranceCards, more: ins.more },
     { key: "health", title: "健康记录", layout: "records", items: health, more: healthMore },
-    { key: "providers", title: "供应商", layout: "records", items: providerCards, more: pr.more },
+    { key: "providers", title: "服务商", layout: "records", items: providerCards, more: pr.more },
   ])
 }
 

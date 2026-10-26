@@ -25,7 +25,7 @@ const navItems: NavItem[] = [
   { href: "/assets/vehicles", label: "车辆", icon: Car },
   { href: "/assets/equipment", label: "设备", icon: Refrigerator },
   { href: "/assets/people", label: "成员", icon: HeartPulse, section: "健康" },
-  { href: "/providers", label: "供应商", icon: Stethoscope },
+  { href: "/providers", label: "服务商", icon: Stethoscope },
   { href: "/insurance", label: "保险", icon: ShieldPlus },
   { href: "/records", label: "维护记录", icon: Wrench, section: "动态" },
   { href: "/costs", label: "支出", icon: PiggyBank },

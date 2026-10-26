@@ -20,7 +20,7 @@ const LABELS: Record<string, string> = {
   Property: "房产", Vehicle: "车辆", Equipment: "设备", Person: "成员", ServiceRecord: "维护记录",
   Warranty: "保修", MaintenanceSchedule: "提醒", Attachment: "文件", User: "账户", InsurancePolicy: "保险单",
   Medication: "用药", HealthCondition: "病症", Observation: "观察记录", Allergy: "过敏", Immunization: "疫苗接种",
-  Provider: "供应商", InboxItem: "收件箱条目",
+  Provider: "服务商", InboxItem: "收件箱条目",
 }
 const SECRETS: Record<string, string> = {
   carried: "邮件密码和 AI 密钥包含在此备份中。",

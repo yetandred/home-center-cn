@@ -20,7 +20,7 @@
 | Insurance | 保险 |
 | Receipt | 收据 |
 | Cost / Expense | 费用 / 支出 |
-| Provider | 供应商 |
+| Provider | 服务商（健康语境下指医生/诊所；不含采购"供应商"义） |
 | Document | 文档 |
 | Attachment | 附件 |
 | Intake / Inbox | 收件箱 |

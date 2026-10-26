@@ -140,7 +140,7 @@ const KIND: Record<RecordKind, { label: string; icon: React.ElementType; tint: s
   maintenance: { label: "维护", icon: CalendarClock, tint: "bg-amber-500/10 text-amber-700 dark:text-amber-300" },
   warranty: { label: "保修", icon: ShieldCheck, tint: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300" },
   insurance: { label: "保险", icon: Umbrella, tint: "bg-indigo-500/10 text-indigo-700 dark:text-indigo-300" },
-  provider: { label: "供应商", icon: UserRound, tint: "bg-violet-500/10 text-violet-700 dark:text-violet-300" },
+  provider: { label: "服务商", icon: UserRound, tint: "bg-violet-500/10 text-violet-700 dark:text-violet-300" },
   condition: { label: "病症", icon: Activity, tint: "bg-rose-500/10 text-rose-700 dark:text-rose-300" },
   medication: { label: "用药", icon: Pill, tint: "bg-teal-500/10 text-teal-700 dark:text-teal-300" },
   allergy: { label: "过敏", icon: TriangleAlert, tint: "bg-orange-500/10 text-orange-700 dark:text-orange-300" },
