@@ -26,6 +26,7 @@ const schema = z.object({
   indexingEnabled: z.boolean(),
   ocrEnabled: z.boolean(),
   ocrLanguage: z.enum(["eng", "chi_sim+eng"]),
+  ocrEngine: z.enum(["tesseract", "ppocr"]),
   semanticEnabled: z.boolean(),
 })
 
@@ -41,8 +42,8 @@ export async function updateDocumentSettings(data: z.infer<typeof schema>): Prom
   })
   if (!parsed.data.semanticEnabled) await unloadEmbedder()
   if (parsed.data.ocrEnabled && !before.ocrEnabled) await requeueEmptyForOcr()
-  // 换了 OCR 语言：已识别为空的文件重排队；已有文本不动（想全量重识别用「全部重新提取」）。
-  if (parsed.data.ocrLanguage !== before.ocrLanguage) await requeueEmptyForOcr()
+  // 换了 OCR 语言或引擎：已识别为空的文件重排队；已有文本不动（想全量重识别用「全部重新提取」）。
+  if (parsed.data.ocrLanguage !== before.ocrLanguage || parsed.data.ocrEngine !== before.ocrEngine) await requeueEmptyForOcr()
   // Switching on (or OCR on) starts work straight away instead of at the next timer.
   if (parsed.data.indexingEnabled) void documentIndexer().reconcile()
   revalidatePath("/settings")

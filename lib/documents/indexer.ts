@@ -26,8 +26,11 @@ export type SaveResult =
   | { status: "EMPTY" | "UNSUPPORTED" }
   | { status: "FAILED"; error: string }
 
+/** 一次提取需要的 OCR 设定：开关 + 语言（Tesseract）+ 引擎。 */
+export type OcrConfig = { ocr: boolean; ocrLanguage: string; ocrEngine: string }
+
 export type IndexerStore = {
-  settings(): Promise<{ indexingEnabled: boolean; ocrEnabled: boolean; ocrLanguage: string }>
+  settings(): Promise<{ indexingEnabled: boolean; ocrEnabled: boolean; ocrLanguage: string; ocrEngine: string }>
   loadJob(id: string): Promise<Job | null>
   /**
    * Counts an attempt before the file is read. A file that kills the process
@@ -66,7 +69,7 @@ const MAX_EMBED_PASSES = 3
 export type IndexerDeps = {
   store: IndexerStore
   index: () => Promise<SearchIndex>
-  extract: (filePath: string, ext: string | null, opts: { ocr: boolean; ocrLanguage: string }) => Promise<Extracted>
+  extract: (filePath: string, ext: string | null, opts: OcrConfig) => Promise<Extracted>
   /** Called whenever the queue empties — frees the OCR worker. */
   idle?: () => Promise<void>
   log?: Pick<Console, "info" | "error">
@@ -115,10 +118,10 @@ export function createIndexer(deps: IndexerDeps): Indexer {
     }
   }
 
-  async function processOne(id: string, ocr: boolean, ocrLanguage: string) {
+  async function processOne(id: string, ocr: OcrConfig) {
     const job = await deps.store.loadJob(id)
     if (!job) return
-    const status = await extractOne(id, job, ocr, ocrLanguage)
+    const status = await extractOne(id, job, ocr)
     if (!deps.processed) return
     try {
       await deps.processed(job, status)
@@ -127,7 +130,7 @@ export function createIndexer(deps: IndexerDeps): Indexer {
     }
   }
 
-  async function extractOne(id: string, job: Job, ocr: boolean, ocrLanguage: string): Promise<SaveResult["status"]> {
+  async function extractOne(id: string, job: Job, ocr: OcrConfig): Promise<SaveResult["status"]> {
     await deps.store.claim(id)
     // A failed re-read leaves no text behind, so its old chunks must go too.
     if (!job.filePath) {
@@ -137,7 +140,7 @@ export function createIndexer(deps: IndexerDeps): Indexer {
     }
     let out: Extracted
     try {
-      out = await deps.extract(job.filePath, job.ext, { ocr, ocrLanguage })
+      out = await deps.extract(job.filePath, job.ext, ocr)
     } catch (error) {
       const message = error instanceof ExtractError ? error.message : "Couldn't read this file"
       await deps.store.save(id, { status: "FAILED", error: message })
@@ -214,13 +217,13 @@ export function createIndexer(deps: IndexerDeps): Indexer {
         while (queue.size) {
           const id = queue.values().next().value as string
           queue.delete(id)
-          const { indexingEnabled, ocrEnabled, ocrLanguage } = await deps.store.settings()
+          const { indexingEnabled, ocrEnabled, ocrLanguage, ocrEngine } = await deps.store.settings()
           if (!indexingEnabled) {
             queue.clear()
             break
           }
           try {
-            await processOne(id, ocrEnabled, ocrLanguage)
+            await processOne(id, { ocr: ocrEnabled, ocrLanguage, ocrEngine })
           } catch (error) {
             log.error(`[documents] job ${id} failed:`, nameOf(error))
           }

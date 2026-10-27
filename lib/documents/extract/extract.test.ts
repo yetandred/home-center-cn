@@ -13,8 +13,8 @@ const put = (name: string, data: Buffer | string) => {
   writeFileSync(p, data)
   return p
 }
-const pages = async (name: string, data: Buffer | string, ocr = false) => {
-  const r = await extractFile(put(name, data), path.extname(name), { ocr })
+const pages = async (name: string, data: Buffer | string, ocr = false, ocrLanguage = "eng") => {
+  const r = await extractFile(put(name, data), path.extname(name), { ocr, ocrLanguage })
   if (r.kind !== "text") throw new Error(`expected text, got ${r.kind}`)
   return r
 }

@@ -25,10 +25,32 @@ export type OcrLanguageSetting = keyof typeof OCR_LANGUAGE_OPTIONS
 
 export const DEFAULT_OCR_LANGUAGE: OcrLanguageSetting = "chi_sim+eng"
 
+/**
+ * 两个识别引擎：
+ * - tesseract：轻量（WASM），中文靠 chi_sim 语言包，速度一般、中文精度一般；
+ * - ppocr：PP-OCRv4（ONNX，随镜像分发的离线权重），中文精度明显更高，
+ *   代价是要多占 200-400MB 内存、每页多 1-2 秒。
+ * 两者的语言参数互不影响：ppocr 的中英混排是模型自带的。
+ */
+export const OCR_ENGINE_OPTIONS = {
+  tesseract: "Tesseract（轻量）",
+  ppocr: "PP-OCR（中文更准）",
+} as const
+
+export type OcrEngine = keyof typeof OCR_ENGINE_OPTIONS
+
+export const DEFAULT_OCR_ENGINE: OcrEngine = "tesseract"
+
+export function normalizeOcrEngine(value: string | null | undefined): OcrEngine {
+  return value === "ppocr" ? "ppocr" : "tesseract"
+}
+
 /** 把设置值规整成有效的语言串；未知值回退到默认（中英混合）。 */
 export function normalizeOcrLanguage(value: string | null | undefined): string {
   return OCR_LANGUAGE_OPTIONS[value as OcrLanguageSetting] ?? OCR_LANGUAGE_OPTIONS[DEFAULT_OCR_LANGUAGE]
 }
+
+export type OcrOptions = { engine?: string | null; language?: string | null }
 
 function sourceDir(lang: string): string {
   return path.join(process.cwd(), "node_modules", "@tesseract.js-data", lang, "4.0.0_best_int")
@@ -73,7 +95,12 @@ function getWorker(langs: string): Promise<Worker> {
   return created
 }
 
-export async function ocrImage(image: Buffer, langs = "eng"): Promise<string> {
+export async function ocrImage(image: Buffer, options: OcrOptions = {}): Promise<string> {
+  if (normalizeOcrEngine(options.engine) === "ppocr") {
+    const { recognizePng } = await import("./ppocr/engine")
+    return recognizePng(image)
+  }
+  const langs = normalizeOcrLanguage(options.language)
   const { data } = await (await getWorker(langs)).recognize(image)
   return data.text
 }
@@ -81,5 +108,11 @@ export async function ocrImage(image: Buffer, langs = "eng"): Promise<string> {
 export async function terminateOcr(): Promise<void> {
   const pending = [...workers.values()]
   workers.clear()
-  await Promise.all(pending.map((w) => w.then((x) => x.terminate()).catch(() => {})))
+  await Promise.all([
+    ...pending.map((w) => w.then((x) => x.terminate()).catch(() => {})),
+    // PP-OCR 的 ONNX 会话同样占内存，超时/退出时一起放掉。
+    import("./ppocr/engine")
+      .then((m) => m.releasePpocr())
+      .catch(() => {}),
+  ])
 }

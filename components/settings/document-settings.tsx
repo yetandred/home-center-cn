@@ -14,11 +14,17 @@ import type { ModelRow, ModelStatus } from "@/lib/documents/embed/server"
 import { modelRowState } from "@/lib/documents/embed/model-row"
 
 type OcrLanguage = "eng" | "chi_sim+eng"
-type Values = { indexingEnabled: boolean; ocrEnabled: boolean; ocrLanguage: OcrLanguage; semanticEnabled: boolean }
+type OcrEngine = "tesseract" | "ppocr"
+type Values = { indexingEnabled: boolean; ocrEnabled: boolean; ocrLanguage: OcrLanguage; ocrEngine: OcrEngine; semanticEnabled: boolean }
 
 const OCR_LANGUAGES: { value: OcrLanguage; label: string }[] = [
   { value: "chi_sim+eng", label: "简体中文 + 英文（推荐）" },
   { value: "eng", label: "仅英文（更快）" },
+]
+
+const OCR_ENGINES: { value: OcrEngine; label: string; hint: string }[] = [
+  { value: "tesseract", label: "Tesseract（轻量）", hint: "占用内存小、启动快；中文识别一般，复杂表格容易串行。" },
+  { value: "ppocr", label: "PP-OCR（中文更准）", hint: "中文印刷体、表格、票据明显更准；每页慢 1–2 秒，识别时多占约 300MB 内存。" },
 ]
 
 export function DocumentSettings({
@@ -135,22 +141,43 @@ export function DocumentSettings({
             />
             读取照片和扫描版 PDF 中的文字（OCR）
           </label>
-          <div className="ml-6 flex flex-wrap items-center gap-2 text-sm">
-            <label htmlFor="ocr-language" className="text-muted-foreground">识别语言</label>
-            <select
-              id="ocr-language"
-              className="h-8 rounded-md border bg-background px-2 text-sm disabled:opacity-50"
-              value={values.ocrLanguage}
-              disabled={pending || !on || !values.ocrEnabled}
-              onChange={(e) => save({ ...values, ocrLanguage: e.target.value as OcrLanguage })}
-            >
-              {OCR_LANGUAGES.map((l) => (
-                <option key={l.value} value={l.value}>{l.label}</option>
-              ))}
-            </select>
+          <div className="ml-6 space-y-1.5">
+            <div className="flex flex-wrap items-center gap-2 text-sm">
+              <label htmlFor="ocr-engine" className="text-muted-foreground">识别引擎</label>
+              <select
+                id="ocr-engine"
+                className="h-8 rounded-md border bg-background px-2 text-sm disabled:opacity-50"
+                value={values.ocrEngine}
+                disabled={pending || !on || !values.ocrEnabled}
+                onChange={(e) => save({ ...values, ocrEngine: e.target.value as OcrEngine })}
+              >
+                {OCR_ENGINES.map((e) => (
+                  <option key={e.value} value={e.value}>{e.label}</option>
+                ))}
+              </select>
+              {values.ocrEngine === "tesseract" && (
+                <>
+                  <label htmlFor="ocr-language" className="ml-2 text-muted-foreground">语言</label>
+                  <select
+                    id="ocr-language"
+                    className="h-8 rounded-md border bg-background px-2 text-sm disabled:opacity-50"
+                    value={values.ocrLanguage}
+                    disabled={pending || !on || !values.ocrEnabled}
+                    onChange={(e) => save({ ...values, ocrLanguage: e.target.value as OcrLanguage })}
+                  >
+                    {OCR_LANGUAGES.map((l) => (
+                      <option key={l.value} value={l.value}>{l.label}</option>
+                    ))}
+                  </select>
+                </>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {OCR_ENGINES.find((e) => e.value === values.ocrEngine)?.hint}
+            </p>
           </div>
           <p className="ml-6 text-xs text-muted-foreground">
-            为新上传的文件建立索引时会占用较多 CPU。中文识别比仅英文慢；更改语言后，已识别为空的文件会自动重试，已有文本可用「全部重新提取」重新识别。
+            为新上传的文件建立索引时会占用较多 CPU。更改引擎或语言后，已识别为空的文件会自动重试，已有文本可用「全部重新提取」重新识别。
           </p>
         </div>
 

@@ -23,7 +23,14 @@ const nextConfig: NextConfig = {
     "@napi-rs/canvas",
     "@huggingface/transformers",
     "onnxruntime-node",
+    // PP-OCR 推理运行时与模型包：都从 node_modules 直接读文件，不能被 webpack 打包。
+    "paddleocr",
+    "@gutenye/ocr-models",
   ],
+  // PP-OCR 的模型权重在 node_modules 里按路径读取；保证 standalone 产物也带上。
+  outputFileTracingIncludes: {
+    "/**": ["./node_modules/@gutenye/ocr-models/assets/**", "./node_modules/onnxruntime-node/bin/**"],
+  },
   experimental: {
     globalNotFound: true,
   },

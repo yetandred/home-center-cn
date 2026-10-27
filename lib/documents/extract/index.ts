@@ -24,7 +24,7 @@ export async function withTimeout<T>(p: Promise<T>, ms: number, onTimeout?: () =
   }
 }
 
-async function run(kind: ExtractKind, ext: string, data: Buffer, opts: { ocr: boolean; ocrLanguage: string }): Promise<Extracted> {
+async function run(kind: ExtractKind, ext: string, data: Buffer, opts: { ocr: boolean; ocrLanguage: string; ocrEngine: string }): Promise<Extracted> {
   switch (kind) {
     case "pdf":
       return (await import("./pdf")).extractPdf(new Uint8Array(data), opts)
@@ -48,11 +48,19 @@ async function run(kind: ExtractKind, ext: string, data: Buffer, opts: { ocr: bo
       // OCR off: an image has no text we can read, so it ends up EMPTY and is
       // re-queued if OCR is switched on later.
       if (!opts.ocr) return { kind: "text", method: "TEXT", pages: [] }
-      return { kind: "text", method: "OCR", pages: [await (await import("./ocr")).ocrImage(data, opts.ocrLanguage)] }
+      return {
+        kind: "text",
+        method: "OCR",
+        pages: [await (await import("./ocr")).ocrImage(data, { engine: opts.ocrEngine, language: opts.ocrLanguage })],
+      }
   }
 }
 
-export async function extractFile(filePath: string, ext: string | null, opts: { ocr: boolean; ocrLanguage?: string }): Promise<Extracted> {
+export async function extractFile(
+  filePath: string,
+  ext: string | null,
+  opts: { ocr: boolean; ocrLanguage?: string; ocrEngine?: string },
+): Promise<Extracted> {
   const kind = kindFor(ext)
   if (!kind || !ext) return { kind: "unsupported" }
   const data = await readFile(filePath).catch((error: NodeJS.ErrnoException) => {
@@ -60,8 +68,9 @@ export async function extractFile(filePath: string, ext: string | null, opts: { 
     throw error
   })
   const ocrLanguage = (await import("./ocr")).normalizeOcrLanguage(opts.ocrLanguage)
+  const ocrEngine = (await import("./ocr")).normalizeOcrEngine(opts.ocrEngine)
   const slow = opts.ocr && (kind === "pdf" || kind === "image")
-  return withTimeout(run(kind, ext, data, { ocr: opts.ocr, ocrLanguage }), slow ? OCR_TIMEOUT_MS : EXTRACT_TIMEOUT_MS, async () => {
+  return withTimeout(run(kind, ext, data, { ocr: opts.ocr, ocrLanguage, ocrEngine }), slow ? OCR_TIMEOUT_MS : EXTRACT_TIMEOUT_MS, async () => {
     if (slow) await (await import("./ocr")).terminateOcr()
   })
 }
