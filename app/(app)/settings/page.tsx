@@ -205,6 +205,7 @@ export default async function SettingsPage({
                 initial={{
                   indexingEnabled: docs[0].indexingEnabled,
                   ocrEnabled: docs[0].ocrEnabled,
+                  ocrLanguage: docs[0].ocrLanguage === "eng" ? "eng" : "chi_sim+eng",
                   semanticEnabled: docs[0].semanticEnabled,
                 }}
                 stats={docs[1]}

@@ -13,7 +13,13 @@ import {
 import type { ModelRow, ModelStatus } from "@/lib/documents/embed/server"
 import { modelRowState } from "@/lib/documents/embed/model-row"
 
-type Values = { indexingEnabled: boolean; ocrEnabled: boolean; semanticEnabled: boolean }
+type OcrLanguage = "eng" | "chi_sim+eng"
+type Values = { indexingEnabled: boolean; ocrEnabled: boolean; ocrLanguage: OcrLanguage; semanticEnabled: boolean }
+
+const OCR_LANGUAGES: { value: OcrLanguage; label: string }[] = [
+  { value: "chi_sim+eng", label: "简体中文 + 英文（推荐）" },
+  { value: "eng", label: "仅英文（更快）" },
+]
 
 export function DocumentSettings({
   initial,
@@ -129,7 +135,23 @@ export function DocumentSettings({
             />
             读取照片和扫描版 PDF 中的文字（OCR）
           </label>
-          <p className="ml-6 text-xs text-muted-foreground">为新上传的文件建立索引时会占用较多 CPU。</p>
+          <div className="ml-6 flex flex-wrap items-center gap-2 text-sm">
+            <label htmlFor="ocr-language" className="text-muted-foreground">识别语言</label>
+            <select
+              id="ocr-language"
+              className="h-8 rounded-md border bg-background px-2 text-sm disabled:opacity-50"
+              value={values.ocrLanguage}
+              disabled={pending || !on || !values.ocrEnabled}
+              onChange={(e) => save({ ...values, ocrLanguage: e.target.value as OcrLanguage })}
+            >
+              {OCR_LANGUAGES.map((l) => (
+                <option key={l.value} value={l.value}>{l.label}</option>
+              ))}
+            </select>
+          </div>
+          <p className="ml-6 text-xs text-muted-foreground">
+            为新上传的文件建立索引时会占用较多 CPU。中文识别比仅英文慢；更改语言后，已识别为空的文件会自动重试，已有文本可用「全部重新提取」重新识别。
+          </p>
         </div>
 
         <div className="space-y-3 border-t pt-4">

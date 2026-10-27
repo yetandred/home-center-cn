@@ -10,7 +10,7 @@ function setup(opts: {
   enabled?: boolean; ocr?: boolean; outcomes?: Record<string, Extracted | Error>; semantic?: boolean
   processed?: (job: Job, status: SaveResult["status"]) => Promise<void>
 } = {}) {
-  const settings = { indexingEnabled: opts.enabled ?? true, ocrEnabled: opts.ocr ?? true }
+  const settings = { indexingEnabled: opts.enabled ?? true, ocrEnabled: opts.ocr ?? true, ocrLanguage: "eng" }
   const rows = new Map<string, Row>()
   const add = (id: string, over: Partial<Job> = {}) =>
     rows.set(id, { job: { attachmentId: id, filePath: `/u/${id}.pdf`, ext: ".pdf", originalName: `${id}.pdf`, recordType: "SERVICE", attempts: 0, ...over } })
@@ -266,7 +266,7 @@ describe("indexer", () => {
     t.add("a")
     t.indexer.enqueue("a")
     await t.indexer.idle()
-    expect(t.extract).toHaveBeenCalledWith("/u/a.pdf", ".pdf", { ocr: false })
+    expect(t.extract).toHaveBeenCalledWith("/u/a.pdf", ".pdf", { ocr: false, ocrLanguage: "eng" })
   })
 
   it("saving a result for a row that disappeared is a no-op", async () => {

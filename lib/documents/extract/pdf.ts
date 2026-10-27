@@ -7,7 +7,7 @@ import { ocrImage } from "./ocr"
 // Text layer page by page. Pages with (almost) no text are probably scans:
 // with OCR on, up to MAX_OCR_PAGES of them are rendered at 2x and read.
 
-export async function extractPdf(data: Uint8Array, opts: { ocr: boolean }): Promise<Extracted> {
+export async function extractPdf(data: Uint8Array, opts: { ocr: boolean; ocrLanguage?: string }): Promise<Extracted> {
   let doc: Awaited<ReturnType<typeof getDocumentProxy>>
   try {
     doc = await getDocumentProxy(data)
@@ -29,7 +29,7 @@ export async function extractPdf(data: Uint8Array, opts: { ocr: boolean }): Prom
       if (!opts.ocr || ocrPages >= MAX_OCR_PAGES) continue
       try {
         const png = await renderPageAsImage(doc, i + 1, { canvasImport: () => import("@napi-rs/canvas"), scale: 2 })
-        pages[i] = await ocrImage(Buffer.from(png))
+        pages[i] = await ocrImage(Buffer.from(png), opts.ocrLanguage ?? "eng")
         ocrPages++
       } catch {
         // Rendering or OCR failed for this page (e.g. no canvas binary for the

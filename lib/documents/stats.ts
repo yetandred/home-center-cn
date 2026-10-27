@@ -9,15 +9,15 @@ export function formatIndexStats(
   const n = (k: keyof StatusCounts) => c[k] ?? 0
   if (!indexingEnabled) {
     const waiting = n("PENDING")
-    return waiting ? `Indexing is off — ${waiting} upload${waiting === 1 ? "" : "s"} waiting.` : "Indexing is off."
+    return waiting ? `索引已关闭 — ${waiting} 个文件等待处理。` : "索引已关闭。"
   }
-  const parts = [`${n("DONE")} searchable`]
-  if (n("PENDING")) parts.push(`${n("PENDING")} waiting`)
-  if (n("FAILED")) parts.push(`${n("FAILED")} failed`)
-  if (n("UNSUPPORTED")) parts.push(`${n("UNSUPPORTED")} not supported`)
-  if (n("EMPTY")) parts.push(`${n("EMPTY")} with no text`)
+  const parts = [`${n("DONE")} 个可搜索`]
+  if (n("PENDING")) parts.push(`${n("PENDING")} 个等待中`)
+  if (n("FAILED")) parts.push(`${n("FAILED")} 个失败`)
+  if (n("UNSUPPORTED")) parts.push(`${n("UNSUPPORTED")} 个不支持`)
+  if (n("EMPTY")) parts.push(`${n("EMPTY")} 个无文本`)
   if (vectors && vectors.chunks > 0) {
-    parts.push(vectors.withVectors >= vectors.chunks ? "meaning search ready" : `${vectors.withVectors} of ${vectors.chunks} chunks have meaning vectors`)
+    parts.push(vectors.withVectors >= vectors.chunks ? "语义搜索就绪" : `已生成 ${vectors.withVectors} / ${vectors.chunks} 个语义向量`)
   }
   return parts.join(" · ")
 }

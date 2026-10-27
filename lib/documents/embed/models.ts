@@ -26,7 +26,7 @@ export const EMBEDDING_MODELS: EmbeddingModel[] = [
   {
     id: "bge-small-en-v1.5",
     label: "BGE small (English)",
-    purpose: "Fast, good for English. Built in.",
+    purpose: "速度快，适合英文。内置模型。",
     repo: "Xenova/bge-small-en-v1.5",
     revision: "ea104dacec62c0de699686887e3f920caeb4f3e3",
     dims: 384,
@@ -46,7 +46,7 @@ export const EMBEDDING_MODELS: EmbeddingModel[] = [
   {
     id: "bge-base-en-v1.5",
     label: "BGE base (English)",
-    purpose: "Better quality for English, about 3× slower.",
+    purpose: "英文效果更好，约慢 3 倍。",
     repo: "Xenova/bge-base-en-v1.5",
     revision: "4d6cd88e18e51a5e020c2c305726d76ada9c03cf",
     dims: 768,
@@ -65,7 +65,7 @@ export const EMBEDDING_MODELS: EmbeddingModel[] = [
   {
     id: "snowflake-arctic-embed-m-v1.5",
     label: "Arctic Embed M (English)",
-    purpose: "Best quality for its size, English. Recommended upgrade.",
+    purpose: "同体积中效果最好（英文）。推荐的升级选择。",
     repo: "Snowflake/snowflake-arctic-embed-m-v1.5",
     revision: "e58a8f756156a1293d763f17e3aae643474e9b8a",
     dims: 768,
@@ -84,7 +84,7 @@ export const EMBEDDING_MODELS: EmbeddingModel[] = [
   {
     id: "nomic-embed-text-v1.5",
     label: "Nomic Embed Text (English)",
-    purpose: "Good quality for English; a little larger.",
+    purpose: "英文效果好，体积略大。",
     repo: "nomic-ai/nomic-embed-text-v1.5",
     revision: "e9b6763023c676ca8431644204f50c2b100d9aab",
     dims: 768,
@@ -103,7 +103,7 @@ export const EMBEDDING_MODELS: EmbeddingModel[] = [
   {
     id: "multilingual-e5-base",
     label: "E5 base (many languages)",
-    purpose: "For documents in languages other than English.",
+    purpose: "适合英文以外的语言文档（含中文）。",
     repo: "Xenova/multilingual-e5-base",
     revision: "1ec9243030a27d1a115d5c340572074c125b58b2",
     dims: 768,
@@ -122,7 +122,7 @@ export const EMBEDDING_MODELS: EmbeddingModel[] = [
   {
     id: "bge-large-en-v1.5",
     label: "BGE large (English)",
-    purpose: "Highest quality, slow on small hosts.",
+    purpose: "效果最好，小型主机上较慢。",
     repo: "Xenova/bge-large-en-v1.5",
     revision: "dfeef6070b90658e1b391a6940efdb0925c1de6f",
     dims: 1024,
