@@ -21,6 +21,7 @@ import { DropProvider } from "@/components/drop/drop-provider"
 import { IntakeHeaderLink } from "@/components/inbox/intake-header-link"
 import { cn } from "@/lib/utils"
 import packageJson from "@/package.json"
+import { buildStamp } from "@/lib/build-info"
 import { loadFeatures, visibleNotificationsWhere } from "@/lib/features-server"
 import { loadRegionalSettings } from "@/lib/regional-server"
 import { RegionalProvider } from "@/components/regional-provider"
@@ -28,6 +29,8 @@ import { RegionalProvider } from "@/components/regional-provider"
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()
   if (!session) redirect("/login")
+  // 页脚构建标识：CI 构建时自动注入；本地开发为空，不显示。
+  const stamp = buildStamp()
 
   const [features, regional] = await Promise.all([loadFeatures(), loadRegionalSettings()])
   const [notifications, llm, inbox, captureParser] = await Promise.all([
@@ -97,6 +100,20 @@ export default async function AppLayout({ children }: { children: React.ReactNod
                     HomeCenter
                   </a>{" "}
                   &middot; v{packageJson.version}
+                  {stamp && (
+                    <>
+                      {" · "}
+                      <a
+                        href="https://github.com/yetandred/home-center-cn/blob/zh-CN/CHANGELOG.md"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="查看本站更新日志"
+                        className="underline-offset-2 hover:text-foreground hover:underline"
+                      >
+                        {stamp}
+                      </a>
+                    </>
+                  )}
                 </span>
               </footer>
             </div>

@@ -86,6 +86,10 @@ jobs:
             type=raw,value=zh-cn-{{date 'YYYYMMDD'}}
             type=sha,format=short,prefix=zh-cn-
 
+      - name: 记录构建日期
+        id: builddate
+        run: echo "date=$(date -u +%Y%m%d)" >> "$GITHUB_OUTPUT"
+
       - name: 构建并推送
         uses: docker/build-push-action@v6
         with:
@@ -93,6 +97,10 @@ jobs:
           platforms: ${{ inputs.platforms || 'linux/amd64,linux/arm64' }}
           push: ${{ github.event_name == 'push' || inputs.push }}
           tags: ${{ steps.meta.outputs.tags }}
+          # 页脚构建标识：提交短号 + 构建日期，便于核对 NAS 上运行的版本。
+          build-args: |
+            GIT_SHA=${{ github.sha }}
+            BUILD_DATE=${{ steps.builddate.outputs.date }}
           labels: ${{ steps.meta.outputs.labels }}
           # 第二次构建能复用 layer，省掉 npm install 和模型下载的大头时间。
           cache-from: type=gha

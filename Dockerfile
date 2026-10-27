@@ -22,6 +22,11 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
+# 构建标识（页脚展示，方便核对 NAS 上跑的是哪次构建）。CI 传入；本地构建留空。
+ARG GIT_SHA=""
+ARG BUILD_DATE=""
+ENV NEXT_PUBLIC_BUILD_SHA=$GIT_SHA
+ENV NEXT_PUBLIC_BUILD_DATE=$BUILD_DATE
 RUN npx prisma generate
 # Build-time only placeholder — lib/prisma.ts constructs a client at module
 # load (needed while Next statically collects route/page data), but nothing

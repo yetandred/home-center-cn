@@ -24,6 +24,7 @@
 > - **本地化默认值**：货币 ¥ 人民币、公里、平方米、`2026-01-05` 日期格式、24 小时制（设置里可改）
 > - **AI 助手兼容性增强**：Base URL 自动补 `/v1`、Azure 支持、自定义请求头、`max_completion_tokens` 自适应、非流式降级、推理模型思维链保留、不支持工具的模型进入纯聊天模式
 > - **NAS 部署配置**：现成 compose 与中文指南见 [deploy/nas/](deploy/nas/NAS部署指南.md)
+> - **更新日志**：每次构建改了什么见 [CHANGELOG.md](CHANGELOG.md)；页面右下角页脚会显示当前构建标识（如 `2026.10.27 · cc8b0bb`），点击即可跳转对照
 >
 > 本分支镜像：`ghcr.io/yetandred/home-center-cn:zh-cn`（amd64 + arm64）。许可为 **PolyForm Noncommercial 1.0.0**（非 MIT，仅限非商业使用），与上游一致。以下为原版 README 内容，安装命令中的镜像地址已替换为本分支。
 
@@ -398,6 +399,8 @@ docker compose pull && docker compose up -d
 ```
 
 Portainer 中：**Pull and redeploy**。
+
+**怎么知道更新了什么**：页脚显示当前构建标识（如 `2026.10.27 · cc8b0bb`），点它打开 [CHANGELOG.md](CHANGELOG.md) 对照同一条目。镜像同时提供 `zh-cn`（跟随最新）、`zh-cn-20261027`（当日快照）、`zh-cn-cc8b0bb`（精确到提交）三种标签；想固定某次构建，把 compose 里的标签换成日期或提交号版本即可（之后需要手动改标签才会更新）。
 
 自本版本起，镜像的基础从 Alpine 改为 Debian slim。对你没有任何影响：照常拉取并重建即可。
 
