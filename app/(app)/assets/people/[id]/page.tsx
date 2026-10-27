@@ -6,7 +6,6 @@ import { cookies } from "next/headers"
 import Link from "next/link"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Cake, Download, Droplet, FileText, ShieldPlus, Stethoscope, Users, User } from "lucide-react"
-import { ServiceRecordList } from "@/components/service-records/service-record-list"
 import { MaintenanceList } from "@/components/maintenance/maintenance-list"
 import { AssetDocuments } from "@/components/attachments/asset-documents"
 import { AssetImageUploader } from "@/components/asset-image-uploader"
@@ -23,6 +22,8 @@ import { byNewest, typeSuggestions } from "@/lib/observations"
 import { getFormat } from "@/lib/regional-server"
 import { ageFrom, INSURANCE_KINDS, labelFor, RELATIONSHIPS } from "@/lib/health"
 import { MEDICATION_VIEW_COOKIE, parseMedicationView } from "@/lib/medication-timeline"
+import { buildTimelineEvents } from "@/lib/health-timeline"
+import { VisitsTabWithTimeline } from "@/components/health/visits-tab-with-timeline"
 
 export default async function PersonDetailPage({
   params,
@@ -72,6 +73,16 @@ export default async function PersonDetailPage({
   const conditionOptions = person.conditions.map((c) => ({ id: c.id, name: c.name }))
   const observations = [...person.observations].sort(byNewest)
   const observationTypes = typeSuggestions(observations)
+
+  // 医疗时间线：六类健康数据合并成一条事件流（就诊/观察/病症/用药/疫苗/过敏）。
+  const timelineEvents = buildTimelineEvents({
+    visits,
+    observations: person.observations,
+    conditions: person.conditions,
+    medications: person.medications,
+    immunizations: person.immunizations,
+    allergies: person.allergies,
+  })
 
   return (
     <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
@@ -157,7 +168,16 @@ export default async function PersonDetailPage({
             <TabsTrigger value="documents">文档 ({documents.length})</TabsTrigger>
           </TabsList>
           <TabsContent value="visits" className="mt-4">
-            <ServiceRecordList records={visits} assetId={id} assetType="PERSON" providerOptions={providers} conditionOptions={conditionOptions} reminders={schedules} openId={tab === "visits" ? open : undefined} />
+            <VisitsTabWithTimeline
+              events={timelineEvents}
+              records={visits}
+              assetId={id}
+              assetType="PERSON"
+              providerOptions={providers}
+              conditionOptions={conditionOptions}
+              reminders={schedules}
+              openId={tab === "visits" ? open : undefined}
+            />
           </TabsContent>
           <TabsContent value="observations" className="mt-4">
             <ObservationsSection personId={id} observations={observations} conditions={conditionOptions} medications={person.medications} openId={tab === "observations" ? open : undefined} />
