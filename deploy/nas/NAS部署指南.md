@@ -228,7 +228,7 @@ docker inspect --format '{{json .State.Health}}' homecenter   # 健康检查详�
 docker compose exec homecenter npx tsx scripts/reset-password.ts 新密码至少8位
 
 # 有多个用户时，指定邮箱：
-docker compose exec homecenter npx tsx scripts/reset-password.ts 新密码 yetandred@sina.cn
+docker compose exec homecenter npx tsx scripts/reset-password.ts 新密码 你的邮箱@例.com
 ```
 
 重置后该账号所有已登录的会话立即失效，需要重新登录。旧镜像里没有这个脚本的话，升级一次（`docker compose pull && docker compose up -d`）即可。
