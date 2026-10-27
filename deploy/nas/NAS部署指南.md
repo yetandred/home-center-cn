@@ -217,13 +217,21 @@ docker inspect --format '{{json .State.Health}}' homecenter   # 健康检查详�
 
 ### 忘记管理员密码
 
-目前没有找回入口，进容器重置：
+两种方式，选其一：
+
+**方式一（推荐）：应用内自助重置。** 配置了 SMTP 邮件的话，在登录页点「忘记密码」，收邮件里的重置链接。
+
+**方式二：终端脚本重置**（未配置邮件时的自救，镜像 `zh-cn-20261027` 及以后内置）：
 
 ```bash
-docker compose exec homecenter npx tsx prisma/seed.ts
+# 只有一个管理员时，直接重置：
+docker compose exec homecenter npx tsx scripts/reset-password.ts 新密码至少8位
+
+# 有多个用户时，指定邮箱：
+docker compose exec homecenter npx tsx scripts/reset-password.ts 新密码 yetandred@sina.cn
 ```
 
-注意：`seed.ts` **只在数据库为空时**创建管理员，已有数据时不会重置密码。真要重置，进应用用别的管理员账号改，或直接在数据库里操作（谨慎）。
+重置后该账号所有已登录的会话立即失效，需要重新登录。旧镜像里没有这个脚本的话，升级一次（`docker compose pull && docker compose up -d`）即可。
 
 ### 附件上传失败
 
