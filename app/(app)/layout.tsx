@@ -1,5 +1,4 @@
 import { Suspense } from "react"
-import { Coffee } from "lucide-react"
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { cookies } from "next/headers"
@@ -87,9 +86,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <div className="flex min-w-0 flex-1 flex-col">
               {/* Extra bottom room so the floating assistant button never hides the end of a page. */}
               <main className={cn("flex-1 overflow-y-auto p-6", floatingAssistant && "pb-20")}>{children}</main>
-              {/* Name and version centred; the empty first column balances the coffee link on the right. */}
-              <footer className="grid shrink-0 grid-cols-[1fr_auto_1fr] items-center gap-2 border-t border-border/60 px-4 py-2 text-xs text-muted-foreground">
-                <span />
+              <footer className="flex shrink-0 items-center justify-center gap-2 border-t border-border/60 px-4 py-2 text-xs text-muted-foreground">
                 <span>
                   <a
                     href="https://github.com/yatzin/home-center"
@@ -101,15 +98,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
                   </a>{" "}
                   &middot; v{packageJson.version}
                 </span>
-                <a
-                  href="https://buymeacoffee.com/yatzin"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 justify-self-end whitespace-nowrap underline-offset-2 hover:text-foreground hover:underline"
-                >
-                  <Coffee className="h-3 w-3" aria-hidden="true" />
-                  请我喝杯咖啡
-                </a>
               </footer>
             </div>
             {showAssistant && <ChatDock />}
